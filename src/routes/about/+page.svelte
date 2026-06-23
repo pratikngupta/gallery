@@ -39,6 +39,15 @@
 		name="description"
 		content="About Pratik Gupta — a software engineer and photographer based in Ontario, Canada. The intersection of engineering precision and artistic vision."
 	/>
+	
+	<!-- Open Graph Tags -->
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="About | Pratik Gupta" />
+	<meta property="og:description" content="A software engineer and photographer capturing the world through code and a lens." />
+	<meta property="og:url" content="https://pratikgupta.dev/about" />
+	
+	<!-- Canonical URL -->
+	<link rel="canonical" href="https://pratikgupta.dev/about" />
 </svelte:head>
 
 <div class="about-page">

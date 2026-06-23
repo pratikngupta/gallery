@@ -11,5 +11,31 @@ export default defineConfig({
 			},
 			adapter: adapter()
 		})
-	]
+	],
+	build: {
+		// Optimize bundle splitting
+		rollupOptions: {
+			output: {
+				// Manual code splitting for better caching
+				manualChunks: {
+					'vendor': ['svelte']
+				}
+			}
+		},
+		// Warn if chunks exceed this size
+		chunkSizeWarningLimit: 600,
+		// Faster build with modern target
+		target: 'ES2020',
+		// Compress CSS and JS
+		minify: 'terser',
+		terserOptions: {
+			compress: {
+				drop_console: false
+			}
+		}
+	},
+	// Optimize dependencies
+	optimizeDeps: {
+		include: ['svelte']
+	}
 });

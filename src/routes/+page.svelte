@@ -65,6 +65,40 @@
 		name="description"
 		content="Photography portfolio by Pratik Gupta — a software engineer capturing landscapes, architecture, and wildlife through a precise yet artistic lens."
 	/>
+	
+	<!-- Open Graph Tags -->
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="Pratik Gupta | Engineer × Photographer" />
+	<meta property="og:description" content="Photography portfolio by Pratik Gupta — a software engineer capturing landscapes, architecture, and wildlife." />
+	<meta property="og:url" content="https://pratikgupta.dev" />
+	<meta property="og:image" content="https://pratikgupta.dev/og-image.jpg" />
+	
+	<!-- Twitter Card Tags -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="Pratik Gupta | Engineer × Photographer" />
+	<meta name="twitter:description" content="Photography portfolio by Pratik Gupta — a software engineer capturing landscapes, architecture, and wildlife." />
+	<meta name="twitter:image" content="https://pratikgupta.dev/og-image.jpg" />
+	
+	<!-- Canonical URL -->
+	<link rel="canonical" href="https://pratikgupta.dev" />
+	
+	<!-- JSON-LD Structured Data -->
+	<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "Person",
+			"name": "Pratik Gupta",
+			"jobTitle": "Software Engineer",
+			"description": "Software engineer and photographer capturing landscapes, architecture, and wildlife through a precise yet artistic lens.",
+			"url": "https://pratikgupta.dev",
+			"image": "https://pratikgupta.dev/og-image.jpg",
+			"sameAs": [
+				"https://github.com/pratikngupta",
+				"https://linkedin.com/in/pratikngupta",
+				"https://instagram.com/pratikngupta"
+			]
+		}
+	</script>
 </svelte:head>
 
 <!-- The Exhibition Frame Hero -->

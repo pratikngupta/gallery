@@ -4,6 +4,10 @@
 	let { photos, currentIndex = 0, onclose } = $props();
 
 	let internalIndex = $state(currentIndex);
+	let lightboxElement = $state(null);
+	let closeButton = $state(null);
+	let previouslyFocusedElement = $state(null);
+
 	$effect(() => {
 		internalIndex = currentIndex;
 	});
@@ -33,7 +37,39 @@
 	function handleKeydown(e) {
 		if (e.key === 'ArrowRight') goNext();
 		else if (e.key === 'ArrowLeft') goPrev();
-		else if (e.key === 'Escape') onclose?.();
+		else if (e.key === 'Escape') {
+			e.preventDefault();
+			onclose?.();
+		}
+		// Focus trap: Tab key handling
+		else if (e.key === 'Tab') {
+			handleTabKey(e);
+		}
+	}
+
+	function handleTabKey(e) {
+		if (!lightboxElement) return;
+		
+		const focusableElements = lightboxElement.querySelectorAll(
+			'button, [tabindex]:not([tabindex="-1"])'
+		);
+		if (focusableElements.length === 0) return;
+
+		const firstElement = focusableElements[0];
+		const lastElement = focusableElements[focusableElements.length - 1];
+		const activeElement = document.activeElement;
+
+		if (e.shiftKey) {
+			if (activeElement === firstElement) {
+				e.preventDefault();
+				lastElement.focus();
+			}
+		} else {
+			if (activeElement === lastElement) {
+				e.preventDefault();
+				firstElement.focus();
+			}
+		}
 	}
 
 	function handleTouchStart(e) {
@@ -55,7 +91,23 @@
 		}
 	}
 
+	function handleClose() {
+		onclose?.();
+		// Restore focus to previously focused element
+		if (previouslyFocusedElement) {
+			setTimeout(() => previouslyFocusedElement.focus(), 0);
+		}
+	}
+
 	$effect(() => {
+		// Store the previously focused element
+		previouslyFocusedElement = document.activeElement;
+		
+		// Focus the lightbox for keyboard navigation
+		if (lightboxElement) {
+			lightboxElement.focus();
+		}
+
 		document.addEventListener('keydown', handleKeydown);
 		document.body.style.overflow = 'hidden';
 
@@ -64,10 +116,28 @@
 			document.body.style.overflow = '';
 		};
 	});
+
+	// Preload adjacent images for faster carousel navigation
+	$effect(() => {
+		// Preload next image
+		if (hasNext && internalIndex + 1 < photos.length) {
+			const nextPhoto = photos[internalIndex + 1];
+			const img = new Image();
+			img.src = nextPhoto.src;
+		}
+		
+		// Preload previous image
+		if (hasPrev && internalIndex - 1 >= 0) {
+			const prevPhoto = photos[internalIndex - 1];
+			const img = new Image();
+			img.src = prevPhoto.src;
+		}
+	});
 </script>
 
 <div
 	class="lightbox-overlay"
+	bind:this={lightboxElement}
 	role="dialog"
 	aria-modal="true"
 	aria-label="Photo viewer"
@@ -78,17 +148,22 @@
 	ontouchend={handleTouchEnd}
 	transition:fade={{ duration: 250 }}
 >
-	<button class="close-btn" onclick={() => onclose?.()} aria-label="Close lightbox">
+	<button 
+		class="close-btn" 
+		onclick={handleClose} 
+		aria-label="Close lightbox (Esc key)"
+		bind:this={closeButton}
+	>
 		<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 			<line x1="18" y1="6" x2="6" y2="18"></line>
 			<line x1="6" y1="6" x2="18" y2="18"></line>
 		</svg>
 	</button>
 
-	<div class="counter">{counter}</div>
+	<div class="counter" aria-live="polite" aria-atomic="true">{counter}</div>
 
 	{#if hasPrev}
-		<button class="nav-btn nav-prev" onclick={goPrev} aria-label="Previous photo">
+		<button class="nav-btn nav-prev" onclick={goPrev} aria-label="Previous photo (← arrow key)">
 			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 				<polyline points="15 18 9 12 15 6"></polyline>
 			</svg>
@@ -96,7 +171,7 @@
 	{/if}
 
 	{#if hasNext}
-		<button class="nav-btn nav-next" onclick={goNext} aria-label="Next photo">
+		<button class="nav-btn nav-next" onclick={goNext} aria-label="Next photo (→ arrow key)">
 			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 				<polyline points="9 18 15 12 9 6"></polyline>
 			</svg>

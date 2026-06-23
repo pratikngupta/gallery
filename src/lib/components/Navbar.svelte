@@ -3,6 +3,7 @@
 	let scrolled = $state(false);
 	let mobileOpen = $state(false);
 	let currentTheme = $state('dark');
+	let hamburgerButton = $state(null);
 
 	const navLinks = [
 		{ label: 'Home', href: '/' },
@@ -40,8 +41,21 @@
 
 	function closeMobile() {
 		mobileOpen = false;
+		// Return focus to hamburger button when closing menu
+		if (hamburgerButton) {
+			hamburgerButton.focus();
+		}
+	}
+
+	function handleMobileMenuKeydown(e) {
+		if (e.key === 'Escape') {
+			e.preventDefault();
+			closeMobile();
+		}
 	}
 </script>
+
+<a href="#main" class="skip-to-main">Skip to main content</a>
 
 <nav class="navbar" class:scrolled>
 	<div class="navbar-inner">
@@ -73,7 +87,10 @@
 				class="hamburger"
 				class:open={mobileOpen}
 				onclick={toggleMobile}
+				bind:this={hamburgerButton}
 				aria-label="Toggle menu"
+				aria-expanded={mobileOpen}
+				aria-controls="mobile-menu"
 			>
 				<span class="bar bar-1"></span>
 				<span class="bar bar-2"></span>
@@ -85,10 +102,20 @@
 </nav>
 
 {#if mobileOpen}
-	<div class="mobile-backdrop" onclick={closeMobile} role="presentation"></div>
+	<div 
+		class="mobile-backdrop" 
+		onclick={closeMobile} 
+		role="presentation"
+		tabindex="-1"
+	></div>
 {/if}
 
-<div class="mobile-menu" class:open={mobileOpen}>
+<div 
+	class="mobile-menu" 
+	id="mobile-menu"
+	class:open={mobileOpen}
+	onkeydown={handleMobileMenuKeydown}
+>
 	<div class="mobile-menu-header">
 		<span class="mobile-logo">
 			<span class="logo-bracket">&lt;</span><span class="logo-text">PG</span>
@@ -111,6 +138,25 @@
 </div>
 
 <style>
+	/* Skip to main content link */
+	.skip-to-main {
+		position: absolute;
+		top: -40px;
+		left: 0;
+		background: #4fd1c5;
+		color: #0a0a0f;
+		padding: 8px 12px;
+		text-decoration: none;
+		border-radius: 0 0 4px 0;
+		font-weight: 600;
+		font-size: 0.85rem;
+		z-index: 2000;
+	}
+
+	.skip-to-main:focus {
+		top: 0;
+	}
+
 	.navbar {
 		position: fixed;
 		top: 0;

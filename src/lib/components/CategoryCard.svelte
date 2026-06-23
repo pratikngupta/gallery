@@ -13,6 +13,7 @@
 <a
 	href="/gallery/{category.id}"
 	class="category-card"
+	data-sveltekit-prefetch="viewport"
 	onmouseenter={() => (isHovered = true)}
 	onmouseleave={() => (isHovered = false)}
 >

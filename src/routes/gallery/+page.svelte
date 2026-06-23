@@ -9,6 +9,15 @@
 <svelte:head>
 	<title>Gallery | All Collections</title>
 	<meta name="description" content="Browse all photography collections — landscapes, buildings, and wildlife." />
+	
+	<!-- Open Graph Tags -->
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="Gallery | Pratik Gupta" />
+	<meta property="og:description" content="Browse all photography collections — landscapes, buildings, and wildlife." />
+	<meta property="og:url" content="https://pratikgupta.dev/gallery" />
+	
+	<!-- Canonical URL -->
+	<link rel="canonical" href="https://pratikgupta.dev/gallery" />
 </svelte:head>
 
 <div class="gallery-page">
