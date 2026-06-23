@@ -64,10 +64,13 @@
 			<div class="exhibition-frame" in:fade={{ duration: 1200, delay: 800 }}>
 				{#each images as img, i}
 					<div
-						class="frame-img"
+						class="slide-wrapper"
 						class:active={i === activeIndex}
-						style="background-image: url({img}); z-index: {i === activeIndex ? 1 : 0};"
-					></div>
+						style="z-index: {i === activeIndex ? 1 : 0};"
+					>
+						<div class="slide-bg" style="background-image: url({img})"></div>
+						<div class="frame-img" style="background-image: url({img})"></div>
+					</div>
 				{/each}
 
 				{#if images.length > 1}
@@ -176,18 +179,31 @@
 		display: none;
 	}
 
+	.slide-wrapper {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		transition: opacity 1s ease-in-out;
+	}
+
+	.slide-wrapper.active {
+		opacity: 1;
+	}
+
+	.slide-bg {
+		position: absolute;
+		inset: -30px;
+		background-size: cover;
+		background-position: center;
+		filter: blur(20px) brightness(0.3);
+	}
+
 	.frame-img {
 		position: absolute;
 		inset: 0;
 		background-size: contain;
 		background-position: center;
 		background-repeat: no-repeat;
-		opacity: 0;
-		transition: opacity 1s ease-in-out;
-	}
-
-	.frame-img.active {
-		opacity: 1;
 	}
 
 	/* Controls */
