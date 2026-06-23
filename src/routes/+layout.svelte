@@ -13,7 +13,7 @@
 <svelte:head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta name="theme-color" content="#0a0a0f" />
-	<link rel="canonical" href="https://pratikgupta.dev" />
+	<link rel="canonical" href="https://pratikngupta.github.io/gallery" />
 	<meta name="robots" content="index, follow" />
 	<meta name="format-detection" content="telephone=no" />
 	

@@ -14,10 +14,10 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:title" content="Gallery | Pratik Gupta" />
 	<meta property="og:description" content="Browse all photography collections — landscapes, buildings, and wildlife." />
-	<meta property="og:url" content="https://pratikgupta.dev/gallery" />
+	<meta property="og:url" content="https://pratikngupta.github.io/gallery/gallery" />
 	
 	<!-- Canonical URL -->
-	<link rel="canonical" href="https://pratikgupta.dev/gallery" />
+	<link rel="canonical" href="https://pratikngupta.github.io/gallery/gallery" />
 </svelte:head>
 
 <div class="gallery-page">

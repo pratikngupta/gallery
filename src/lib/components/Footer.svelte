@@ -25,7 +25,7 @@
 		},
 		{
 			label: 'Email',
-			href: 'mailto:hello@pratikgupta.dev',
+			href: 'mailto:pratikngupta@outlook.com',
 			icon: 'email'
 		}
 	];

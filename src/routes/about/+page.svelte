@@ -44,10 +44,10 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:title" content="About | Pratik Gupta" />
 	<meta property="og:description" content="A software engineer and photographer capturing the world through code and a lens." />
-	<meta property="og:url" content="https://pratikgupta.dev/about" />
+	<meta property="og:url" content="https://pratikngupta.github.io/gallery/about" />
 	
 	<!-- Canonical URL -->
-	<link rel="canonical" href="https://pratikgupta.dev/about" />
+	<link rel="canonical" href="https://pratikngupta.github.io/gallery/about" />
 </svelte:head>
 
 <div class="about-page">
