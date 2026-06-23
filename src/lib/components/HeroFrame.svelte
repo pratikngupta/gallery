@@ -179,8 +179,8 @@
 	.frame-img {
 		position: absolute;
 		inset: 0;
-		background-size: cover;
-		background-position: center 30%;
+		background-size: contain;
+		background-position: center;
 		background-repeat: no-repeat;
 		opacity: 0;
 		transition: opacity 1s ease-in-out;
