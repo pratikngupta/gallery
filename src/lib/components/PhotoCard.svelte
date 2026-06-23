@@ -14,6 +14,7 @@
 			src={photo.src}
 			alt={photo.title || 'Photo'}
 			loading="lazy"
+			decoding="async"
 			class="photo-image"
 		/>
 		<div class="photo-overlay">

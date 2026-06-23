@@ -152,7 +152,7 @@
 </section>
 
 <!-- Collections Section -->
-<section class="section" id="collections">
+<section class="section offscreen-section" id="collections">
 	<div class="container">
 		<div class="section-header">
 			<span class="section-label">collections</span>
@@ -172,7 +172,7 @@
 </section>
 
 <!-- Featured Photos Section -->
-<section class="section section-dark" id="featured">
+<section class="section section-dark offscreen-section" id="featured">
 	<div class="container">
 		<div class="section-header">
 			<span class="section-label">recent captures</span>
@@ -200,7 +200,7 @@
 {/if}
 
 <!-- About Teaser -->
-<section class="section" id="about-teaser">
+<section class="section offscreen-section" id="about-teaser">
 	<div class="container">
 		<div class="section-header">
 			<span class="section-label">about</span>
@@ -591,5 +591,11 @@
 		.cta-section {
 			padding: 60px 0 80px;
 		}
+	}
+
+	/* Offscreen rendering optimization */
+	.offscreen-section {
+		content-visibility: auto;
+		contain-intrinsic-size: auto 600px;
 	}
 </style>

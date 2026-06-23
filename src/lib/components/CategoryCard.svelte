@@ -13,7 +13,7 @@
 	href="/gallery/{category.id}"
 	class="category-card"
 >
-	<img class="card-image" src={category.cover} alt={category.name} loading="lazy" />
+	<img class="card-image" src={category.cover} alt={category.name} loading="lazy" decoding="async" />
 	<div class="card-overlay"></div>
 
 	<div class="card-content">
