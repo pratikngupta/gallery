@@ -115,6 +115,9 @@
 	id="mobile-menu"
 	class:open={mobileOpen}
 	onkeydown={handleMobileMenuKeydown}
+	role="dialog"
+	aria-modal="true"
+	tabindex="-1"
 >
 	<div class="mobile-menu-header">
 		<span class="mobile-logo">
@@ -163,18 +166,15 @@
 		left: 0;
 		right: 0;
 		z-index: 1000;
-		transition: background-color 0.4s ease, backdrop-filter 0.4s ease,
-			box-shadow 0.4s ease, border-color 0.4s ease;
+		transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 		background-color: transparent;
 		border-bottom: 1px solid transparent;
 	}
 
 	.navbar.scrolled {
-		background-color: rgba(10, 10, 15, 0.85);
-		backdrop-filter: blur(24px);
-		-webkit-backdrop-filter: blur(24px);
+		background-color: rgba(10, 10, 15, 0.97);
 		border-bottom-color: rgba(79, 209, 197, 0.08);
-		box-shadow: 0 1px 30px rgba(79, 209, 197, 0.04);
+		box-shadow: 0 1px 20px rgba(0, 0, 0, 0.3);
 	}
 
 	.navbar-inner {
@@ -311,9 +311,9 @@
 	}
 
 	:global([data-theme="light"]) .navbar.scrolled {
-		background-color: rgba(255, 255, 255, 0.85);
+		background-color: rgba(255, 255, 255, 0.97);
 		border-bottom-color: rgba(0, 0, 0, 0.08);
-		box-shadow: 0 1px 30px rgba(0, 0, 0, 0.04);
+		box-shadow: 0 1px 20px rgba(0, 0, 0, 0.06);
 	}
 
 	:global([data-theme="light"]) .mobile-menu {
@@ -401,10 +401,8 @@
 	.mobile-backdrop {
 		position: fixed;
 		inset: 0;
-		background-color: rgba(0, 0, 0, 0.6);
+		background-color: rgba(0, 0, 0, 0.7);
 		z-index: 999;
-		backdrop-filter: blur(4px);
-		-webkit-backdrop-filter: blur(4px);
 	}
 
 	/* Mobile menu panel */
@@ -415,9 +413,7 @@
 		bottom: 0;
 		width: 320px;
 		max-width: 85vw;
-		background-color: rgba(10, 10, 15, 0.97);
-		backdrop-filter: blur(30px);
-		-webkit-backdrop-filter: blur(30px);
+		background-color: #0a0a0f;
 		border-left: 1px solid rgba(79, 209, 197, 0.08);
 		z-index: 1050;
 		transform: translateX(100%);

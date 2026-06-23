@@ -173,14 +173,7 @@
 	}
 
 	.frame-reflection {
-		width: 80%;
-		max-width: 1100px;
-		height: 40px;
-		background: rgba(255, 255, 255, 0.03);
-		border-radius: 50%;
-		filter: blur(20px);
-		margin-top: 10px;
-		pointer-events: none;
+		display: none;
 	}
 
 	.frame-img {
@@ -189,15 +182,12 @@
 		background-size: cover;
 		background-position: center 30%;
 		background-repeat: no-repeat;
-		will-change: opacity, transform;
 		opacity: 0;
-		transform: scale(1);
-		transition: opacity 1.5s ease-in-out, transform 8s linear;
+		transition: opacity 1s ease-in-out;
 	}
 
 	.frame-img.active {
 		opacity: 1;
-		transform: scale(1.03);
 	}
 
 	/* Controls */
@@ -219,9 +209,7 @@
 	}
 
 	.ctrl-btn {
-		background: var(--color-surface-glass-strong);
-		backdrop-filter: blur(10px);
-		-webkit-backdrop-filter: blur(10px);
+		background: rgba(0, 0, 0, 0.5);
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		color: var(--color-text-primary);
 		width: 48px;
@@ -232,12 +220,10 @@
 		justify-content: center;
 		cursor: pointer;
 		pointer-events: auto;
-		transition: all 0.2s ease;
 	}
 
 	.ctrl-btn:hover {
-		background: rgba(255, 255, 255, 0.1);
-		transform: scale(1.1);
+		background: rgba(0, 0, 0, 0.7);
 	}
 
 	.ctrl-btn svg {
@@ -245,7 +231,6 @@
 		height: 24px;
 	}
 
-	/* Indicators */
 	.frame-indicators {
 		position: absolute;
 		bottom: 24px;
@@ -254,8 +239,7 @@
 		display: flex;
 		gap: 10px;
 		z-index: 10;
-		background: var(--color-surface-glass-strong);
-		backdrop-filter: blur(8px);
+		background: rgba(0, 0, 0, 0.5);
 		padding: 8px 12px;
 		border-radius: 20px;
 		border: 1px solid rgba(255, 255, 255, 0.05);

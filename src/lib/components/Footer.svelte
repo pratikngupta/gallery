@@ -108,9 +108,7 @@
 <style>
 	.footer {
 		position: relative;
-		background: rgba(255, 255, 255, 0.02);
-		backdrop-filter: blur(10px);
-		-webkit-backdrop-filter: blur(10px);
+		background: var(--color-bg-secondary);
 	}
 
 	.footer-gradient-border {

@@ -3,7 +3,7 @@
 
 	let { photos, currentIndex = 0, onclose } = $props();
 
-	let internalIndex = $state(currentIndex);
+	let internalIndex = $state((() => currentIndex)());
 	let lightboxElement = $state(null);
 	let closeButton = $state(null);
 	let previouslyFocusedElement = $state(null);

@@ -163,7 +163,7 @@
 		</div>
 		<div class="categories-grid">
 			{#each categories as category, i}
-				<div class="category-wrapper" style="animation-delay: {i * 150}ms">
+				<div class="category-wrapper">
 					<CategoryCard {category} />
 				</div>
 			{/each}
@@ -181,7 +181,7 @@
 		</div>
 		<div class="featured-grid">
 			{#each featuredPhotos as photo, i}
-				<div class="featured-item" style="animation-delay: {i * 100}ms">
+				<div class="featured-item">
 					<PhotoCard {photo} index={i} onclick={() => openLightbox(i)} />
 				</div>
 			{/each}
@@ -373,7 +373,7 @@
 	}
 
 	.category-wrapper {
-		animation: fadeInUp 0.8s ease-out both;
+		/* Animation removed for performance */
 	}
 
 	/* ---- Featured Grid ---- */
@@ -386,7 +386,7 @@
 	.featured-item {
 		break-inside: avoid;
 		margin-bottom: 16px;
-		animation: fadeInUp 0.6s ease-out both;
+		/* Animation removed for performance */
 	}
 
 	/* ---- About Teaser ---- */

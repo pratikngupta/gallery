@@ -1,45 +1,31 @@
 <script>
-	import { fly } from 'svelte/transition';
-
 	let { photo, index = 0, onclick } = $props();
-
-	let visible = $state(false);
-
-	$effect(() => {
-		const timer = setTimeout(() => {
-			visible = true;
-		}, 50);
-		return () => clearTimeout(timer);
-	});
 </script>
 
-{#if visible}
-	<div
-		class="photo-card"
-		role="button"
-		tabindex="0"
-		onclick={onclick}
-		onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onclick?.(); } }}
-		in:fly={{ y: 30, duration: 600, delay: index * 80 }}
-	>
-		<div class="photo-wrapper">
-			<img
-				src={photo.src}
-				alt={photo.title || 'Photo'}
-				loading="lazy"
-				class="photo-image"
-			/>
-			<div class="photo-overlay">
-				<div class="photo-info">
-					<h4 class="photo-title">{photo.title || ''}</h4>
-					{#if photo.location}
-						<span class="photo-location">📍 {photo.location}</span>
-					{/if}
-				</div>
+<div
+	class="photo-card"
+	role="button"
+	tabindex="0"
+	onclick={onclick}
+	onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onclick?.(); } }}
+>
+	<div class="photo-wrapper">
+		<img
+			src={photo.src}
+			alt={photo.title || 'Photo'}
+			loading="lazy"
+			class="photo-image"
+		/>
+		<div class="photo-overlay">
+			<div class="photo-info">
+				<h4 class="photo-title">{photo.title || ''}</h4>
+				{#if photo.location}
+					<span class="photo-location">📍 {photo.location}</span>
+				{/if}
 			</div>
 		</div>
 	</div>
-{/if}
+</div>
 
 <style>
 	.photo-card {
@@ -49,13 +35,6 @@
 		border-radius: 12px;
 		overflow: hidden;
 		position: relative;
-		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-					box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-	}
-
-	.photo-card:hover {
-		transform: scale(1.03);
-		box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
 	}
 
 	.photo-wrapper {
@@ -67,11 +46,6 @@
 		width: 100%;
 		height: auto;
 		display: block;
-		transition: filter 0.4s ease;
-	}
-
-	.photo-card:hover .photo-image {
-		filter: brightness(0.8);
 	}
 
 	.photo-overlay {

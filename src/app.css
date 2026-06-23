@@ -182,7 +182,6 @@
 }
 
 html {
-  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
@@ -358,20 +357,6 @@ p {
    ============================================ */
 .dot-pattern {
   position: relative;
-}
-
-.dot-pattern::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.03) 1px,
-    transparent 1px
-  );
-  background-size: 24px 24px;
-  pointer-events: none;
-  z-index: 0;
 }
 
 /* ============================================

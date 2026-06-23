@@ -7,7 +7,7 @@
 	let { data, children } = $props();
 	
 	// Initialize store with server data
-	initGalleryData(data.gallery);
+	initGalleryData((() => data.gallery)());
 </script>
 
 <svelte:head>
