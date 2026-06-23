@@ -1,6 +1,7 @@
 <script>
 	import PhotoCard from './PhotoCard.svelte';
 	import Lightbox from './Lightbox.svelte';
+	import Masonry from './Masonry.svelte';
 
 	let { photos } = $props();
 
@@ -17,14 +18,16 @@
 	}
 </script>
 
-<div class="photo-grid">
-	{#each photos as photo, index (photo.src)}
-		<PhotoCard
-			{photo}
-			{index}
-			onclick={() => openLightbox(index)}
-		/>
-	{/each}
+<div class="photo-grid-wrapper">
+	<Masonry items={photos} minColWidth={280} gap={16}>
+		{#snippet children({ item: photo, index })}
+			<PhotoCard
+				{photo}
+				{index}
+				onclick={() => openLightbox(index)}
+			/>
+		{/snippet}
+	</Masonry>
 </div>
 
 {#if lightboxOpen}
@@ -36,27 +39,8 @@
 {/if}
 
 <style>
-	.photo-grid {
-		columns: 4;
-		column-gap: 16px;
+	.photo-grid-wrapper {
+		width: 100%;
 		padding: 0;
-	}
-
-	@media (max-width: 1200px) {
-		.photo-grid {
-			columns: 3;
-		}
-	}
-
-	@media (max-width: 768px) {
-		.photo-grid {
-			columns: 2;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.photo-grid {
-			columns: 1;
-		}
 	}
 </style>
