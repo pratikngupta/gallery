@@ -90,17 +90,17 @@
 							</div>
 							<div class="code-line code-indent">
 								<span class="code-key">title</span><span class="code-punct">:</span>
-								<span class="code-string">'Software Engineer & Photographer'</span><span class="code-punct">,</span>
+								<span class="code-string">'Software Engineering Student & Photographer'</span><span class="code-punct">,</span>
 							</div>
 							<div class="code-line code-indent">
-								<span class="code-key">location</span><span class="code-punct">:</span>
-								<span class="code-string">'Ontario, Canada'</span><span class="code-punct">,</span>
+								<span class="code-key">focus</span><span class="code-punct">:</span>
+								<span class="code-string">'AI, Robotics & Cloud-native Infrastructure'</span><span class="code-punct">,</span>
 							</div>
 							<div class="code-line code-indent">
 								<span class="code-key">stack</span><span class="code-punct">:</span>
-								<span class="code-bracket">[</span><span class="code-string">'SvelteKit'</span><span class="code-punct">,</span>
-								<span class="code-string">'TypeScript'</span><span class="code-punct">,</span>
-								<span class="code-string">'Node.js'</span><span class="code-bracket">]</span><span class="code-punct">,</span>
+								<span class="code-bracket">[</span><span class="code-string">'Python'</span><span class="code-punct">,</span>
+								<span class="code-string">'C++'</span><span class="code-punct">,</span>
+								<span class="code-string">'TypeScript'</span><span class="code-bracket">]</span><span class="code-punct">,</span>
 							</div>
 							<div class="code-line code-indent">
 								<span class="code-key">camera</span><span class="code-punct">:</span>
@@ -124,14 +124,11 @@
 					<span class="section-label">the story</span>
 					<h2 class="section-heading">Where Precision Meets Vision</h2>
 					<p class="story-text">
-						There's an algorithm to light — the way it diffracts through morning fog, the
-						gradient it paints across a winter sky, the split-second timing that turns an
-						ordinary scene into something worth preserving. As a software engineer, I've learned
-						to see patterns everywhere. As a photographer, I've learned to <em>feel</em> them.
+						As a Software Engineering student at Western University, I spend my days building resilient, high-performance systems at the intersection of AI, robotics, and cloud-native infrastructure. I thrive in deep technical challenges — from PX4 firmware and LoRa telemetry to CNN/Transformer architectures.
 					</p>
 					<p class="story-text">
 						My engineering mindset shapes how I approach a photograph: I debug compositions,
-						refactor framing, optimize for the moment. But the camera demands something code
+						refactor framing, and optimize for the moment. But the camera demands something code
 						never does — surrender to imperfection. The best shots happen when the plan fails
 						and the light does something no function could predict.
 					</p>
@@ -150,8 +147,7 @@
 							</div>
 							<h3 class="world-title">The Engineer</h3>
 							<p class="world-text">
-								By day, I design and build software systems — writing clean, purposeful code
-								that solves real problems. I think in types, interfaces, and data flows.
+								I design and build software systems — whether leading autonomous VTOL mission systems at Western Aero Design or architecting computer vision platforms. I think in types, interfaces, and data flows.
 								This analytical lens follows me everywhere, including into the field with a camera.
 							</p>
 						</div>
@@ -226,7 +222,7 @@
 					<p class="contact-text">
 						Interested in prints, licensing, or collaborations? Let's connect.
 					</p>
-					<a href="mailto:hello@gallery.com" class="btn btn-primary contact-btn">Contact Me</a>
+					<a href="mailto:pratikngupta@outlook.com" class="btn btn-primary contact-btn">Contact Me</a>
 				</div>
 			</aside>
 		</div>

@@ -208,12 +208,10 @@
 		<div class="about-content">
 			<div class="about-text">
 				<h2 class="section-title about-title">
-					An engineer who sees the world<br />in frames & functions
+					The logic of software.<br />The art of the lens.
 				</h2>
 				<p class="about-description">
-					I build software for a living and photographs for the soul. Every landscape is a
-					system to decode — light, shadow, geometry, timing. Every shutter click is a deployment
-					of a moment I'll never get back. This portfolio is where both halves converge.
+					I'm a Software Engineering student building resilient systems at the intersection of AI, robotics, and cloud-native infrastructure. But behind the lens, logic meets wonder. Every landscape is a system to decode, and every shutter click is a deployment of a moment I'll never get back. Where engineering precision meets artistic vision.
 				</p>
 				<a href="/about" class="btn btn-ghost">
 					<span class="btn-decorator">&lt;/&gt;</span>

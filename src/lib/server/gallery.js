@@ -129,11 +129,10 @@ export function generateGalleryData() {
 		}
 	}
 
-	// Basic site metadata
 	const site = {
 		name: "Gallery",
-		tagline: "Capturing Moments in Light",
-		description: "A photography portfolio showcasing landscapes, architecture, and wildlife from around the world.",
+		tagline: "The logic of software. The art of the lens.",
+		description: "Where engineering precision meets artistic vision. A photography portfolio by Pratik Gupta.",
 		photographer: "Pratik Gupta"
 	};
 
