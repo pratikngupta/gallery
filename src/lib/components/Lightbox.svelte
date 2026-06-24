@@ -236,7 +236,7 @@
 		background: rgba(255, 255, 255, 0.08);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
-		color: #f0ece2;
+		color: var(--color-text-primary);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
@@ -256,7 +256,7 @@
 		transform: translateX(-50%);
 		font-family: 'Inter', sans-serif;
 		font-size: 0.8rem;
-		color: #a0998e;
+		color: var(--color-text-secondary);
 		letter-spacing: 0.1em;
 		z-index: 10;
 	}
@@ -273,7 +273,7 @@
 		background: rgba(255, 255, 255, 0.08);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
-		color: #f0ece2;
+		color: var(--color-text-primary);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
@@ -336,7 +336,7 @@
 		font-family: 'Playfair Display', serif;
 		font-size: 1.3rem;
 		font-weight: 600;
-		color: #f0ece2;
+		color: var(--color-text-primary);
 		margin: 0 0 0.5rem 0;
 	}
 
@@ -352,14 +352,14 @@
 	.info-date {
 		font-family: 'Inter', sans-serif;
 		font-size: 0.8rem;
-		color: #a0998e;
+		color: var(--color-text-secondary);
 	}
 
 	.info-description {
 		font-family: 'Inter', sans-serif;
 		font-size: 0.85rem;
 		font-weight: 300;
-		color: #a0998e;
+		color: var(--color-text-secondary);
 		line-height: 1.6;
 		margin: 0.25rem 0 0 0;
 	}

@@ -1,14 +1,11 @@
 <script>
-  import CategoryCard from "$lib/components/CategoryCard.svelte";
-  import PhotoCard from "$lib/components/PhotoCard.svelte";
+import CategoryCard from "$lib/components/CategoryCard.svelte";
   import Lightbox from "$lib/components/Lightbox.svelte";
-  import MarqueeSlider from "$lib/components/MarqueeSlider.svelte";
   import BentoGrid from "$lib/components/BentoGrid.svelte";
   import HorizontalScroll from "$lib/components/HorizontalScroll.svelte";
   import {
     galleryData,
     getFeaturedPhotos,
-    getTotalPhotoCount,
     getAllPhotos,
   } from "$lib/stores/gallery.js";
 
@@ -142,7 +139,7 @@
   onclick={(idx) => openLightbox(idx, heroImages)} 
 />
 
-<!-- Introduction Strip -->`
+<!-- Introduction Strip -->
 <section class="intro-strip">
   <div class="dot-pattern"></div>
   <div class="container intro-inner">
@@ -337,12 +334,12 @@
   }
 
   .code-keyword {
-    color: #c792ea;
+    color: var(--color-syntax-keyword, #c792ea);
     font-weight: 500;
   }
 
   .code-var {
-    color: #82aaff;
+    color: var(--color-syntax-variable, #82aaff);
     margin-left: 0.5em;
   }
 
@@ -418,10 +415,6 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
-  }
-
-  .category-wrapper {
-    /* Animation removed for performance */
   }
 
   /* ---- Featured Grid ---- */
@@ -528,18 +521,6 @@
     font-size: 1.05rem;
     margin-bottom: 36px;
     font-weight: 300;
-  }
-
-  /* ---- Keyframes ---- */
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
   }
 
   /* ---- Responsive ---- */

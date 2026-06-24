@@ -241,7 +241,7 @@
 		padding: 0 24px;
 	}
 
-	/* ---- Breadcrumb ---- */
+
 
 	.page-title {
 		font-family: 'Playfair Display', serif;
@@ -510,7 +510,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 8px 0;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		border-bottom: 1px solid var(--color-border);
 	}
 
 	.stat-row:last-child {
@@ -567,7 +567,7 @@
 
 	.sidebar-cta {
 		text-align: center;
-		border-color: rgba(79, 209, 197, 0.1);
+		border-color: var(--color-accent-subtle);
 	}
 
 	.cta-decorator {

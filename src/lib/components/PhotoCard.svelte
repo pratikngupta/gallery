@@ -79,7 +79,7 @@
 		font-family: 'Playfair Display', serif;
 		font-size: 1.05rem;
 		font-weight: 600;
-		color: #f0ece2;
+		color: white;
 		margin: 0;
 		line-height: 1.3;
 	}
@@ -87,12 +87,12 @@
 	.photo-location {
 		font-family: 'Inter', sans-serif;
 		font-size: 0.8rem;
-		color: #a0998e;
+		color: rgba(255, 255, 255, 0.7);
 		letter-spacing: 0.02em;
 	}
 
 	.photo-card:focus-visible {
-		outline: 2px solid #d4a574;
+		outline: 2px solid var(--color-accent);
 		outline-offset: 2px;
 	}
 </style>

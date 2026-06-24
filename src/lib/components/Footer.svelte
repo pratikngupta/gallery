@@ -287,7 +287,7 @@
 		font-weight: 500;
 		text-transform: uppercase;
 		letter-spacing: 0.2em;
-		color: #4fd1c5;
+		color: var(--color-accent);
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5em;

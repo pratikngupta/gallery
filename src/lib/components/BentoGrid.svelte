@@ -65,7 +65,7 @@
 	}
 
 	.bento-title {
-		color: #fff;
+		color: white;
 		font-family: 'Playfair Display', serif;
 		font-size: 1.4rem;
 		transform: translateY(15px);

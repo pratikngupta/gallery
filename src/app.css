@@ -16,12 +16,16 @@
   --color-bg-elevated: #14141c;
   --color-bg-card: rgba(255, 255, 255, 0.03);
 
-  /* Accent — Teal / Cyan (code / tech feel) */
-  --color-accent: #4fd1c5;
-  --color-accent-light: #81e6d9;
-  --color-accent-dark: #38b2ac;
-  --color-accent-glow: rgba(79, 209, 197, 0.25);
-  --color-accent-subtle: rgba(79, 209, 197, 0.08);
+  /* Accent — Blue (code / tech feel) */
+  --color-accent: #6193f0;
+  --color-accent-light: #8db4f8;
+  --color-accent-dark: #4070d4;
+  --color-accent-glow: rgba(97, 147, 240, 0.25);
+  --color-accent-subtle: rgba(97, 147, 240, 0.08);
+
+  /* Syntax Highlighting */
+  --color-syntax-keyword: #c792ea;
+  --color-syntax-variable: #82aaff;
 
   /* Secondary Accent — Warm Amber */
   --color-secondary: #d4a574;
@@ -38,7 +42,7 @@
   /* Borders & Surfaces */
   --color-border: rgba(255, 255, 255, 0.06);
   --color-border-hover: rgba(255, 255, 255, 0.12);
-  --color-border-accent: rgba(79, 209, 197, 0.3);
+  --color-border-accent: rgba(97, 147, 240, 0.3);
   --color-surface-glass: rgba(255, 255, 255, 0.04);
   --color-surface-glass-strong: rgba(255, 255, 255, 0.08);
   --color-overlay: rgba(10, 10, 15, 0.7);
@@ -56,12 +60,16 @@
   --color-bg-elevated: #ffffff;
   --color-bg-card: rgba(0, 0, 0, 0.02);
 
-  /* Accent — Teal / Cyan (slightly darker for contrast) */
-  --color-accent: #319795;
-  --color-accent-light: #4fd1c5;
-  --color-accent-dark: #285e61;
-  --color-accent-glow: rgba(49, 151, 149, 0.2);
-  --color-accent-subtle: rgba(49, 151, 149, 0.08);
+  /* Accent — Blue (slightly darker for contrast) */
+  --color-accent: #3b72d9;
+  --color-accent-light: #6193f0;
+  --color-accent-dark: #2a5bb8;
+  --color-accent-glow: rgba(59, 114, 217, 0.2);
+  --color-accent-subtle: rgba(59, 114, 217, 0.08);
+
+  /* Syntax Highlighting */
+  --color-syntax-keyword: #9c27b0;
+  --color-syntax-variable: #1976d2;
 
   /* Secondary Accent */
   --color-secondary: #b8884e;
@@ -78,7 +86,7 @@
   /* Borders & Surfaces */
   --color-border: rgba(0, 0, 0, 0.08);
   --color-border-hover: rgba(0, 0, 0, 0.15);
-  --color-border-accent: rgba(49, 151, 149, 0.3);
+  --color-border-accent: rgba(59, 114, 217, 0.3);
   --color-surface-glass: rgba(255, 255, 255, 0.6);
   --color-surface-glass-strong: rgba(255, 255, 255, 0.85);
   --color-overlay: rgba(248, 249, 250, 0.7);
@@ -290,7 +298,7 @@ p {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a2e;
+  background: var(--color-bg-tertiary);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -316,10 +324,10 @@ p {
   background: var(--color-accent-light);
 }
 
-/* Firefox */
+/* Firefox scrollbar styling */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-accent) #1a1a2e;
+  scrollbar-color: var(--color-accent) var(--color-bg-tertiary);
 }
 
 /* ============================================
@@ -863,26 +871,3 @@ p {
   }
 }
 
-/* ============================================
-   Reduced Motion
-   ============================================ */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-
-  .animate-on-scroll {
-    opacity: 1;
-    transform: none;
-  }
-
-  .animate-float,
-  .animate-pulse-glow {
-    animation: none;
-  }
-}

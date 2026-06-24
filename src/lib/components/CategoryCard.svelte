@@ -111,7 +111,7 @@
 		font-family: 'Playfair Display', serif;
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #ffffff;
+		color: white;
 		margin: 0.25rem 0 0.75rem 0;
 		line-height: 1.2;
 		transition: color 0.3s ease;

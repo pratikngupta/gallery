@@ -187,7 +187,7 @@
 	.hs-item-title {
 		font-family: 'Playfair Display', serif;
 		font-size: 2rem;
-		color: #fff;
+		color: white;
 		margin-bottom: 8px;
 		transform: translateY(20px);
 		transition: transform 0.4s ease;
@@ -196,7 +196,7 @@
 	.hs-item-location {
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.9rem;
-		color: #a0998e;
+		color: var(--color-text-secondary);
 		letter-spacing: 0.05em;
 		transform: translateY(20px);
 		transition: transform 0.4s ease 0.05s;

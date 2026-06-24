@@ -146,8 +146,8 @@
 		position: absolute;
 		top: -40px;
 		left: 0;
-		background: #4fd1c5;
-		color: #0a0a0f;
+		background: var(--color-accent);
+		color: var(--color-bg-primary);
 		padding: 8px 12px;
 		text-decoration: none;
 		border-radius: 0 0 4px 0;
@@ -172,8 +172,8 @@
 	}
 
 	.navbar.scrolled {
-		background-color: rgba(10, 10, 15, 0.97);
-		border-bottom-color: rgba(79, 209, 197, 0.08);
+		background-color: var(--color-overlay-heavy);
+		border-bottom-color: var(--color-accent-subtle);
 		box-shadow: 0 1px 20px rgba(0, 0, 0, 0.3);
 	}
 
@@ -229,7 +229,7 @@
 		font-family: 'Inter', sans-serif;
 		font-size: 0.8rem;
 		font-weight: 400;
-		color: #8a8a8e;
+		color: var(--color-text-secondary);
 		text-decoration: none;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
@@ -289,7 +289,7 @@
 	}
 
 	:global([data-theme="light"]) .theme-toggle {
-		color: #1a202c;
+		color: var(--color-text-primary);
 		background: rgba(0, 0, 0, 0.05);
 	}
 
@@ -299,11 +299,11 @@
 	}
 
 	:global([data-theme="light"]) .logo {
-		color: #1a202c;
+		color: var(--color-text-primary);
 	}
 
 	:global([data-theme="light"]) .logo-text {
-		color: #1a202c;
+		color: var(--color-text-primary);
 	}
 
 	:global([data-theme="light"]) .logo-bracket {
@@ -322,15 +322,15 @@
 	}
 
 	:global([data-theme="light"]) .nav-link {
-		color: #4a5568;
+		color: var(--color-text-secondary);
 	}
 
 	:global([data-theme="light"]) .nav-link:hover {
-		color: #1a202c;
+		color: var(--color-text-primary);
 	}
 
 	:global([data-theme="light"]) .bar {
-		background-color: #1a202c;
+		background-color: var(--color-text-primary);
 	}
 
 	:global([data-theme="light"]) .hamburger.open .bar {
@@ -413,7 +413,7 @@
 		bottom: 0;
 		width: 320px;
 		max-width: 85vw;
-		background-color: #0a0a0f;
+		background-color: var(--color-bg-primary);
 		border-left: 1px solid var(--color-accent-subtle);
 		z-index: 1050;
 		transform: translateX(100%);
@@ -500,7 +500,7 @@
 
 	.mobile-footer-text {
 		font-size: 0.7rem;
-		color: #5a5a5e;
+		color: var(--color-text-muted);
 		letter-spacing: 0.1em;
 	}
 
