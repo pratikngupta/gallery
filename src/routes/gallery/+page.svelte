@@ -28,7 +28,6 @@
 				<span class="separator">/</span>
 				<span class="current">Gallery</span>
 			</nav>
-			<p class="section-label">// all collections</p>
 			<h1 class="page-title">Gallery</h1>
 			<p class="page-subtitle">{totalPhotos} photographs across {categories.length} collections</p>
 		</div>
