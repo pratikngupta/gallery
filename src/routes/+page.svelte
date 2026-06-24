@@ -3,6 +3,9 @@
   import CategoryCard from "$lib/components/CategoryCard.svelte";
   import PhotoCard from "$lib/components/PhotoCard.svelte";
   import Lightbox from "$lib/components/Lightbox.svelte";
+  import MarqueeSlider from "$lib/components/MarqueeSlider.svelte";
+  import BentoGrid from "$lib/components/BentoGrid.svelte";
+  import HorizontalScroll from "$lib/components/HorizontalScroll.svelte";
   import {
     galleryData,
     getFeaturedPhotos,
@@ -11,7 +14,8 @@
   } from "$lib/stores/gallery.js";
 
   const categories = galleryData.categories;
-  const featuredPhotos = getFeaturedPhotos(6);
+  const featuredPhotos = getFeaturedPhotos(6); // Bento grid takes 6
+  const hsPhotos = getFeaturedPhotos(8); // Horizontal scroll takes 8
   const allPhotos = getAllPhotos();
   const totalPhotos = allPhotos.length;
   const totalSubcategories = categories.reduce(
@@ -187,7 +191,15 @@
   </div>
 </section>
 
-<!-- Collections Section -->
+<!-- Curated Highlights (Horizontal Scroll) -->
+<HorizontalScroll 
+  title="Curated Series" 
+  subtitle="Swipe or scroll to explore highlighted works from across the globe." 
+  photos={hsPhotos} 
+  onclick={openLightbox} 
+/>
+
+<!-- Collections Section (Marquee) -->
 <section class="section offscreen-section" id="collections">
   <div class="container">
     <div class="section-header">
@@ -197,17 +209,17 @@
         {totalPhotos} photographs across {categories.length} curated collections
       </p>
     </div>
-    <div class="categories-grid">
-      {#each categories as category, i}
-        <div class="category-wrapper">
-          <CategoryCard {category} />
-        </div>
-      {/each}
-    </div>
   </div>
+  <!-- Full bleed marquee -->
+  <MarqueeSlider 
+    photos={categories.map(c => ({ src: c.cover, title: c.name }))} 
+    speed={30} 
+    direction="left"
+    onclick={(index) => window.location.href = `/gallery/${categories[index].id}`}
+  />
 </section>
 
-<!-- Featured Photos Section -->
+<!-- Featured Photos Section (Bento Grid) -->
 <section class="section section-dark offscreen-section" id="featured">
   <div class="container">
     <div class="section-header">
@@ -217,12 +229,8 @@
         A selection of recent photographs from the portfolio
       </p>
     </div>
-    <div class="featured-grid">
-      {#each featuredPhotos as photo, i}
-        <div class="featured-item">
-          <PhotoCard {photo} index={i} onclick={() => openLightbox(i)} />
-        </div>
-      {/each}
+    <div class="featured-grid-container">
+      <BentoGrid photos={featuredPhotos} onclick={openLightbox} />
     </div>
   </div>
 </section>
@@ -409,28 +417,9 @@
     line-height: 1.6;
   }
 
-  /* ---- Categories Grid ---- */
-  .categories-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-  }
-
-  .category-wrapper {
-    /* Animation removed for performance */
-  }
-
   /* ---- Featured Grid ---- */
-  .featured-grid {
-    display: block;
-    columns: 3;
-    column-gap: 16px;
-  }
-
-  .featured-item {
-    break-inside: avoid;
-    margin-bottom: 16px;
-    /* Animation removed for performance */
+  .featured-grid-container {
+    width: 100%;
   }
 
   /* ---- About Teaser ---- */
