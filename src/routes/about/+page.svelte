@@ -237,7 +237,6 @@
 
 	.page-header {
 		padding: 60px 0 20px;
-		background: linear-gradient(180deg, rgba(26, 26, 46, 0.4) 0%, transparent 100%);
 	}
 
 	.container {

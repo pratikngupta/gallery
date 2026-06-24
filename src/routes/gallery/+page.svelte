@@ -52,7 +52,6 @@
 
 	.page-header {
 		padding: 60px 0 40px;
-		background: linear-gradient(180deg, rgba(20, 20, 30, 0.4) 0%, transparent 100%);
 	}
 
 	.container {

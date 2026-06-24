@@ -93,7 +93,6 @@
 	}
 
 	.page-header {
-		text-align: center;
 		padding: 60px 0;
 		margin-bottom: 40px;
 	}
@@ -107,7 +106,6 @@
 	.breadcrumb {
 		display: flex;
 		align-items: center;
-		justify-content: center;
 		gap: 12px;
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.8rem;
@@ -157,7 +155,6 @@
 		font-size: 1.2rem;
 		color: var(--color-accent);
 		max-width: 600px;
-		margin: 0 auto;
 		font-weight: 300;
 		font-style: italic;
 	}
