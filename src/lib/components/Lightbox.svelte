@@ -123,14 +123,14 @@
 		if (hasNext && internalIndex + 1 < photos.length) {
 			const nextPhoto = photos[internalIndex + 1];
 			const img = new Image();
-			img.src = nextPhoto.src;
+			img.src = nextPhoto.src || nextPhoto;
 		}
 		
 		// Preload previous image
 		if (hasPrev && internalIndex - 1 >= 0) {
 			const prevPhoto = photos[internalIndex - 1];
 			const img = new Image();
-			img.src = prevPhoto.src;
+			img.src = prevPhoto.src || prevPhoto;
 		}
 	});
 </script>
@@ -181,7 +181,7 @@
 	<div class="image-container">
 		{#key internalIndex}
 			<img
-				src={currentPhoto.src}
+				src={currentPhoto.src || currentPhoto}
 				alt={currentPhoto.title || 'Photo'}
 				class="lightbox-image"
 				in:fly={{ x: direction * 60, duration: 350, delay: 50 }}
