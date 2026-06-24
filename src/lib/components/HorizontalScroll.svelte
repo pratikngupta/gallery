@@ -48,7 +48,6 @@
 <div class="hs-section" class:is-hero={isHero} bind:this={sectionEl}>
 	<div class="hs-sticky">
 		<div class="hs-header">
-			<span class="hs-label">// {isHero ? 'home' : 'cinematic scroll'}</span>
 			<h2 class="hs-title">{title}</h2>
 			<p class="hs-subtitle">{subtitle}</p>
 		</div>

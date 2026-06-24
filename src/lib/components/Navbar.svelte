@@ -129,15 +129,11 @@
 		{#each navLinks as link, i}
 			<li style="transition-delay: {mobileOpen ? (i + 1) * 80 : 0}ms;">
 				<a href={link.href} class="mobile-link" onclick={closeMobile}>
-					<span class="mobile-link-index code-accent">{String(i).padStart(2, '0')}</span>
 					<span class="mobile-link-label">{link.label}</span>
 				</a>
 			</li>
 		{/each}
 	</ul>
-	<div class="mobile-menu-footer">
-		<span class="code-accent mobile-footer-text">// navigate</span>
-	</div>
 </div>
 
 <style>
@@ -446,15 +442,14 @@
 	}
 
 	.mobile-menu li {
-		margin-bottom: 0.5rem;
 		opacity: 0;
-		transform: translateX(20px);
-		transition: opacity 0.4s ease, transform 0.4s ease;
+		transform: translateY(20px);
+		transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.mobile-menu.open li {
 		opacity: 1;
-		transform: translateX(0);
+		transform: translateY(0);
 	}
 
 	.mobile-link {

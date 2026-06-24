@@ -487,10 +487,7 @@ p {
   margin-bottom: var(--space-lg);
 }
 
-.section-label::before {
-  content: '//';
-  opacity: 0.6;
-}
+
 
 /* ============================================
    Code Accent & Gradient Text
