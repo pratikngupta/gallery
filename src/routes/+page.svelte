@@ -22,6 +22,7 @@
     0,
   );
 
+  let lightboxPhotos = $state([]);
   let lightboxOpen = $state(false);
   let lightboxIndex = $state(0);
 
@@ -31,7 +32,8 @@
   let subcategoriesCount = $state(0);
   let countersStarted = $state(false);
 
-  function openLightbox(index) {
+  function openLightbox(index, photosArray) {
+    lightboxPhotos = photosArray;
     lightboxIndex = index;
     lightboxOpen = true;
   }
@@ -137,7 +139,7 @@
   title="Engineer × Photographer" 
   subtitle="The logic of software. The art of the lens." 
   photos={heroImages} 
-  onclick={openLightbox} 
+  onclick={(idx) => openLightbox(idx, heroImages)} 
 />
 
 <!-- Introduction Strip -->`
@@ -224,14 +226,14 @@
       </p>
     </div>
     <div class="featured-grid-container">
-      <BentoGrid photos={featuredPhotos} onclick={openLightbox} />
+      <BentoGrid photos={featuredPhotos} onclick={(idx) => openLightbox(idx, featuredPhotos)} />
     </div>
   </div>
 </section>
 
 {#if lightboxOpen}
   <Lightbox
-    photos={featuredPhotos}
+    photos={lightboxPhotos}
     currentIndex={lightboxIndex}
     onclose={() => {
       lightboxOpen = false;
