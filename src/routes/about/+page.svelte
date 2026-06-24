@@ -164,7 +164,7 @@
 					</div>
 				</section>
 
-				<!-- Skills Grid -->
+				<!-- Skills Grid
 				<section class="about-section">
 					<span class="section-label">craft</span>
 					<h2 class="section-heading">What I Bring to Every Frame</h2>
@@ -177,7 +177,7 @@
 							</div>
 						{/each}
 					</div>
-				</section>
+				</section> -->
 			</div>
 
 			<!-- Sidebar -->
