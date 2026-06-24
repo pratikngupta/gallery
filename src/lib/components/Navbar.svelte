@@ -310,7 +310,6 @@
 	}
 
 	:global([data-theme="light"]) .navbar.scrolled {
-		background-color: rgba(255, 255, 255, 0.97);
 		border-bottom-color: rgba(0, 0, 0, 0.08);
 		box-shadow: 0 1px 20px rgba(0, 0, 0, 0.06);
 	}
