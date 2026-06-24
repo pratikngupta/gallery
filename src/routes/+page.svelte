@@ -1,5 +1,4 @@
 <script>
-  import HeroFrame from "$lib/components/HeroFrame.svelte";
   import CategoryCard from "$lib/components/CategoryCard.svelte";
   import PhotoCard from "$lib/components/PhotoCard.svelte";
   import Lightbox from "$lib/components/Lightbox.svelte";
@@ -132,12 +131,13 @@
   </script>
 </svelte:head>
 
-<!-- The Exhibition Frame Hero -->
-<HeroFrame
-  label="home"
-  title="Engineer × Photographer"
-  subtitle="The logic of software × The art of the lens"
-  backgroundImages={heroImages}
+<!-- Cinematic Scroll Hero -->
+<HorizontalScroll 
+  isHero={true}
+  title="Engineer × Photographer" 
+  subtitle="The logic of software. The art of the lens." 
+  photos={heroImages} 
+  onclick={openLightbox} 
 />
 
 <!-- Introduction Strip -->`
@@ -191,13 +191,7 @@
   </div>
 </section>
 
-<!-- Curated Highlights (Horizontal Scroll) -->
-<HorizontalScroll 
-  title="Curated Series" 
-  subtitle="Swipe or scroll to explore highlighted works from across the globe." 
-  photos={hsPhotos} 
-  onclick={openLightbox} 
-/>
+
 
 <!-- Collections Section (Marquee) -->
 <section class="section offscreen-section" id="collections">

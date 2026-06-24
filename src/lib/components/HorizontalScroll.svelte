@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	let { title = "Curated Series", subtitle = "Swipe through selected works", photos = [], onclick } = $props();
+	let { title = "Curated Series", subtitle = "Swipe through selected works", photos = [], isHero = false, onclick } = $props();
 
 	let sectionEl = $state();
 	let trackEl = $state();
@@ -45,10 +45,10 @@
 	let translateX = $derived(scrollProgress * Math.max(0, trackWidth - windowWidth + (windowWidth * 0.1))); // adding a bit of buffer
 </script>
 
-<div class="hs-section" bind:this={sectionEl}>
+<div class="hs-section" class:is-hero={isHero} bind:this={sectionEl}>
 	<div class="hs-sticky">
 		<div class="hs-header">
-			<span class="hs-label">// cinematic scroll</span>
+			<span class="hs-label">// {isHero ? 'home' : 'cinematic scroll'}</span>
 			<h2 class="hs-title">{title}</h2>
 			<p class="hs-subtitle">{subtitle}</p>
 		</div>
@@ -62,7 +62,7 @@
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<div class="hs-item" onclick={() => onclick?.(i)}>
-					<img src={photo.src} alt={photo.title || 'Curated Photo'} loading="lazy" />
+					<img src={photo.src || photo} alt={photo.title || 'Curated Photo'} loading="lazy" />
 					<div class="hs-overlay">
 						{#if photo.title}
 							<span class="hs-item-title">{photo.title}</span>
@@ -80,11 +80,15 @@
 <style>
 	.hs-section {
 		/* The height determines how long it takes to scroll through. 
-		   300vh means it takes 2 full screen scrolls to get from start to end */
+		   350vh means it takes 2.5 full screen scrolls to get from start to end */
 		height: 350vh; 
 		position: relative;
 		background: var(--color-bg-primary);
 		margin: 100px 0;
+	}
+
+	.hs-section.is-hero {
+		margin-top: 0;
 	}
 
 	.hs-sticky {
