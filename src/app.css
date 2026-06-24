@@ -10,43 +10,43 @@
    ============================================ */
 :root {
   /* Colors — Charcoal Palette (Dark Mode) */
-  --color-bg-primary: #121212;
-  --color-bg-secondary: #1A1A1A;
-  --color-bg-tertiary: #333333;
-  --color-bg-elevated: #1A1A1A;
-  --color-bg-card: rgba(255, 255, 255, 0.03);
+  --color-bg-primary: #4D4D4D;
+  --color-bg-secondary: #333333;
+  --color-bg-tertiary: #1A1A1A;
+  --color-bg-elevated: #666666;
+  --color-bg-card: rgba(0, 0, 0, 0.2);
 
-  /* Accent — Charcoal Light */
-  --color-accent: #E6E6E6;
-  --color-accent-light: #F2F2F2;
+  /* Accent — High Contrast Bright */
+  --color-accent: #F2F2F2;
+  --color-accent-light: #FFFFFF;
   --color-accent-dark: #CCCCCC;
-  --color-accent-glow: rgba(230, 230, 230, 0.15);
-  --color-accent-subtle: rgba(230, 230, 230, 0.08);
+  --color-accent-glow: rgba(242, 242, 242, 0.2);
+  --color-accent-subtle: rgba(242, 242, 242, 0.08);
 
   /* Syntax Highlighting */
-  --color-syntax-keyword: #B3B3B3;
-  --color-syntax-variable: #E6E6E6;
+  --color-syntax-keyword: #E6E6E6;
+  --color-syntax-variable: #CCCCCC;
 
   /* Secondary Accent */
-  --color-secondary: #999999;
-  --color-secondary-light: #CCCCCC;
-  --color-secondary-dark: #666666;
-  --color-secondary-glow: rgba(153, 153, 153, 0.15);
+  --color-secondary: #B3B3B3;
+  --color-secondary-light: #E6E6E6;
+  --color-secondary-dark: #808080;
+  --color-secondary-glow: rgba(179, 179, 179, 0.2);
 
   /* Text */
   --color-text-primary: #F2F2F2;
-  --color-text-secondary: #B3B3B3;
-  --color-text-muted: #808080;
-  --color-text-inverse: #121212;
+  --color-text-secondary: #E6E6E6;
+  --color-text-muted: #CCCCCC;
+  --color-text-inverse: #1A1A1A;
 
   /* Borders & Surfaces */
   --color-border: #333333;
-  --color-border-hover: #4D4D4D;
-  --color-border-accent: #666666;
-  --color-surface-glass: rgba(26, 26, 26, 0.6);
-  --color-surface-glass-strong: rgba(51, 51, 51, 0.8);
-  --color-overlay: rgba(18, 18, 18, 0.7);
-  --color-overlay-heavy: rgba(18, 18, 18, 0.9);
+  --color-border-hover: #1A1A1A;
+  --color-border-accent: #808080;
+  --color-surface-glass: rgba(51, 51, 51, 0.5);
+  --color-surface-glass-strong: rgba(26, 26, 26, 0.7);
+  --color-overlay: rgba(26, 26, 26, 0.8);
+  --color-overlay-heavy: rgba(26, 26, 26, 0.95);
 }
 
 /* ============================================
@@ -54,43 +54,43 @@
    ============================================ */
 :root[data-theme="light"] {
   /* Colors — Charcoal Palette (Light Mode) */
-  --color-bg-primary: #F2F2F2;
+  --color-bg-primary: #CCCCCC;
   --color-bg-secondary: #E6E6E6;
-  --color-bg-tertiary: #CCCCCC;
-  --color-bg-elevated: #FFFFFF;
-  --color-bg-card: rgba(0, 0, 0, 0.04);
+  --color-bg-tertiary: #F2F2F2;
+  --color-bg-elevated: #999999;
+  --color-bg-card: rgba(255, 255, 255, 0.3);
 
-  /* Accent — Charcoal Dark */
-  --color-accent: #333333;
-  --color-accent-light: #4D4D4D;
+  /* Accent — High Contrast Dark */
+  --color-accent: #1A1A1A;
+  --color-accent-light: #333333;
   --color-accent-dark: #121212;
-  --color-accent-glow: rgba(51, 51, 51, 0.15);
-  --color-accent-subtle: rgba(51, 51, 51, 0.08);
+  --color-accent-glow: rgba(26, 26, 26, 0.15);
+  --color-accent-subtle: rgba(26, 26, 26, 0.08);
 
   /* Syntax Highlighting */
-  --color-syntax-keyword: #666666;
-  --color-syntax-variable: #333333;
+  --color-syntax-keyword: #4D4D4D;
+  --color-syntax-variable: #1A1A1A;
 
   /* Secondary Accent */
-  --color-secondary: #666666;
-  --color-secondary-light: #999999;
-  --color-secondary-dark: #4D4D4D;
-  --color-secondary-glow: rgba(102, 102, 102, 0.15);
+  --color-secondary: #4D4D4D;
+  --color-secondary-light: #666666;
+  --color-secondary-dark: #333333;
+  --color-secondary-glow: rgba(77, 77, 77, 0.15);
 
   /* Text */
   --color-text-primary: #1A1A1A;
-  --color-text-secondary: #4D4D4D;
-  --color-text-muted: #666666;
+  --color-text-secondary: #333333;
+  --color-text-muted: #4D4D4D;
   --color-text-inverse: #F2F2F2;
 
   /* Borders & Surfaces */
-  --color-border: #CCCCCC;
-  --color-border-hover: #B3B3B3;
-  --color-border-accent: #808080;
-  --color-surface-glass: rgba(242, 242, 242, 0.6);
-  --color-surface-glass-strong: rgba(230, 230, 230, 0.85);
-  --color-overlay: rgba(242, 242, 242, 0.8);
-  --color-overlay-heavy: rgba(242, 242, 242, 0.95);
+  --color-border: #999999;
+  --color-border-hover: #808080;
+  --color-border-accent: #666666;
+  --color-surface-glass: rgba(230, 230, 230, 0.6);
+  --color-surface-glass-strong: rgba(242, 242, 242, 0.85);
+  --color-overlay: rgba(204, 204, 204, 0.8);
+  --color-overlay-heavy: rgba(204, 204, 204, 0.95);
 }
 
 :root {
