@@ -193,7 +193,7 @@
 
 
 
-<!-- Collections Section (Marquee) -->
+<!-- Collections Section -->
 <section class="section offscreen-section" id="collections">
   <div class="container">
     <div class="section-header">
@@ -203,14 +203,14 @@
         {totalPhotos} photographs across {categories.length} curated collections
       </p>
     </div>
+    <div class="categories-grid">
+      {#each categories as category, i}
+        <div class="category-wrapper">
+          <CategoryCard {category} />
+        </div>
+      {/each}
+    </div>
   </div>
-  <!-- Full bleed marquee -->
-  <MarqueeSlider 
-    photos={categories.map(c => ({ src: c.cover, title: c.name }))} 
-    speed={30} 
-    direction="left"
-    onclick={(index) => window.location.href = `/gallery/${categories[index].id}`}
-  />
 </section>
 
 <!-- Featured Photos Section (Bento Grid) -->
@@ -409,6 +409,17 @@
     max-width: 600px;
     margin: 0 auto;
     line-height: 1.6;
+  }
+
+  /* ---- Categories Grid ---- */
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .category-wrapper {
+    /* Animation removed for performance */
   }
 
   /* ---- Featured Grid ---- */
