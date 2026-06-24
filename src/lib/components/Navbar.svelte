@@ -97,44 +97,37 @@
 				<span class="bar bar-3"></span>
 			</button>
 		</div>
+	</div>
 
+	{#if mobileOpen}
+		<div 
+			class="mobile-backdrop" 
+			onclick={closeMobile} 
+			role="presentation"
+			tabindex="-1"
+		></div>
+	{/if}
+
+	<div 
+		class="mobile-menu" 
+		id="mobile-menu"
+		class:open={mobileOpen}
+		onkeydown={handleMobileMenuKeydown}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+	>
+		<ul>
+			{#each navLinks as link, i}
+				<li style="transition-delay: {mobileOpen ? (i + 1) * 80 : 0}ms;">
+					<a href={link.href} class="mobile-link" onclick={closeMobile}>
+						<span class="mobile-link-label">{link.label}</span>
+					</a>
+				</li>
+			{/each}
+		</ul>
 	</div>
 </nav>
-
-{#if mobileOpen}
-	<div 
-		class="mobile-backdrop" 
-		onclick={closeMobile} 
-		role="presentation"
-		tabindex="-1"
-	></div>
-{/if}
-
-<div 
-	class="mobile-menu" 
-	id="mobile-menu"
-	class:open={mobileOpen}
-	onkeydown={handleMobileMenuKeydown}
-	role="dialog"
-	aria-modal="true"
-	tabindex="-1"
->
-	<div class="mobile-menu-header">
-		<span class="mobile-logo">
-			<span class="logo-bracket">&lt;</span><span class="logo-text">PG</span>
-			<span class="logo-bracket">&nbsp;/&gt;</span>
-		</span>
-	</div>
-	<ul>
-		{#each navLinks as link, i}
-			<li style="transition-delay: {mobileOpen ? (i + 1) * 80 : 0}ms;">
-				<a href={link.href} class="mobile-link" onclick={closeMobile}>
-					<span class="mobile-link-label">{link.label}</span>
-				</a>
-			</li>
-		{/each}
-	</ul>
-</div>
 
 <style>
 	/* Skip to main content link */
@@ -179,6 +172,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		position: relative;
+		z-index: 1100;
 	}
 
 	/* Logo: <PG /> */
@@ -310,10 +305,6 @@
 		box-shadow: 0 1px 20px rgba(0, 0, 0, 0.06);
 	}
 
-	:global([data-theme="light"]) .mobile-menu {
-		background-color: rgba(255, 255, 255, 0.97);
-		border-left-color: rgba(0, 0, 0, 0.08);
-	}
 
 	:global([data-theme="light"]) .nav-link {
 		color: var(--color-text-secondary);
@@ -403,12 +394,12 @@
 	.mobile-menu {
 		position: fixed;
 		top: 0;
+		left: 0;
 		right: 0;
 		bottom: 0;
-		width: 320px;
-		max-width: 85vw;
+		width: 100%;
+		height: 100vh;
 		background-color: var(--color-bg-primary);
-		border-left: 1px solid var(--color-accent-subtle);
 		z-index: 1050;
 		transform: translateX(100%);
 		transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);

@@ -106,16 +106,6 @@
 		transform: translateY(-20px);
 	}
 
-	.hs-label {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.8rem;
-		color: var(--color-accent);
-		text-transform: uppercase;
-		letter-spacing: 0.15em;
-		display: block;
-		margin-bottom: 12px;
-	}
-
 	.hs-title {
 		font-family: 'Playfair Display', serif;
 		font-size: clamp(2.5rem, 5vw, 4rem);
