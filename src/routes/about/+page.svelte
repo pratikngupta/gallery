@@ -329,6 +329,10 @@
     padding: 48px 0 120px;
   }
 
+  .about-main, .about-sidebar {
+    min-width: 0;
+  }
+
   .about-section {
     margin-bottom: 56px;
   }
