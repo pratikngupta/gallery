@@ -135,6 +135,7 @@
 
 	.hs-track {
 		display: flex;
+		align-items: center;
 		gap: 6vw;
 		padding: 0 5vw;
 		width: max-content;
@@ -143,7 +144,7 @@
 	}
 
 	.hs-item {
-		height: 70vh;
+		height: auto;
 		width: auto;
 		flex: 0 0 auto;
 		position: relative;
@@ -155,9 +156,10 @@
 	}
 
 	.hs-item img {
-		height: 100%;
+		height: auto;
 		width: auto;
-		object-fit: contain;
+		max-height: 70vh;
+		max-width: 85vw;
 		display: block;
 		transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 	}
@@ -206,8 +208,9 @@
 	}
 
 	@media (max-width: 768px) {
-		.hs-item {
-			height: 50vh;
+		.hs-item img {
+			max-height: 60vh;
+			max-width: 90vw;
 		}
 		.hs-header {
 			margin-bottom: 24px;
