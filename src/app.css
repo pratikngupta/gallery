@@ -45,8 +45,8 @@
   --color-border-accent: rgba(242, 242, 242, 0.3);
   --color-surface-glass: rgba(255, 255, 255, 0.05);
   --color-surface-glass-strong: rgba(255, 255, 255, 0.1);
-  --color-overlay: rgba(77, 77, 77, 0.8);
-  --color-overlay-heavy: rgba(77, 77, 77, 0.95);
+  --color-overlay: rgba(26, 26, 26, 0.8);
+  --color-overlay-heavy: rgba(26, 26, 26, 0.85);
 }
 
 /* ============================================
@@ -89,8 +89,8 @@
   --color-border-accent: rgba(26, 26, 26, 0.3);
   --color-surface-glass: rgba(255, 255, 255, 0.3);
   --color-surface-glass-strong: rgba(255, 255, 255, 0.5);
-  --color-overlay: rgba(204, 204, 204, 0.8);
-  --color-overlay-heavy: rgba(204, 204, 204, 0.95);
+  --color-overlay: rgba(255, 255, 255, 0.8);
+  --color-overlay-heavy: rgba(255, 255, 255, 0.85);
 }
 
 :root {
