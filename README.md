@@ -10,13 +10,13 @@ This website is built with a **"Zero-Config" File-Based CMS**. There is no datab
 - **Subcategories**: Create a nested folder (e.g., `1-birds`).
 - **Photos**: Drop an image file inside. The file name acts as metadata:
   - `bird-10.jpg`: The number `10` represents its sorting rank.
-  - `bird-10-hero.jpg`: The `-hero` tag automatically sends it to the massive Exhibition Frame on the homepage.
+  - `bird-10-hero.jpg`: The `-hero` tag adds the photo to special homepage features like the Bento Grid or Scrollytelling carousel.
   - `bird-10-main.jpg`: The `-main` tag sets it as the subcategory cover photo.
   - `bird-10.txt`: Dropping a `.txt` file with the same name automatically attaches a caption to the photo in the lightbox.
 
 ## Technologies
 - **SvelteKit** (Svelte 5 Runes)
-- **Vanilla CSS** with Native Light/Dark CSS Variable Theming
+- **Vanilla CSS** with Native Light/Dark CSS Variable Theming and Masonry Grids
 - **SSG** via `@sveltejs/adapter-static` for extreme performance
 
 ## Development
@@ -32,4 +32,4 @@ npm run dev
 npm run build
 ```
 
-For more in-depth architectural details, refer to the [handoff.md](./handoff.md) document.
+For more in-depth architectural details, refer to the [handoff.md](./handoff.md) and [structure.md](./structure.md) documents.

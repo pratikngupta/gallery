@@ -20,6 +20,14 @@ The project is a statically generated site (SSG) tailored for a software enginee
 ├── src/
 │   ├── lib/
 │   │   ├── components/         // Svelte 5 UI components
+│   │   │   ├── BentoGrid.svelte       // Asymmetric grid for featured photos
+│   │   │   ├── CategoryCard.svelte    // Component for collections grid
+│   │   │   ├── HeroFrame.svelte       // Cinematic full-bleed header
+│   │   │   ├── HorizontalScroll.svelte// Scrollytelling swipe gallery
+│   │   │   ├── Lightbox.svelte        // Edge-to-edge photo viewer
+│   │   │   ├── PhotoCard.svelte       // Standard masonry photo item
+│   │   │   ├── PhotoGrid.svelte       // Core masonry photo grid
+│   │   │   └── SubcategoryFilter.svelte // Filtering buttons
 │   │   ├── server/             // Server-side logic (build-time only)
 │   │   │   └── gallery.js      // Automated file system scanner
 │   │   └── stores/             // Client-side state and utilities
@@ -27,7 +35,7 @@ The project is a statically generated site (SSG) tailored for a software enginee
 │   ├── routes/                 // SvelteKit routing
 │   │   ├── +layout.svelte      // Root layout (Navbar, Footer, store initialization)
 │   │   ├── +layout.server.js   // Calls the scanner during SSG build to pass data to frontend
-│   │   ├── +page.svelte        // Homepage (Hero, Featured, About Teaser)
+│   │   ├── +page.svelte        // Homepage (Hero, Scrollytelling, Collections, Featured Bento)
 │   │   ├── about/              // About page
 │   │   └── gallery/            // Dynamic gallery routing
 │   │       ├── +page.svelte    // All collections overview

@@ -4,7 +4,7 @@ Welcome to the Gallery project! This document contains all the essential informa
 
 ## Project Identity
 This is a photography portfolio tailored for a software engineer. The design language actively blends the two disciplines:
-- **Photography**: Large imagery, edge-to-edge lightboxes, Playfair Display typography for editorial elegance.
+- **Photography**: Large imagery, edge-to-edge lightboxes, scrollytelling horizontal carousels, editorial elegance (Playfair Display typography).
 - **Engineering**: Monospace typography (JetBrains Mono), syntax highlighting accents, terminal-style windows, and `// code comment` section headers.
 
 ## Tech Stack
@@ -24,10 +24,10 @@ Content is managed purely via the file system inside `static/photos/`:
 2. **Drop an image**: Automatically adds it to the gallery.
 3. **Name it smartly**: Naming an image `bird-10.jpg` gives it a sort rank of 10 (higher numbers appear first).
 4. **Use Tags**: You can add specific keywords to the filename to dictate where the photo appears:
-   - `-hero` or `-coverart`: Adds the photo to the homepage's massive exhibition frame slider.
+   - `-hero` or `-coverart`: Adds the photo to the homepage's scrollytelling frame or bento grid.
    - `-gallerycover` or `-categorycover`: Sets the cover photo for the entire Category page (e.g. Wildlife).
    - `-main` or `-cover`: Sets the main cover photo for a Subcategory/collection (e.g. Birds).
-   - `-portrait`: Optional tag to define orientation (for future masonry layouts).
+   - `-portrait`: Optional tag to define orientation.
 5. **Drop a text file**: Placing `bird-10.txt` next to the image automatically attaches the text file's contents as the image description in the lightbox.
 
 *Note: The server-side script (`src/lib/server/gallery.js`) scans this directory during the build process and generates the routing data statically.*

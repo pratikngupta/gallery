@@ -596,19 +596,12 @@
       gap: 20px;
     }
 
-    .featured-grid {
-      columns: 2;
-    }
-
     .section {
       padding: 60px 0;
     }
   }
 
   @media (max-width: 600px) {
-    .featured-grid {
-      columns: 1;
-    }
 
     .about-stats {
       flex-direction: column;

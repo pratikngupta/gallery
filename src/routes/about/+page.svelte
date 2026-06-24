@@ -397,11 +397,6 @@
 		font-weight: 300;
 	}
 
-	.story-text em {
-		color: var(--color-secondary);
-		font-style: italic;
-	}
-
 	/* ---- Two Worlds ---- */
 	.worlds-grid {
 		display: grid;
