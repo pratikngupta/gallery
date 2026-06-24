@@ -53,12 +53,12 @@
    Light Mode Theme Overrides
    ============================================ */
 :root[data-theme="light"] {
-  /* Colors — Bright Gallery Aesthetic */
-  --color-bg-primary: #f8f9fa;
-  --color-bg-secondary: #ffffff;
-  --color-bg-tertiary: #eef0f3;
-  --color-bg-elevated: #ffffff;
-  --color-bg-card: rgba(0, 0, 0, 0.02);
+  /* Colors — Bright Gallery Aesthetic (softened) */
+  --color-bg-primary: #ecedef;
+  --color-bg-secondary: #f5f6f7;
+  --color-bg-tertiary: #e2e4e6;
+  --color-bg-elevated: #fafafa;
+  --color-bg-card: rgba(0, 0, 0, 0.03);
 
   /* Accent — Blue (slightly darker for contrast) */
   --color-accent: #3b72d9;
