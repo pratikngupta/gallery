@@ -3,7 +3,6 @@
 	import { fly } from 'svelte/transition';
 	import SubcategoryFilter from '$lib/components/SubcategoryFilter.svelte';
 	import PhotoGrid from '$lib/components/PhotoGrid.svelte';
-	import HeroFrame from '$lib/components/HeroFrame.svelte';
 	import { getCategory } from '$lib/stores/gallery.js';
 
 	const categoryId = $derived(page.params.category);
@@ -43,9 +42,9 @@
 
 {#if category}
 	<div class="category-page">
-		<!-- Category Hero using Exhibition Frame -->
-		<HeroFrame backgroundImages={[category.cover]}>
-			{#snippet header()}
+		<!-- Category Header -->
+		<div class="page-header">
+			<div class="container">
 				<nav class="breadcrumb" aria-label="Breadcrumb" in:fly={{ y: 20, duration: 700, delay: 100 }}>
 					<a href="/">Home</a>
 					<span class="separator">›</span>
@@ -58,11 +57,8 @@
 				</div>
 				<h1 class="hero-title" in:fly={{ y: 40, duration: 900, delay: 300 }}>{category.name}</h1>
 				<p class="hero-description" in:fly={{ y: 30, duration: 900, delay: 500 }}>{category.description}</p>
-				<p class="hero-count" in:fly={{ y: 30, duration: 900, delay: 700 }}>
-					{allPhotos.length} photographs · {category.subcategories.length} subcategories
-				</p>
-			{/snippet}
-		</HeroFrame>
+			</div>
+		</div>
 
 		<!-- Filter + Grid -->
 		<div class="container">
@@ -93,7 +89,13 @@
 
 <style>
 	.category-page {
-		/* padding-top: 70px; */ /* Removed because HeroFrame handles padding */
+		padding-top: 100px;
+	}
+
+	.page-header {
+		text-align: center;
+		padding: 60px 0;
+		margin-bottom: 40px;
 	}
 
 	.container {
@@ -105,39 +107,47 @@
 	.breadcrumb {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-		margin-bottom: 20px;
-		font-size: 0.85rem;
+		justify-content: center;
+		gap: 12px;
 		font-family: 'JetBrains Mono', monospace;
-	}
-
-	.hero-code-line {
-		margin-bottom: 12px;
+		font-size: 0.8rem;
+		color: var(--color-text-secondary);
+		margin-bottom: 40px;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
 	}
 
 	.breadcrumb a {
 		color: var(--color-text-secondary);
 		text-decoration: none;
-		transition: color 0.2s ease;
+		transition: color 0.3s ease;
 	}
 
 	.breadcrumb a:hover {
 		color: var(--color-accent);
 	}
 
-	.separator {
-		color: var(--color-text-secondary);
-		opacity: 0.5;
+	.breadcrumb .current {
+		color: var(--color-text-primary);
 	}
 
-	.current {
-		color: var(--color-text-primary);
+	.breadcrumb .separator {
+		color: rgba(255, 255, 255, 0.2);
+	}
+
+	.hero-code-line {
+		margin-bottom: 12px;
+	}
+
+	.code-comment {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.85rem;
+		color: var(--color-text-secondary);
 	}
 
 	.hero-title {
 		font-family: 'Playfair Display', serif;
 		font-size: clamp(2.5rem, 6vw, 4rem);
-		color: var(--color-text-primary);
 		margin-bottom: 12px;
 		font-weight: 400;
 	}
