@@ -242,33 +242,6 @@
 	}
 
 	/* ---- Breadcrumb ---- */
-	.breadcrumb {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		margin-bottom: 16px;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.8rem;
-	}
-
-	.breadcrumb a {
-		color: var(--color-text-secondary);
-		text-decoration: none;
-		transition: color 0.2s ease;
-	}
-
-	.breadcrumb a:hover {
-		color: var(--color-accent);
-	}
-
-	.separator {
-		color: var(--color-text-secondary);
-		opacity: 0.4;
-	}
-
-	.current {
-		color: var(--color-text-primary);
-	}
 
 	.page-title {
 		font-family: 'Playfair Display', serif;

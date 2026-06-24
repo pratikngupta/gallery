@@ -44,11 +44,8 @@
 	<div class="category-page">
 		<!-- Category Header -->
 		<div class="page-header">
+			<div class="dot-pattern"></div>
 			<div class="container">
-
-				<div class="hero-code-line" in:fly={{ y: 20, duration: 700, delay: 200 }}>
-					<span class="code-comment">// {category.id}</span>
-				</div>
 				<h1 class="hero-title" in:fly={{ y: 40, duration: 900, delay: 300 }}>{category.name}</h1>
 				<p class="hero-description" in:fly={{ y: 30, duration: 900, delay: 500 }}>{category.description}</p>
 			</div>
@@ -87,54 +84,27 @@
 	}
 
 	.page-header {
+		position: relative;
 		padding: 60px 0;
 		margin-bottom: 40px;
+		overflow: hidden;
+	}
+
+	.dot-pattern {
+		position: absolute;
+		inset: 0;
+		background-image: radial-gradient(var(--color-text-muted) 0.5px, transparent 0.5px);
+		background-size: 24px 24px;
+		opacity: 0.15;
+		pointer-events: none;
 	}
 
 	.container {
 		max-width: 1200px;
 		margin: 0 auto;
 		padding: 0 24px;
-	}
-
-	.breadcrumb {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.8rem;
-		color: var(--color-text-secondary);
-		margin-bottom: 40px;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-	}
-
-	.breadcrumb a {
-		color: var(--color-text-secondary);
-		text-decoration: none;
-		transition: color 0.3s ease;
-	}
-
-	.breadcrumb a:hover {
-		color: var(--color-accent);
-	}
-
-	.breadcrumb .current {
-		color: var(--color-text-primary);
-	}
-
-	.breadcrumb .separator {
-		color: rgba(255, 255, 255, 0.2);
-	}
-
-	.hero-code-line {
-		margin-bottom: 12px;
-	}
-
-	.code-comment {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.85rem;
-		color: var(--color-text-secondary);
+		position: relative;
+		z-index: 1;
 	}
 
 	.hero-title {
@@ -142,6 +112,8 @@
 		font-size: clamp(2.5rem, 6vw, 4rem);
 		margin-bottom: 12px;
 		font-weight: 400;
+		letter-spacing: -0.02em;
+		color: var(--color-text-primary);
 	}
 
 	.hero-description {
@@ -178,7 +150,7 @@
 	}
 
 	.not-found p {
-		color: #8a8a8e;
+		color: var(--color-text-secondary);
 		margin-bottom: 32px;
 		font-size: 1.1rem;
 	}
@@ -189,3 +161,4 @@
 		}
 	}
 </style>
+
