@@ -45,13 +45,7 @@
 		<!-- Category Header -->
 		<div class="page-header">
 			<div class="container">
-				<nav class="breadcrumb" aria-label="Breadcrumb" in:fly={{ y: 20, duration: 700, delay: 100 }}>
-					<a href="/">Home</a>
-					<span class="separator">›</span>
-					<a href="/gallery">Gallery</a>
-					<span class="separator">›</span>
-					<span class="current">{category.name}</span>
-				</nav>
+
 				<div class="hero-code-line" in:fly={{ y: 20, duration: 700, delay: 200 }}>
 					<span class="code-comment">// {category.id}</span>
 				</div>

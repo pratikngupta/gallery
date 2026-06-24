@@ -21,15 +21,7 @@
 		<div class="page-header" style="background-image: url('{subcategory.cover}')">
 			<div class="header-overlay">
 				<div class="container">
-					<nav class="breadcrumb" aria-label="Breadcrumb">
-						<a href="/">Home</a>
-						<span class="separator">›</span>
-						<a href="/gallery">Gallery</a>
-						<span class="separator">›</span>
-						<a href="/gallery/{categoryId}">{category.name}</a>
-						<span class="separator">›</span>
-						<span class="current">{subcategory.name}</span>
-					</nav>
+
 					<h1 class="page-title">{subcategory.name}</h1>
 					<p class="page-count">{subcategory.photos.length} photograph{subcategory.photos.length !== 1 ? 's' : ''}</p>
 				</div>

@@ -54,11 +54,7 @@
 	<!-- Page Header -->
 	<div class="page-header">
 		<div class="container">
-			<nav class="breadcrumb" aria-label="Breadcrumb">
-				<a href="/">Home</a>
-				<span class="separator">/</span>
-				<span class="current">About</span>
-			</nav>
+
 			<h1 class="page-title">About Me</h1>
 		</div>
 	</div>

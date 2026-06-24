@@ -23,11 +23,7 @@
 <div class="gallery-page">
 	<div class="page-header">
 		<div class="container">
-			<nav class="breadcrumb" aria-label="Breadcrumb">
-				<a href="/">Home</a>
-				<span class="separator">/</span>
-				<span class="current">Gallery</span>
-			</nav>
+
 			<h1 class="page-title">Gallery</h1>
 			<p class="page-subtitle">{totalPhotos} photographs across {categories.length} collections</p>
 		</div>
