@@ -62,8 +62,7 @@
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<div class="hs-item" onclick={() => onclick?.(i)}>
-					<div class="hs-bg-blur" style="background-image: url('{photo.src || photo}')"></div>
-					<img class="hs-sharp-img" src={photo.src || photo} alt={photo.title || 'Curated Photo'} loading="lazy" />
+					<img src={photo.src || photo} alt={photo.title || 'Curated Photo'} loading="lazy" />
 					<div class="hs-overlay">
 						{#if photo.title}
 							<span class="hs-item-title">{photo.title}</span>
@@ -144,9 +143,9 @@
 	}
 
 	.hs-item {
-		width: 70vw;
-		max-width: 900px;
-		height: 60vh;
+		height: 70vh;
+		width: auto;
+		flex: 0 0 auto;
 		position: relative;
 		border-radius: 24px;
 		overflow: hidden;
@@ -155,38 +154,21 @@
 		transition: transform 0.4s ease, filter 0.4s ease;
 	}
 
-	.hs-bg-blur {
-		position: absolute;
-		inset: -10%;
-		background-size: cover;
-		background-position: center;
-		filter: blur(20px) brightness(0.7);
-		z-index: 0;
-		transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-	}
-
-	.hs-sharp-img {
-		position: absolute;
-		inset: 0;
-		width: 100%;
+	.hs-item img {
 		height: 100%;
+		width: auto;
 		object-fit: contain;
-		z-index: 1;
+		display: block;
 		transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 	}
 
-	.hs-item:hover .hs-bg-blur {
+	.hs-item:hover img {
 		transform: scale(1.05);
-	}
-
-	.hs-item:hover .hs-sharp-img {
-		transform: scale(1.02);
 	}
 
 	.hs-overlay {
 		position: absolute;
 		inset: 0;
-		z-index: 2;
 		background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 40%);
 		display: flex;
 		flex-direction: column;
@@ -225,7 +207,6 @@
 
 	@media (max-width: 768px) {
 		.hs-item {
-			width: 85vw;
 			height: 50vh;
 		}
 		.hs-header {
