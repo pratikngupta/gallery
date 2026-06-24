@@ -54,11 +54,11 @@
 		gap: 0.5rem;
 		padding: 0.55rem 1.25rem;
 		border-radius: 9999px;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid var(--color-border);
+		background: var(--color-surface-glass);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
-		color: #8a8a8e;
+		color: var(--color-text-secondary);
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.8rem;
 		font-weight: 400;
@@ -69,15 +69,15 @@
 	}
 
 	.filter-chip:hover:not(.active) {
-		background: rgba(79, 209, 197, 0.08);
-		color: #e8e6e1;
-		border-color: rgba(79, 209, 197, 0.3);
+		background: var(--color-accent-subtle);
+		color: var(--color-text-primary);
+		border-color: var(--color-border-accent);
 	}
 
 	.filter-chip.active {
-		background: rgba(79, 209, 197, 0.15);
-		color: #4fd1c5;
-		border-color: #4fd1c5;
+		background: var(--color-accent-glow);
+		color: var(--color-accent);
+		border-color: var(--color-accent);
 		font-weight: 500;
 	}
 

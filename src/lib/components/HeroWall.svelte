@@ -115,7 +115,7 @@
 	.wall-gradient-overlay {
 		position: absolute;
 		inset: 0;
-		background: radial-gradient(circle at center, rgba(10,10,15,0.1) 0%, rgba(10,10,15,0.85) 100%);
+		background: radial-gradient(circle at center, transparent 0%, var(--color-bg-primary) 100%);
 		pointer-events: none;
 	}
 
@@ -129,15 +129,15 @@
 	}
 
 	.glass-card {
-		background: rgba(20, 20, 25, 0.4);
+		background: var(--color-surface-glass);
 		backdrop-filter: blur(24px);
 		-webkit-backdrop-filter: blur(24px);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--color-border);
 		border-radius: 24px;
 		padding: 60px 48px;
 		text-align: center;
 		max-width: 800px;
-		box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+		box-shadow: var(--shadow-xl);
 	}
 
 	.hero-code-line {
@@ -147,7 +147,7 @@
 	.code-comment {
 		font-family: 'JetBrains Mono', monospace;
 		font-size: clamp(0.75rem, 1.2vw, 0.9rem);
-		color: #4fd1c5;
+		color: var(--color-accent);
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
 		opacity: 0.9;
@@ -157,7 +157,7 @@
 		font-family: 'Playfair Display', serif;
 		font-size: clamp(2.5rem, 6vw, 4.5rem);
 		font-weight: 700;
-		color: #e8e6e1;
+		color: var(--color-text-primary);
 		line-height: 1.1;
 		margin: 0 0 1.5rem 0;
 		letter-spacing: -0.02em;

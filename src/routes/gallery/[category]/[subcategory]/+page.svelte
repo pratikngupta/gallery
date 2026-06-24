@@ -100,34 +100,34 @@
 	}
 
 	.breadcrumb a {
-		color: #8a8a8e;
+		color: var(--color-text-secondary);
 		text-decoration: none;
 		transition: color 0.2s ease;
 	}
 
 	.breadcrumb a:hover {
-		color: #4fd1c5;
+		color: var(--color-accent);
 	}
 
 	.separator {
-		color: #8a8a8e;
+		color: var(--color-text-secondary);
 		opacity: 0.5;
 	}
 
 	.current {
-		color: #e8e6e1;
+		color: var(--color-text-primary);
 	}
 
 	.page-title {
 		font-family: 'Playfair Display', serif;
 		font-size: clamp(2rem, 5vw, 3.5rem);
-		color: #e8e6e1;
+		color: var(--color-text-primary);
 		margin-bottom: 8px;
 		font-weight: 400;
 	}
 
 	.page-count {
-		color: #8a8a8e;
+		color: var(--color-text-secondary);
 		font-size: 0.85rem;
 		font-family: 'JetBrains Mono', monospace;
 	}
@@ -148,7 +148,7 @@
 	.not-found h1 {
 		font-family: 'Playfair Display', serif;
 		font-size: 2.5rem;
-		color: #e8e6e1;
+		color: var(--color-text-primary);
 		margin-bottom: 16px;
 	}
 

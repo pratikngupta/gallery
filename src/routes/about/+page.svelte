@@ -424,11 +424,11 @@
 	}
 
 	.world-engineer::before {
-		background: linear-gradient(90deg, #4fd1c5, rgba(79, 209, 197, 0.2));
+		background: linear-gradient(90deg, var(--color-accent), var(--color-accent-subtle));
 	}
 
 	.world-photographer::before {
-		background: linear-gradient(90deg, #d4a574, rgba(212, 165, 116, 0.2));
+		background: linear-gradient(90deg, var(--color-secondary), var(--color-secondary-glow));
 	}
 
 	.world-card:hover {

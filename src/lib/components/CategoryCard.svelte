@@ -56,10 +56,8 @@
 		position: absolute;
 		inset: 0;
 		background: linear-gradient(
-			to top,
-			rgba(10, 10, 15, 0.95) 0%,
-			rgba(10, 10, 15, 0.6) 35%,
-			rgba(10, 10, 15, 0.1) 65%,
+			rgba(0, 0, 0, 0.85) 0%,
+			rgba(0, 0, 0, 0.4) 40%,
 			transparent 100%
 		);
 	}
@@ -85,8 +83,8 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.3em;
-		background: rgba(79, 209, 197, 0.12);
-		border: 1px solid rgba(79, 209, 197, 0.2);
+		background: var(--color-accent-subtle);
+		border: 1px solid var(--color-border-accent);
 		padding: 0.3em 0.7em;
 		border-radius: 999px;
 		letter-spacing: 0.05em;
@@ -94,17 +92,17 @@
 	}
 
 	.count-bracket {
-		color: #4fd1c5;
-		opacity: 0.6;
+		color: var(--color-accent);
+		opacity: 0.8;
 	}
 
 	.count-number {
-		color: #4fd1c5;
+		color: var(--color-accent);
 		font-weight: 500;
 	}
 
 	.count-label {
-		color: #8a8a8e;
+		color: rgba(255, 255, 255, 0.7);
 		margin-left: 0.15em;
 	}
 
@@ -112,21 +110,21 @@
 		font-family: 'Playfair Display', serif;
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #e8e6e1;
+		color: #ffffff;
 		margin: 0.25rem 0 0.75rem 0;
 		line-height: 1.2;
 		transition: color 0.3s ease;
 	}
 
 	.category-card:hover .card-title {
-		color: #fff;
+		color: var(--color-accent);
 	}
 
 	.card-description {
 		font-family: 'Inter', sans-serif;
 		font-size: 0.85rem;
 		font-weight: 300;
-		color: var(--color-text-secondary);
+		color: rgba(255, 255, 255, 0.6);
 		line-height: 1.65;
 		margin: 0;
 	}

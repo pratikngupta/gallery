@@ -179,7 +179,7 @@
 	.not-found h1 {
 		font-family: 'Playfair Display', serif;
 		font-size: 2.5rem;
-		color: #e8e6e1;
+		color: var(--color-text-primary);
 		margin-bottom: 16px;
 	}
 

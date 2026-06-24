@@ -70,28 +70,28 @@
 	}
 
 	.breadcrumb a {
-		color: #8a8a8e;
+		color: var(--color-text-secondary);
 		text-decoration: none;
 		transition: color 0.2s ease;
 	}
 
 	.breadcrumb a:hover {
-		color: #4fd1c5;
+		color: var(--color-accent);
 	}
 
 	.separator {
-		color: #8a8a8e;
+		color: var(--color-text-secondary);
 		opacity: 0.5;
 	}
 
 	.current {
-		color: #e8e6e1;
+		color: var(--color-text-primary);
 	}
 
 	.section-label {
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.75rem;
-		color: #4fd1c5;
+		color: var(--color-accent);
 		text-transform: uppercase;
 		letter-spacing: 0.2em;
 		margin-bottom: 12px;
@@ -100,13 +100,13 @@
 	.page-title {
 		font-family: 'Playfair Display', serif;
 		font-size: clamp(2.5rem, 5vw, 3.5rem);
-		color: #e8e6e1;
+		color: var(--color-text-primary);
 		margin-bottom: 12px;
 		font-weight: 400;
 	}
 
 	.page-subtitle {
-		color: #8a8a8e;
+		color: var(--color-text-secondary);
 		font-size: 1rem;
 		font-weight: 300;
 		font-family: 'JetBrains Mono', monospace;

@@ -132,10 +132,9 @@
 		inset: 0;
 		background: linear-gradient(
 			to bottom,
-			rgba(10, 10, 15, 0.4) 0%,
-			rgba(10, 10, 15, 0.15) 35%,
-			rgba(10, 10, 15, 0.4) 65%,
-			rgba(10, 10, 15, 0.92) 100%
+			transparent 0%,
+			transparent 60%,
+			var(--color-bg-primary) 100%
 		);
 		will-change: opacity;
 	}
@@ -145,10 +144,11 @@
 		inset: 0;
 		background-image: radial-gradient(
 			circle,
-			rgba(79, 209, 197, 0.03) 1px,
+			var(--color-accent-subtle) 1px,
 			transparent 1px
 		);
-		background-size: 32px 32px;
+		background-size: 50px 50px;
+		opacity: 0.5;
 		pointer-events: none;
 		z-index: 1;
 	}
@@ -168,16 +168,15 @@
 	.code-comment {
 		font-family: 'JetBrains Mono', monospace;
 		font-size: clamp(0.7rem, 1.2vw, 0.85rem);
-		color: #4fd1c5;
+		color: var(--color-accent);
 		letter-spacing: 0.06em;
 		opacity: 0.7;
 	}
 
 	.hero-title {
 		font-family: 'Playfair Display', serif;
-		font-size: clamp(2.8rem, 7vw, 5.5rem);
-		font-weight: 700;
-		color: #e8e6e1;
+		font-size: clamp(3.5rem, 8vw, 6rem);
+		color: var(--color-text-primary);
 		line-height: 1.1;
 		margin: 0 0 1.5rem 0;
 		letter-spacing: -0.02em;
@@ -186,12 +185,10 @@
 
 	.hero-subtitle {
 		font-family: 'Inter', sans-serif;
-		font-size: clamp(0.95rem, 1.8vw, 1.2rem);
+		font-size: clamp(1.1rem, 2vw, 1.3rem);
+		color: var(--color-text-secondary);
 		font-weight: 300;
-		color: #e8e6e1;
-		line-height: 1.7;
 		margin: 0;
-		letter-spacing: 0.02em;
 		max-width: 600px;
 		margin-inline: auto;
 		text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
@@ -212,8 +209,8 @@
 
 	.scroll-text {
 		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.6rem;
-		color: #8a8a8e;
+		font-size: 0.9rem;
+		color: var(--color-accent);
 		text-transform: uppercase;
 		letter-spacing: 0.25em;
 	}
