@@ -167,14 +167,11 @@
 		right: 0;
 		z-index: 1000;
 		transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-		background-color: transparent;
+		background-color: var(--color-bg-primary);
 		border-bottom: 1px solid transparent;
 	}
 
 	.navbar.scrolled {
-		background-color: var(--color-overlay-heavy);
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
 		border-bottom-color: var(--color-accent-subtle);
 		box-shadow: 0 1px 20px rgba(0, 0, 0, 0.3);
 	}
