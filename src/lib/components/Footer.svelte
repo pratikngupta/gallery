@@ -293,10 +293,6 @@
 		gap: 0.5em;
 	}
 
-	.section-label::before {
-		content: '//';
-		opacity: 0.6;
-	}
 
 	@media (max-width: 768px) {
 		.footer-inner {

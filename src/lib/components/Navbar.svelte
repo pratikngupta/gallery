@@ -488,9 +488,7 @@
 		letter-spacing: 0.1em;
 	}
 
-	.code-accent {
-		font-family: 'JetBrains Mono', monospace;
-	}
+
 
 	@media (max-width: 768px) {
 		.nav-links {
