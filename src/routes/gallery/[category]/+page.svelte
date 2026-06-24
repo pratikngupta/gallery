@@ -153,17 +153,13 @@
 	}
 
 	.hero-description {
-		color: var(--color-accent);
+		font-family: 'Inter', sans-serif;
 		font-size: 1.2rem;
-		margin-bottom: 8px;
+		color: var(--color-accent);
+		max-width: 600px;
+		margin: 0 auto;
 		font-weight: 300;
 		font-style: italic;
-	}
-
-	.hero-count {
-		color: var(--color-text-secondary);
-		font-size: 0.85rem;
-		font-family: 'JetBrains Mono', monospace;
 	}
 
 	.filter-section {
