@@ -4,49 +4,48 @@
 
 	let sectionEl = $state();
 	let trackEl = $state();
+	let scrollProgress = $state(0);
+	let trackWidth = $state(0);
+	let windowWidth = $state(0);
 
 	onMount(() => {
-		// Cache dimensions — only update on resize, not every frame
-		let cachedTrackWidth = 0;
-		let cachedWindowWidth = 0;
-		let rafId = 0;
-		let ticking = false;
-
 		const updateDimensions = () => {
-			if (trackEl) cachedTrackWidth = trackEl.scrollWidth;
-			cachedWindowWidth = window.innerWidth;
+			if (trackEl) trackWidth = trackEl.scrollWidth;
+			windowWidth = window.innerWidth;
 		};
 
-		const applyTransform = () => {
-			ticking = false;
-			if (!sectionEl || !trackEl) return;
-
+		const handleScroll = () => {
+			if (!sectionEl) return;
 			const rect = sectionEl.getBoundingClientRect();
 			const totalScroll = rect.height - window.innerHeight;
+
 			if (totalScroll <= 0) return;
 
 			let progress = -rect.top / totalScroll;
 			progress = Math.max(0, Math.min(1, progress));
-
-			const maxTranslate = Math.max(0, cachedTrackWidth - cachedWindowWidth + (cachedWindowWidth * 0.1));
-			const tx = progress * maxTranslate;
-
-			// Write directly to DOM — no Svelte re-render
-			trackEl.style.transform = `translate3d(-${tx}px, 0, 0)`;
-		};
-
-		const handleScroll = () => {
-			if (!ticking) {
-				ticking = true;
-				rafId = requestAnimationFrame(applyTransform);
-			}
+			scrollProgress = progress;
 		};
 
 		// Initial setup
-		setTimeout(() => {
+		updateDimensions();
+		handleScroll();
+
+		// Re-measure after images load (they change scrollWidth)
+		const images = trackEl?.querySelectorAll('img') || [];
+		let loaded = 0;
+		const onImgLoad = () => {
+			loaded++;
 			updateDimensions();
-			applyTransform();
-		}, 100);
+		};
+		images.forEach(img => {
+			if (img.complete) {
+				loaded++;
+			} else {
+				img.addEventListener('load', onImgLoad, { once: true });
+			}
+		});
+		// If all were already cached, still re-measure
+		if (loaded === images.length) updateDimensions();
 
 		window.addEventListener('resize', updateDimensions);
 		window.addEventListener('scroll', handleScroll, { passive: true });
@@ -54,9 +53,12 @@
 		return () => {
 			window.removeEventListener('resize', updateDimensions);
 			window.removeEventListener('scroll', handleScroll);
-			cancelAnimationFrame(rafId);
+			images.forEach(img => img.removeEventListener('load', onImgLoad));
 		};
 	});
+
+	// Calculate the actual pixel translation
+	let translateX = $derived(scrollProgress * Math.max(0, trackWidth - windowWidth + (windowWidth * 0.1)));
 </script>
 
 <div class="hs-section" class:is-hero={isHero} bind:this={sectionEl}>
@@ -69,6 +71,7 @@
 		<div 
 			class="hs-track" 
 			bind:this={trackEl}
+			style="transform: translate3d(-{translateX}px, 0, 0);"
 		>
 			{#each photos as photo, i}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -142,7 +145,6 @@
 		padding: 0 5vw;
 		width: max-content;
 		will-change: transform;
-		/* No CSS transition — JS drives transform directly via rAF for smooth 60fps */
 	}
 
 	.hs-item {
@@ -154,6 +156,7 @@
 		overflow: hidden;
 		cursor: pointer;
 		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+		transition: transform 0.4s ease, filter 0.4s ease;
 	}
 
 	.hs-item img {
@@ -211,21 +214,31 @@
 	@media (max-width: 768px) {
 		.hs-item {
 			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+			border-radius: 16px;
 		}
 		.hs-item img {
-			max-height: 60vh;
-			max-width: 90vw;
+			max-height: 55vh;
+			max-width: 85vw;
 		}
 		.hs-header {
 			margin-bottom: 24px;
 		}
 		.hs-overlay {
-			padding: 2rem;
+			padding: 1.5rem;
 			opacity: 1; /* Always show text on mobile */
-			background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+			background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
 		}
-		.hs-item-title, .hs-item-location {
+		.hs-item-title {
+			font-size: 1.3rem;
 			transform: translateY(0);
+		}
+		.hs-item-location {
+			font-size: 0.75rem;
+			transform: translateY(0);
+		}
+		.hs-track {
+			gap: 5vw;
 		}
 	}
 </style>
+
