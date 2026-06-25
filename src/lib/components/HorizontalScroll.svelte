@@ -4,33 +4,49 @@
 
 	let sectionEl = $state();
 	let trackEl = $state();
-	let scrollProgress = $state(0);
-	let trackWidth = $state(0);
-	let windowWidth = $state(0);
 
 	onMount(() => {
+		// Cache dimensions — only update on resize, not every frame
+		let cachedTrackWidth = 0;
+		let cachedWindowWidth = 0;
+		let rafId = 0;
+		let ticking = false;
+
 		const updateDimensions = () => {
-			if (trackEl) trackWidth = trackEl.scrollWidth;
-			windowWidth = window.innerWidth;
+			if (trackEl) cachedTrackWidth = trackEl.scrollWidth;
+			cachedWindowWidth = window.innerWidth;
+		};
+
+		const applyTransform = () => {
+			ticking = false;
+			if (!sectionEl || !trackEl) return;
+
+			const rect = sectionEl.getBoundingClientRect();
+			const totalScroll = rect.height - window.innerHeight;
+			if (totalScroll <= 0) return;
+
+			let progress = -rect.top / totalScroll;
+			progress = Math.max(0, Math.min(1, progress));
+
+			const maxTranslate = Math.max(0, cachedTrackWidth - cachedWindowWidth + (cachedWindowWidth * 0.1));
+			const tx = progress * maxTranslate;
+
+			// Write directly to DOM — no Svelte re-render
+			trackEl.style.transform = `translate3d(-${tx}px, 0, 0)`;
 		};
 
 		const handleScroll = () => {
-			if (!sectionEl) return;
-			const rect = sectionEl.getBoundingClientRect();
-			// The total distance we can scroll within the section
-			const totalScroll = rect.height - window.innerHeight;
-			
-			if (totalScroll <= 0) return;
-
-			// Calculate progress from 0 to 1 as the section scrolls through the viewport
-			let progress = -rect.top / totalScroll;
-			progress = Math.max(0, Math.min(1, progress));
-			scrollProgress = progress;
+			if (!ticking) {
+				ticking = true;
+				rafId = requestAnimationFrame(applyTransform);
+			}
 		};
 
 		// Initial setup
-		setTimeout(updateDimensions, 100);
-		handleScroll();
+		setTimeout(() => {
+			updateDimensions();
+			applyTransform();
+		}, 100);
 
 		window.addEventListener('resize', updateDimensions);
 		window.addEventListener('scroll', handleScroll, { passive: true });
@@ -38,11 +54,9 @@
 		return () => {
 			window.removeEventListener('resize', updateDimensions);
 			window.removeEventListener('scroll', handleScroll);
+			cancelAnimationFrame(rafId);
 		};
 	});
-
-	// Calculate the actual pixel translation
-	let translateX = $derived(scrollProgress * Math.max(0, trackWidth - windowWidth + (windowWidth * 0.1))); // adding a bit of buffer
 </script>
 
 <div class="hs-section" class:is-hero={isHero} bind:this={sectionEl}>
@@ -54,14 +68,13 @@
 		
 		<div 
 			class="hs-track" 
-			bind:this={trackEl} 
-			style="transform: translate3d(-{translateX}px, 0, 0);"
+			bind:this={trackEl}
 		>
 			{#each photos as photo, i}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<div class="hs-item" onclick={() => onclick?.(i)}>
-					<img src={photo.src || photo} alt={photo.title || 'Curated Photo'} loading="lazy" />
+					<img src={photo.src || photo} alt={photo.title || 'Curated Photo'} loading={isHero && i < 2 ? 'eager' : 'lazy'} decoding="async" />
 					<div class="hs-overlay">
 						{#if photo.title}
 							<span class="hs-item-title">{photo.title}</span>
@@ -129,7 +142,7 @@
 		padding: 0 5vw;
 		width: max-content;
 		will-change: transform;
-		transition: transform 0.1s ease-out; /* Smooths out scroll wheel steps */
+		/* No CSS transition — JS drives transform directly via rAF for smooth 60fps */
 	}
 
 	.hs-item {
@@ -141,7 +154,6 @@
 		overflow: hidden;
 		cursor: pointer;
 		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-		transition: transform 0.4s ease, filter 0.4s ease;
 	}
 
 	.hs-item img {
@@ -197,6 +209,9 @@
 	}
 
 	@media (max-width: 768px) {
+		.hs-item {
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+		}
 		.hs-item img {
 			max-height: 60vh;
 			max-width: 90vw;
