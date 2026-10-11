@@ -12,8 +12,20 @@
 <a
 	href="/gallery/{category.id}"
 	class="category-card"
+	aria-label="{category.name} — Explore collection ({photoCount} photos)"
 >
-	<img class="card-image" src={category.cover} alt={category.name} loading="lazy" decoding="async" />
+	<img
+		class="card-image"
+		src={category.coverPhoto?.srcWebp || category.cover}
+		srcset={category.coverPhoto?.srcsetWebp || undefined}
+		sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 380px"
+		width={category.coverPhoto?.width || 800}
+		height={category.coverPhoto?.height || 533}
+		style="aspect-ratio: {category.coverPhoto?.width || 800} / {category.coverPhoto?.height || 533};"
+		alt={category.name}
+		loading="lazy"
+		decoding="async"
+	/>
 	<div class="card-overlay"></div>
 
 	<div class="card-content">
@@ -25,11 +37,9 @@
 				<span class="count-label">photos</span>
 			</span>
 		</div>
-		<h3 class="card-title">{category.name}</h3>
+		<h2 class="card-title">{category.name}</h2>
 		<p class="card-description">{category.description}</p>
 	</div>
-
-
 </a>
 
 <style>
@@ -50,6 +60,16 @@
 		height: 100%;
 		object-fit: cover;
 		object-position: center;
+		transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+
+	.category-card:hover .card-image {
+		transform: scale(1.04);
+	}
+
+	.category-card:focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 4px;
 	}
 
 	.card-overlay {

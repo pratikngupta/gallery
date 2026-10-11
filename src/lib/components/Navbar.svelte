@@ -6,14 +6,24 @@
 	let hamburgerButton = $state(null);
 
 	const navLinks = [
-		{ label: 'Home', href: '/' },
-		{ label: 'Gallery', href: '/gallery' },
-		{ label: 'About', href: '/about' }
+		{ label: 'Work', href: '/gallery' },
+		{ label: 'About', href: '/about' },
+		{ label: 'Contact', href: 'mailto:pratikngupta@outlook.com' }
 	];
 
 	$effect(() => {
+		let ticking = false;
 		function handleScroll() {
-			scrolled = window.scrollY > 50;
+			if (!ticking) {
+				ticking = true;
+				requestAnimationFrame(() => {
+					const isScrolled = window.scrollY > 50;
+					if (scrolled !== isScrolled) {
+						scrolled = isScrolled;
+					}
+					ticking = false;
+				});
+			}
 		}
 
 		window.addEventListener('scroll', handleScroll, { passive: true });
@@ -27,12 +37,20 @@
 	onMount(() => {
 		// Initialize theme from document
 		currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+		const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+		if (metaThemeColor) {
+			metaThemeColor.setAttribute('content', currentTheme === 'dark' ? '#121212' : '#F7F7F5');
+		}
 	});
 
 	function toggleTheme() {
 		currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
 		document.documentElement.setAttribute('data-theme', currentTheme);
 		localStorage.setItem('gallery-theme', currentTheme);
+		const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+		if (metaThemeColor) {
+			metaThemeColor.setAttribute('content', currentTheme === 'dark' ? '#121212' : '#F7F7F5');
+		}
 	}
 
 	function toggleMobile() {
@@ -57,7 +75,7 @@
 
 <a href="#main" class="skip-to-main">Skip to main content</a>
 
-<nav class="navbar" class:scrolled>
+<nav class="navbar" class:scrolled aria-label="Main Navigation">
 	<div class="navbar-inner">
 		<a href="/" class="logo">
 			<span class="logo-bracket">&lt;</span><span class="logo-text">PG</span>
@@ -115,6 +133,9 @@
 		onkeydown={handleMobileMenuKeydown}
 		role="dialog"
 		aria-modal="true"
+		aria-label="Navigation menu"
+		aria-hidden={!mobileOpen}
+		inert={!mobileOpen ? true : undefined}
 		tabindex="-1"
 	>
 		<ul>
@@ -402,7 +423,8 @@
 		background-color: var(--color-bg-primary);
 		z-index: 1050;
 		transform: translateX(100%);
-		transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+		visibility: hidden;
+		transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.45s ease;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -410,19 +432,8 @@
 	}
 
 	.mobile-menu.open {
+		visibility: visible;
 		transform: translateX(0);
-	}
-
-	.mobile-menu-header {
-		position: absolute;
-		top: 2rem;
-		left: 2.5rem;
-	}
-
-	.mobile-logo {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 1.1rem;
-		font-weight: 500;
 	}
 
 	.mobile-menu ul {
@@ -458,12 +469,6 @@
 		border-bottom-color: var(--color-accent-subtle);
 	}
 
-	.mobile-link-index {
-		font-size: 0.7rem;
-		color: var(--color-accent);
-		opacity: 0.5;
-	}
-
 	.mobile-link-label {
 		font-family: 'Playfair Display', serif;
 		font-size: 2rem;
@@ -474,18 +479,6 @@
 
 	.mobile-link:hover .mobile-link-label {
 		color: var(--color-accent);
-	}
-
-	.mobile-menu-footer {
-		position: absolute;
-		bottom: 2rem;
-		left: 2.5rem;
-	}
-
-	.mobile-footer-text {
-		font-size: 0.7rem;
-		color: var(--color-text-muted);
-		letter-spacing: 0.1em;
 	}
 
 

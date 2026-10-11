@@ -9,88 +9,94 @@
    Custom Properties
    ============================================ */
 :root {
-  /* Colors — Charcoal Palette (Dark Mode) */
-  --color-bg-primary: #4D4D4D;
-  --color-bg-secondary: rgba(0, 0, 0, 0.05);
-  --color-bg-tertiary: rgba(0, 0, 0, 0.1);
-  --color-bg-elevated: rgba(255, 255, 255, 0.05);
-  --color-bg-card: rgba(0, 0, 0, 0.15);
+  /* Colors — Dark Theme (Default) */
+  --color-bg-primary: #121212;
+  --color-bg-surface: #1C1C1C;
+  --color-bg-secondary: #181818;
+  --color-bg-tertiary: #222222;
+  --color-bg-elevated: #282828;
+  --color-bg-card: #1C1C1C;
 
-  /* Accent — High Contrast Bright */
-  --color-accent: #F2F2F2;
+  /* Accent & Interactive */
+  --color-accent: #F5F5F3;
   --color-accent-light: #FFFFFF;
-  --color-accent-dark: #CCCCCC;
-  --color-accent-glow: rgba(242, 242, 242, 0.2);
-  --color-accent-subtle: rgba(242, 242, 242, 0.08);
+  --color-accent-dark: #D4D4D4;
+  --color-accent-glow: rgba(245, 245, 243, 0.15);
+  --color-accent-subtle: rgba(245, 245, 243, 0.08);
 
   /* Syntax Highlighting */
   --color-syntax-keyword: #E6E6E6;
   --color-syntax-variable: #CCCCCC;
 
   /* Secondary Accent */
-  --color-secondary: #B3B3B3;
-  --color-secondary-light: #E6E6E6;
-  --color-secondary-dark: #808080;
-  --color-secondary-glow: rgba(179, 179, 179, 0.2);
+  --color-secondary: #A3A3A3;
+  --color-secondary-light: #CCCCCC;
+  --color-secondary-dark: #737373;
+  --color-secondary-glow: rgba(163, 163, 163, 0.15);
 
-  /* Text */
-  --color-text-primary: #F2F2F2;
-  --color-text-secondary: #E6E6E6;
-  --color-text-muted: #CCCCCC;
-  --color-text-inverse: #1A1A1A;
+  /* Text — WCAG AA/AAA */
+  --color-text-primary: #F5F5F3;
+  --color-text-secondary: #A3A3A3;
+  --color-text-muted: #737373;
+  --color-text-inverse: #121212;
 
   /* Borders & Surfaces */
   --color-border: rgba(255, 255, 255, 0.1);
   --color-border-hover: rgba(255, 255, 255, 0.2);
-  --color-border-accent: rgba(242, 242, 242, 0.3);
-  --color-surface-glass: rgba(255, 255, 255, 0.05);
-  --color-surface-glass-strong: rgba(255, 255, 255, 0.1);
-  --color-overlay: rgba(26, 26, 26, 0.8);
-  --color-overlay-heavy: rgba(26, 26, 26, 0.85);
+  --color-border-accent: rgba(245, 245, 243, 0.3);
+  --color-surface-glass: rgba(28, 28, 28, 0.7);
+  --color-surface-glass-strong: rgba(28, 28, 28, 0.9);
+  --color-overlay: rgba(18, 18, 18, 0.85);
+  --color-overlay-heavy: rgba(9, 9, 9, 0.95);
+
+  /* Full-Screen Photograph Viewer (Fixed #090909 regardless of theme) */
+  --color-lightbox-bg: #090909;
 }
 
-/* ============================================
-   Light Mode Theme Overrides
-   ============================================ */
+/* Light Theme Overrides */
 :root[data-theme="light"] {
-  /* Colors — Charcoal Palette (Light Mode) */
-  --color-bg-primary: #CCCCCC;
-  --color-bg-secondary: rgba(255, 255, 255, 0.3);
-  --color-bg-tertiary: rgba(255, 255, 255, 0.5);
-  --color-bg-elevated: rgba(255, 255, 255, 0.8);
-  --color-bg-card: rgba(255, 255, 255, 0.4);
+  /* Colors — Light Theme */
+  --color-bg-primary: #F7F7F5;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-secondary: #EEEEEC;
+  --color-bg-tertiary: #E5E5E2;
+  --color-bg-elevated: #FFFFFF;
+  --color-bg-card: #FFFFFF;
 
-  /* Accent — High Contrast Dark */
-  --color-accent: #1A1A1A;
-  --color-accent-light: #333333;
-  --color-accent-dark: #121212;
-  --color-accent-glow: rgba(26, 26, 26, 0.15);
-  --color-accent-subtle: rgba(26, 26, 26, 0.08);
+  /* Accent & Interactive */
+  --color-accent: #171717;
+  --color-accent-light: #2C2C2C;
+  --color-accent-dark: #000000;
+  --color-accent-glow: rgba(23, 23, 23, 0.12);
+  --color-accent-subtle: rgba(23, 23, 23, 0.06);
 
   /* Syntax Highlighting */
   --color-syntax-keyword: #4D4D4D;
-  --color-syntax-variable: #1A1A1A;
+  --color-syntax-variable: #171717;
 
   /* Secondary Accent */
-  --color-secondary: #4D4D4D;
-  --color-secondary-light: #666666;
-  --color-secondary-dark: #333333;
-  --color-secondary-glow: rgba(77, 77, 77, 0.15);
+  --color-secondary: #666660;
+  --color-secondary-light: #8E8E88;
+  --color-secondary-dark: #40403C;
+  --color-secondary-glow: rgba(102, 102, 96, 0.12);
 
-  /* Text */
-  --color-text-primary: #1A1A1A;
-  --color-text-secondary: #333333;
-  --color-text-muted: #4D4D4D;
-  --color-text-inverse: #F2F2F2;
+  /* Text — WCAG AA/AAA */
+  --color-text-primary: #171717;
+  --color-text-secondary: #666660;
+  --color-text-muted: #8E8E88;
+  --color-text-inverse: #F7F7F5;
 
   /* Borders & Surfaces */
-  --color-border: rgba(0, 0, 0, 0.1);
-  --color-border-hover: rgba(0, 0, 0, 0.2);
-  --color-border-accent: rgba(26, 26, 26, 0.3);
-  --color-surface-glass: rgba(255, 255, 255, 0.3);
-  --color-surface-glass-strong: rgba(255, 255, 255, 0.5);
-  --color-overlay: rgba(255, 255, 255, 0.8);
-  --color-overlay-heavy: rgba(255, 255, 255, 0.85);
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-hover: rgba(0, 0, 0, 0.16);
+  --color-border-accent: rgba(23, 23, 23, 0.25);
+  --color-surface-glass: rgba(255, 255, 255, 0.85);
+  --color-surface-glass-strong: rgba(255, 255, 255, 0.95);
+  --color-overlay: rgba(247, 247, 245, 0.85);
+  --color-overlay-heavy: rgba(247, 247, 245, 0.95);
+
+  /* Full-Screen Photograph Viewer (Fixed #090909 regardless of theme) */
+  --color-lightbox-bg: #090909;
 }
 
 :root {

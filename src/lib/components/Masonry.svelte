@@ -1,75 +1,52 @@
 <script>
-	// A responsive Masonry layout component for Svelte 5
-	import { onMount } from 'svelte';
-
+	// Responsive CSS-column Masonry for Svelte 5
+	// Zero Layout Shift (CLS = 0) during SSR and hydration
 	let { 
 		items = [], 
-		minColWidth = 300, 
-		gap = 16, 
 		children 
 	} = $props();
-
-	let containerWidth = $state(0);
-	
-	// Calculate number of columns based on container width and minimum column width
-	let numCols = $derived(
-		Math.max(1, Math.floor((containerWidth + gap) / (minColWidth + gap))) || 1
-	);
-
-	// Distribute items into columns left-to-right
-	let columns = $derived(() => {
-		const cols = Array.from({ length: numCols }, () => []);
-		items.forEach((item, i) => {
-			cols[i % numCols].push({ item, originalIndex: i });
-		});
-		return cols;
-	});
 </script>
 
-<div 
-	class="masonry-container" 
-	bind:clientWidth={containerWidth} 
-	style="--gap: {gap}px;"
->
-	{#if containerWidth > 0}
-		{#each columns() as col}
-			<div class="masonry-column">
-				{#each col as { item, originalIndex }}
-					<div class="masonry-item">
-						{@render children({ item, index: originalIndex })}
-					</div>
-				{/each}
-			</div>
-		{/each}
-	{:else}
-		<!-- SSR fallback or before hydration: render all items in a single column so they are visible -->
-		<div class="masonry-column">
-			{#each items as item, index}
-				<div class="masonry-item">
-					{@render children({ item, index })}
-				</div>
-			{/each}
+<div class="masonry-grid">
+	{#each items as item, index}
+		<div class="masonry-item">
+			{@render children({ item, index })}
 		</div>
-	{/if}
+	{/each}
 </div>
 
 <style>
-	.masonry-container {
-		display: flex;
-		align-items: flex-start;
-		gap: var(--gap, 16px);
+	.masonry-grid {
+		column-count: 1;
+		column-gap: 20px;
 		width: 100%;
 	}
 
-	.masonry-column {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap, 16px);
-		flex: 1;
-		min-width: 0; /* Prevents flex items from overflowing */
+	@media (min-width: 640px) {
+		.masonry-grid {
+			column-count: 2;
+			column-gap: 24px;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.masonry-grid {
+			column-count: 3;
+			column-gap: 24px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.masonry-grid {
+			column-count: 4;
+			column-gap: 28px;
+		}
 	}
 
 	.masonry-item {
+		break-inside: avoid;
+		margin-bottom: 24px;
+		display: inline-block;
 		width: 100%;
 	}
 </style>

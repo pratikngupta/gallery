@@ -1,25 +1,31 @@
 <script>
-	let { photo, index = 0, onclick } = $props();
+	let { photo, index = 0, loading = 'lazy', onclick } = $props();
 </script>
 
 <div
 	class="photo-card"
 	role="button"
 	tabindex="0"
+	aria-label="{photo.title ? 'View photo: ' + photo.title : 'View photo'}"
 	onclick={onclick}
 	onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onclick?.(); } }}
 >
 	<div class="photo-wrapper">
 		<img
-			src={photo.src}
+			src={photo.srcWebp || photo.src}
+			srcset={photo.srcsetWebp || undefined}
+			sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 380px"
+			width={photo.width || 800}
+			height={photo.height || 533}
+			style="aspect-ratio: {photo.width || 800} / {photo.height || 533};"
 			alt={photo.title || 'Photo'}
-			loading="lazy"
+			loading={loading}
 			decoding="async"
 			class="photo-image"
 		/>
 		<div class="photo-overlay">
 			<div class="photo-info">
-				<h4 class="photo-title">{photo.title || ''}</h4>
+				<h3 class="photo-title">{photo.title || ''}</h3>
 				{#if photo.location}
 					<span class="photo-location">📍 {photo.location}</span>
 				{/if}
@@ -31,22 +37,37 @@
 <style>
 	.photo-card {
 		break-inside: avoid;
-		margin-bottom: 16px;
+		margin-bottom: 0;
 		cursor: pointer;
 		border-radius: 12px;
 		overflow: hidden;
 		position: relative;
+		background: var(--color-bg-surface);
+		border: 1px solid var(--color-border);
+		transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+	}
+
+	.photo-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+		border-color: var(--color-border-accent);
 	}
 
 	.photo-wrapper {
 		position: relative;
 		line-height: 0;
+		overflow: hidden;
 	}
 
 	.photo-image {
 		width: 100%;
 		height: auto;
 		display: block;
+		transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+
+	.photo-card:hover .photo-image {
+		transform: scale(1.03);
 	}
 
 	.photo-overlay {
@@ -62,11 +83,25 @@
 			transparent 100%
 		);
 		transform: translateY(100%);
-		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
-	.photo-card:hover .photo-overlay {
+	.photo-card:hover .photo-overlay,
+	.photo-card:focus-visible .photo-overlay {
 		transform: translateY(0);
+	}
+
+	@media (hover: none) {
+		.photo-overlay {
+			transform: translateY(0);
+			padding: 1rem 1.25rem;
+			background: linear-gradient(
+				to top,
+				rgba(10, 10, 10, 0.85) 0%,
+				rgba(10, 10, 10, 0.3) 70%,
+				transparent 100%
+			);
+		}
 	}
 
 	.photo-info {
@@ -93,6 +128,6 @@
 
 	.photo-card:focus-visible {
 		outline: 2px solid var(--color-accent);
-		outline-offset: 2px;
+		outline-offset: 3px;
 	}
 </style>

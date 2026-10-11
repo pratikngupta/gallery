@@ -52,11 +52,11 @@
   />
   <meta
     property="og:url"
-    content="https://pratikngupta.github.io/gallery/about"
+    content="https://gallery-rho-two.vercel.app/about"
   />
 
   <!-- Canonical URL -->
-  <link rel="canonical" href="https://pratikngupta.github.io/gallery/about" />
+  <link rel="canonical" href="https://gallery-rho-two.vercel.app/about" />
 </svelte:head>
 
 <div class="about-page">
@@ -520,55 +520,6 @@
     font-weight: 300;
   }
 
-  /* ---- Skills Grid ---- */
-  .skills-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: 8px;
-  }
-
-  .skill-card {
-    padding: 24px;
-    background: var(--color-surface-glass);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    transition:
-      transform 0.3s ease,
-      background 0.3s ease;
-  }
-
-  .skill-card:hover {
-    transform: translateY(-2px);
-    background: var(--color-surface-glass-strong);
-  }
-
-  .skill-num {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.75rem;
-    color: var(--color-accent);
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    display: block;
-    margin-bottom: 12px;
-    opacity: 0.7;
-  }
-
-  .skill-name {
-    font-family: "Playfair Display", serif;
-    color: var(--color-text-primary);
-    font-size: 1.1rem;
-    margin-bottom: 8px;
-    font-weight: 400;
-  }
-
-  .skill-desc {
-    color: var(--color-text-secondary);
-    font-size: 0.9rem;
-    line-height: 1.6;
-    font-weight: 300;
-  }
-
   /* ---- Sidebar ---- */
   .sidebar-card {
     background: var(--color-surface-glass);
@@ -654,31 +605,6 @@
     background: var(--color-secondary-glow);
   }
 
-  .sidebar-cta {
-    text-align: center;
-    border-color: var(--color-accent-subtle);
-  }
-
-  .cta-decorator {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 1.5rem;
-    color: var(--color-accent);
-    opacity: 0.25;
-    margin-bottom: 16px;
-  }
-
-  .contact-text {
-    color: var(--color-text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-bottom: 20px;
-  }
-
-  .contact-btn {
-    width: 100%;
-    text-align: center;
-  }
-
   /* ---- Responsive ---- */
   @media (max-width: 1024px) {
     .about-layout {
@@ -703,10 +629,6 @@
     }
 
     .worlds-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .skills-grid {
       grid-template-columns: 1fr;
     }
 

@@ -19,7 +19,7 @@
 </script>
 
 <div class="photo-grid-wrapper">
-	<Masonry items={photos} minColWidth={280} gap={16}>
+	<Masonry items={photos}>
 		{#snippet children({ item: photo, index })}
 			<PhotoCard
 				{photo}

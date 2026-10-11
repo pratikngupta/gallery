@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 const PHOTOS_DIR = path.join(process.cwd(), 'static', 'photos');
+const MANIFEST_PATH = path.join(process.cwd(), 'static', 'photos-opt', 'manifest.json');
 
 function capitalize(str) {
 	return str.charAt(0).toUpperCase() + str.slice(1);
@@ -41,7 +42,16 @@ function parseFilename(filename) {
 
 export function generateGalleryData() {
 	if (!fs.existsSync(PHOTOS_DIR)) {
-		return { categories: [] };
+		return { site: { name: "Gallery", tagline: "", description: "", photographer: "" }, categories: [], heroImages: [] };
+	}
+
+	let manifest = {};
+	if (fs.existsSync(MANIFEST_PATH)) {
+		try {
+			manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf-8'));
+		} catch (e) {
+			console.warn('Could not read photos-opt manifest:', e);
+		}
 	}
 
 	const categories = [];
@@ -67,17 +77,9 @@ export function generateGalleryData() {
 
 			for (const imgFile of imageFiles) {
 				const { title, rank, isHero, isGalleryCover, isMain, isPortrait, nameWithoutExt } = parseFilename(imgFile.name);
-				const src = `/photos/${catFolder.name}/${subFolder.name}/${imgFile.name}`;
-				
-				if (isGalleryCover) {
-					explicitCategoryCover = src;
-				}
-
-				if (isHero) {
-					if (!heroImages.includes(src)) {
-						heroImages.push(src);
-					}
-				}
+				const relKey = `${catFolder.name}/${subFolder.name}/${imgFile.name}`;
+				const opt = manifest[relKey] || {};
+				const src = opt.src || `/photos/${encodeURIComponent(catFolder.name)}/${encodeURIComponent(subFolder.name)}/${encodeURIComponent(imgFile.name)}`;
 				
 				// Check for companion text file
 				let description = "";
@@ -86,17 +88,39 @@ export function generateGalleryData() {
 					description = fs.readFileSync(txtPath, 'utf-8').trim();
 				}
 
-				photos.push({
+				const photoObj = {
 					src,
+					srcWebp: opt.srcWebp || src,
+					src400: opt.src400 || src,
+					src800: opt.src800 || src,
+					src1400: opt.src1400 || src,
+					src2048: opt.src2048 || src,
+					srcsetWebp: opt.srcsetWebp || '',
+					width: opt.width || 2048,
+					height: opt.height || 1365,
+					aspectRatio: opt.aspectRatio || 1.5,
 					title,
 					description,
 					rank,
 					isMain,
 					isPortrait,
-					// Optional: derive date from file creation or just leave empty
+					isHero,
+					isGalleryCover,
 					date: undefined, 
 					location: undefined
-				});
+				};
+
+				if (isGalleryCover) {
+					explicitCategoryCover = photoObj;
+				}
+
+				if (isHero) {
+					if (!heroImages.some(p => p.src === src)) {
+						heroImages.push(photoObj);
+					}
+				}
+
+				photos.push(photoObj);
 			}
 
 			// Sort photos by rank descending
@@ -110,6 +134,7 @@ export function generateGalleryData() {
 					id: subFolder.name,
 					name: subFolder.name.split('-').map(capitalize).join(' '),
 					cover: coverPhoto.src,
+					coverPhoto,
 					photos: photos.map(({ rank, isHero, isGalleryCover, ...rest }) => rest) // Clean up internal props
 				});
 			}
@@ -117,13 +142,20 @@ export function generateGalleryData() {
 
 		if (subcategories.length > 0) {
 			// Category cover is the explicitly marked coverart, or fallback to first subcategory's cover
-			const cover = explicitCategoryCover || subcategories[0].cover;
-			
+			const coverPhoto = explicitCategoryCover || subcategories[0].coverPhoto;
+			const cover = coverPhoto ? coverPhoto.src : subcategories[0].cover;
+			const categoryDescriptions = {
+				buildings: 'Architectural geometry, cityscapes, and structural symmetry captured across North American cities.',
+				landscape: 'Serene vistas, tranquil lakes, and sweeping horizons across Canadian provincial and national parks.',
+				wildlife: 'Native fauna and avian portraits captured in their natural habitats with patience and precision.'
+			};
+
 			categories.push({
 				id: catFolder.name,
 				name: catFolder.name.split('-').map(capitalize).join(' '),
-				description: `Explore the ${catFolder.name} collection.`,
+				description: categoryDescriptions[catFolder.name.toLowerCase()] || `Explore the ${catFolder.name} collection.`,
 				cover,
+				coverPhoto,
 				subcategories
 			});
 		}
@@ -138,7 +170,11 @@ export function generateGalleryData() {
 
 	// Fallback: if no coverart specified, use category covers
 	if (heroImages.length === 0) {
-		heroImages.push(...categories.map(c => c.cover).filter(Boolean));
+		for (const c of categories) {
+			if (c.coverPhoto) {
+				heroImages.push(c.coverPhoto);
+			}
+		}
 	}
 
 	return { site, categories, heroImages };

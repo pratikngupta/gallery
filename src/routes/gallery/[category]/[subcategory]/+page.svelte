@@ -20,6 +20,10 @@
 	{#if subcategory && category}
 		<title>{subcategory.name} — {category.name} | Gallery</title>
 		<meta name="description" content="Browse {subcategory.photos.length} {subcategory.name} photographs in the {category.name} collection." />
+		<link rel="canonical" href="https://gallery-rho-two.vercel.app/gallery/{categoryId}/{subcategoryId}" />
+		<meta property="og:title" content="{subcategory.name} — {category.name} | Gallery" />
+		<meta property="og:description" content="Browse {subcategory.photos.length} {subcategory.name} photographs in the {category.name} collection." />
+		<meta property="og:url" content="https://gallery-rho-two.vercel.app/gallery/{categoryId}/{subcategoryId}" />
 	{/if}
 </svelte:head>
 

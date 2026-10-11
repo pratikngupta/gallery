@@ -5,12 +5,25 @@
 <div class="bento-grid">
 	{#each photos as photo, i}
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div 
 			class="bento-item bento-{i % 6}"
+			role="button"
+			tabindex="0"
+			aria-label="{photo.title ? 'View photo: ' + photo.title : 'View featured photograph'}"
 			onclick={() => onclick?.(i)}
+			onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onclick?.(i); } }}
 		>
-			<img src={photo.src} alt={photo.title || 'Featured Photograph'} loading="lazy" />
+			<img
+				src={photo.srcWebp || photo.src}
+				srcset={photo.srcsetWebp || undefined}
+				sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
+				width={photo.width || 800}
+				height={photo.height || 533}
+				style="aspect-ratio: {photo.width || 800} / {photo.height || 533};"
+				alt={photo.title || 'Featured Photograph'}
+				loading="lazy"
+				decoding="async"
+			/>
 			<div class="bento-overlay">
 				<span class="bento-title">{photo.title || ''}</span>
 			</div>

@@ -123,14 +123,14 @@
 		if (hasNext && internalIndex + 1 < photos.length) {
 			const nextPhoto = photos[internalIndex + 1];
 			const img = new Image();
-			img.src = nextPhoto.src || nextPhoto;
+			img.src = nextPhoto.src800 || nextPhoto.srcWebp || nextPhoto.src || nextPhoto;
 		}
 		
 		// Preload previous image
 		if (hasPrev && internalIndex - 1 >= 0) {
 			const prevPhoto = photos[internalIndex - 1];
 			const img = new Image();
-			img.src = prevPhoto.src || prevPhoto;
+			img.src = prevPhoto.src800 || prevPhoto.srcWebp || prevPhoto.src || prevPhoto;
 		}
 	});
 </script>
@@ -181,9 +181,14 @@
 	<div class="image-container">
 		{#key internalIndex}
 			<img
-				src={currentPhoto.src || currentPhoto}
+				src={currentPhoto.src2048 || currentPhoto.srcWebp || currentPhoto.src || currentPhoto}
+				srcset={currentPhoto.srcsetWebp || undefined}
+				sizes="90vw"
+				width={currentPhoto.width || undefined}
+				height={currentPhoto.height || undefined}
 				alt={currentPhoto.title || 'Photo'}
 				class="lightbox-image"
+				decoding="async"
 				in:fly={{ x: direction * 60, duration: 350, delay: 50 }}
 				out:fade={{ duration: 150 }}
 			/>
@@ -217,7 +222,7 @@
 		position: fixed;
 		inset: 0;
 		z-index: 2000;
-		background-color: rgba(0, 0, 0, 0.95);
+		background-color: var(--color-lightbox-bg, #090909);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
