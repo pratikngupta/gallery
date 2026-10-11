@@ -40,6 +40,17 @@ function parseFilename(filename) {
 	return { title, rank, isHero, isGalleryCover, isMain, isPortrait, nameWithoutExt };
 }
 
+function inferLocation(nameWithoutExt, catName, subName) {
+	const text = `${nameWithoutExt} ${catName} ${subName}`.toLowerCase();
+	if (text.includes('toronto') || text.includes('cn-tower')) return 'Toronto, Canada';
+	if (text.includes('chicago') || text.includes('hancock')) return 'Chicago, Illinois';
+	if (text.includes('yosemite')) return 'Yosemite National Park, California';
+	if (text.includes('port-stanley') || text.includes('port stanley')) return 'Port Stanley, Ontario';
+	if (text.includes('surf') || text.includes('costline')) return 'Big Sur, California';
+	if (catName && catName.toLowerCase() === 'wildlife') return 'Ontario, Canada';
+	return undefined;
+}
+
 export function generateGalleryData() {
 	if (!fs.existsSync(PHOTOS_DIR)) {
 		return { site: { name: "Gallery", tagline: "", description: "", photographer: "" }, categories: [], heroImages: [] };
@@ -107,7 +118,7 @@ export function generateGalleryData() {
 					isHero,
 					isGalleryCover,
 					date: undefined, 
-					location: undefined
+					location: inferLocation(nameWithoutExt, catFolder.name, subFolder.name)
 				};
 
 				if (isGalleryCover) {

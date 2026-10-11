@@ -53,48 +53,11 @@
   let lightboxOpen = $state(false);
   let lightboxIndex = $state(0);
 
-  /* Animated counters */
-  let photosCount = $state(0);
-  let collectionsCount = $state(0);
-  let subcategoriesCount = $state(0);
-  let countersStarted = $state(false);
-
   function openLightbox(index, photosArray) {
     lightboxPhotos = photosArray;
     lightboxIndex = index;
     lightboxOpen = true;
   }
-
-  function animateCounter(target, setter, duration = 1600) {
-    const start = performance.now();
-    function tick(now) {
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setter(Math.round(eased * target));
-      if (progress < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-  }
-
-  $effect(() => {
-    if (countersStarted) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          countersStarted = true;
-          animateCounter(totalPhotos, (v) => (photosCount = v));
-          animateCounter(categories.length, (v) => (collectionsCount = v), 1000);
-          animateCounter(totalSubcategories, (v) => (subcategoriesCount = v), 1200);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.2 },
-    );
-    const el = document.getElementById("about-teaser");
-    if (el) observer.observe(el);
-    return () => observer.disconnect();
-  });
 
   const lcpHref = typeof heroPhoto === 'object' && heroPhoto ? (heroPhoto.src600 || heroPhoto.srcWebp || heroPhoto.src || '') : '';
   const lcpSrcset = typeof heroPhoto === 'object' && heroPhoto ? heroPhoto.srcsetWebp : undefined;
@@ -200,9 +163,11 @@
             fetchpriority="high"
             decoding="async"
           />
-          <div class="hero-pill-badge" aria-hidden="true">
-            {heroPhoto.location || '📍 Yosemite National Park'}
-          </div>
+          {#if heroPhoto.location}
+            <div class="hero-pill-badge" aria-hidden="true">
+              📍 {heroPhoto.location}
+            </div>
+          {/if}
         </div>
       {/if}
 
@@ -295,9 +260,11 @@
                 loading="lazy"
                 decoding="async"
               />
-              <div class="hero-pill-badge" aria-hidden="true">
-                {wildlifePhoto.location || '📍 Ontario, Canada'}
-              </div>
+              {#if wildlifePhoto.location}
+                <div class="hero-pill-badge" aria-hidden="true">
+                  📍 {wildlifePhoto.location}
+                </div>
+              {/if}
             </div>
             <div class="card-caption">
               <h3 class="card-name">Wildlife</h3>
@@ -369,98 +336,6 @@
             </Masonry>
           </div>
         {/key}
-      </div>
-
-      <div class="gallery-footer-cta">
-        {#if activeFilter === 'all'}
-          <a href="/gallery" class="btn btn-primary">
-            <span>Explore complete gallery</span>
-            <span class="btn-count">({totalPhotos} photographs)</span>
-            <span class="btn-arrow" aria-hidden="true">→</span>
-          </a>
-        {:else}
-          <a href="/gallery/{activeFilter}" class="btn btn-primary">
-            <span>Explore all {activeTab.label} photographs</span>
-            <span class="btn-count">({activeTab.count} works)</span>
-            <span class="btn-arrow" aria-hidden="true">→</span>
-          </a>
-        {/if}
-      </div>
-    </div>
-  </section>
-
-  <!-- Horizontal Section Divider -->
-  <div class="container">
-    <div class="section-divider" aria-hidden="true"></div>
-  </div>
-
-  <!-- 4. Behind the Camera (About Section) -->
-  <section class="intro-strip" id="about-teaser">
-    <div class="dot-pattern" aria-hidden="true"></div>
-    <div class="container intro-inner">
-      <div class="code-block">
-        <div class="code-line">
-          <span class="code-keyword">const</span>
-          <span class="code-var">pratik</span>
-          <span class="code-punct">=</span>
-          <span class="code-bracket">{"{"}</span>
-        </div>
-        <div class="code-line code-indent">
-          <span class="code-key">role</span><span class="code-punct">:</span>
-          <span class="code-string">'Software Engineer'</span><span class="code-punct">,</span>
-        </div>
-        <div class="code-line code-indent">
-          <span class="code-key">passion</span><span class="code-punct">:</span>
-          <span class="code-string">'Photography'</span><span class="code-punct">,</span>
-        </div>
-        <div class="code-line code-indent">
-          <span class="code-key">focus</span><span class="code-punct">:</span>
-          <span class="code-bracket">[</span>
-          <span class="code-string">'Buildings'</span><span class="code-punct">,</span>
-          <span class="code-string">'Landscape'</span><span class="code-punct">,</span>
-          <span class="code-string">'Wildlife'</span>
-          <span class="code-bracket">]</span>
-        </div>
-        <div class="code-line">
-          <span class="code-bracket">{"}"}</span><span class="code-punct">;</span>
-        </div>
-      </div>
-      <div class="intro-text">
-        <span class="section-label-behind">BEHIND THE CAMERA</span>
-        <h2 class="about-lead-title">The engineer and the photographer.</h2>
-        <p class="about-subtext">
-          Exploring the intersection of technical precision, creativity, and visual storytelling.
-        </p>
-        <p>
-          There's a quiet symmetry between writing elegant code and composing a
-          photograph. Both demand patience, precision, and an eye for the details
-          others overlook. By day I architect software systems; by golden hour I
-          chase the algorithms of light — debugging compositions until every pixel
-          feels intentional.
-        </p>
-        <div class="about-action-row">
-          <a href="/about" class="btn btn-ghost">
-            <span>More about me</span>
-            <span class="btn-arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="container about-stats-container">
-      <div class="about-stats">
-        <div class="stat-card">
-          <span class="stat-number">{photosCount}</span>
-          <span class="stat-label">Photographs</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-number">{collectionsCount}</span>
-          <span class="stat-label">Collections</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-number">{subcategoriesCount}</span>
-          <span class="stat-label">Categories</span>
-        </div>
       </div>
     </div>
   </section>
@@ -558,7 +433,6 @@
     overflow: hidden;
     cursor: pointer;
     background: var(--color-bg-surface);
-    line-height: 0;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
@@ -595,6 +469,7 @@
     color: #ffffff;
     font-family: 'Inter', sans-serif;
     font-size: 0.8rem;
+    line-height: 1.4;
     padding: 6px 14px;
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.18);
@@ -693,7 +568,6 @@
     border-radius: 14px;
     overflow: hidden;
     background: var(--color-bg-surface);
-    line-height: 0;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
@@ -891,167 +765,7 @@
     transform: translateX(4px);
   }
 
-  /* ---- 4. Behind the Camera (About Section) ---- */
-  .intro-strip {
-    position: relative;
-    background: var(--color-bg-surface);
-    border-top: 1px solid var(--color-border);
-    border-bottom: 1px solid var(--color-border);
-    overflow: hidden;
-    padding: 80px 0;
-  }
-
-  .dot-pattern {
-    position: absolute;
-    inset: 0;
-    opacity: 0.04;
-    background-image: radial-gradient(circle, #fff 1px, transparent 1px);
-    background-size: 24px 24px;
-    pointer-events: none;
-  }
-
-  :root[data-theme="light"] .dot-pattern {
-    opacity: 0.08;
-    background-image: radial-gradient(circle, #000 1px, transparent 1px);
-  }
-
-  .intro-inner {
-    position: relative;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 60px;
-    align-items: center;
-    margin-bottom: 60px;
-  }
-
-  .code-block {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.9rem;
-    line-height: 2;
-    white-space: nowrap;
-    padding: 28px 32px;
-    background: var(--color-bg-primary);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-  }
-
-  .code-indent {
-    padding-left: 2em;
-  }
-
-  .code-keyword {
-    color: var(--color-syntax-keyword, #c792ea);
-    font-weight: 500;
-  }
-
-  .code-var {
-    color: var(--color-syntax-variable, #82aaff);
-    margin-left: 0.5em;
-  }
-
-  .code-punct {
-    color: var(--color-text-secondary);
-    margin: 0 0.25em;
-  }
-
-  .code-bracket {
-    color: var(--color-text-primary);
-    margin: 0 0.15em;
-  }
-
-  .code-key {
-    color: var(--color-accent);
-  }
-
-  .code-string {
-    color: var(--color-secondary);
-  }
-
-  .section-label-behind {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.78rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-text-secondary);
-    display: block;
-    margin-bottom: 10px;
-  }
-
-  .about-lead-title {
-    font-family: 'Inter', -apple-system, sans-serif;
-    font-size: clamp(1.8rem, 3.2vw, 2.5rem);
-    color: var(--color-text-primary);
-    font-weight: 700;
-    margin-bottom: 12px;
-    line-height: 1.25;
-    letter-spacing: -0.02em;
-  }
-
-  .about-subtext {
-    font-family: "Inter", sans-serif;
-    font-size: 1.05rem;
-    font-style: italic;
-    color: var(--color-accent);
-    margin-bottom: 16px;
-    line-height: 1.6;
-  }
-
-  .intro-text p {
-    color: var(--color-text-secondary);
-    font-size: 1.02rem;
-    line-height: 1.8;
-    font-weight: 300;
-    max-width: 540px;
-    margin-bottom: 24px;
-  }
-
-  .about-action-row {
-    margin-top: 20px;
-  }
-
-  .about-stats-container {
-    position: relative;
-  }
-
-  .about-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-
-  .stat-card {
-    padding: 24px 28px;
-    background: var(--color-bg-primary);
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    transition: transform 0.3s ease, border-color 0.3s ease;
-  }
-
-  .stat-card:hover {
-    transform: translateY(-3px);
-    border-color: var(--color-border-accent);
-  }
-
-  .stat-number {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 2.2rem;
-    color: var(--color-accent);
-    font-weight: 700;
-    min-width: 64px;
-    line-height: 1;
-  }
-
-  .stat-label {
-    color: var(--color-text-secondary);
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-  }
-
-  /* ---- 5. CTA Section ---- */
+  /* ---- 4. CTA Section ---- */
   .cta-section {
     padding: 80px 0 120px;
   }
@@ -1107,15 +821,6 @@
     .wide-card img {
       aspect-ratio: 1.33;
     }
-
-    .intro-inner {
-      grid-template-columns: 1fr;
-      gap: 36px;
-    }
-
-    .code-block {
-      overflow-x: auto;
-    }
   }
 
   @media (max-width: 768px) {
@@ -1162,19 +867,6 @@
       aspect-ratio: 1;
     }
 
-    .about-stats {
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-
-    .stat-card {
-      padding: 18px 22px;
-    }
-
-    .intro-strip {
-      padding: 50px 0;
-    }
-
     .cta-section {
       padding: 60px 0 80px;
     }
@@ -1184,8 +876,7 @@
     .gallery-fade-container,
     .hero-img,
     .tall-card img,
-    .wide-card img,
-    .stat-card {
+    .wide-card img {
       animation: none !important;
       transition: none !important;
       transform: none !important;

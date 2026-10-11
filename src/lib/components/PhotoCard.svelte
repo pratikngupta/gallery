@@ -55,7 +55,6 @@
 
 	.photo-wrapper {
 		position: relative;
-		line-height: 0;
 		overflow: hidden;
 	}
 
@@ -76,6 +75,7 @@
 		left: 0;
 		right: 0;
 		padding: 1.5rem;
+		line-height: normal;
 		background: linear-gradient(
 			to top,
 			rgba(10, 10, 10, 0.9) 0%,
@@ -122,6 +122,7 @@
 	.photo-location {
 		font-family: 'Inter', sans-serif;
 		font-size: 0.8rem;
+		line-height: 1.4;
 		color: rgba(255, 255, 255, 0.7);
 		letter-spacing: 0.02em;
 	}
