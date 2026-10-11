@@ -247,16 +247,16 @@
 
 	.copyright {
 		font-family: 'Inter', sans-serif;
-		font-size: 0.72rem;
-		color: var(--color-text-muted);
+		font-size: 0.75rem;
+		color: var(--color-text-secondary);
 		margin: 0;
 		letter-spacing: 0.02em;
 	}
 
 	.built-with {
 		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.68rem;
-		color: var(--color-text-muted);
+		font-size: 0.72rem;
+		color: var(--color-text-secondary);
 		margin: 0;
 		display: inline-flex;
 		align-items: center;
@@ -265,11 +265,11 @@
 
 	.code-tag {
 		color: var(--color-accent);
-		opacity: 0.7;
+		opacity: 0.8;
 	}
 
 	.code-line {
-		color: var(--color-text-muted);
+		color: var(--color-text-secondary);
 	}
 
 	.heart {

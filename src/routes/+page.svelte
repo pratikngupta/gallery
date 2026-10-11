@@ -1,9 +1,7 @@
 <script>
-  import CategoryCard from "$lib/components/CategoryCard.svelte";
   import Lightbox from "$lib/components/Lightbox.svelte";
   import Masonry from "$lib/components/Masonry.svelte";
   import PhotoCard from "$lib/components/PhotoCard.svelte";
-  import HorizontalScroll from "$lib/components/HorizontalScroll.svelte";
   import {
     galleryData,
     getFeaturedPhotos,
@@ -18,10 +16,38 @@
     0,
   );
 
-  // Curated photos for Selected Work vertical gallery (9 photos across categories)
-  const selectedPhotos = getFeaturedPhotos(9);
-  // Curated series photos for horizontal editorial section
-  const seriesPhotos = allPhotos.slice(0, 8);
+  // Curated photographs for editorial layout
+  const heroPhoto = allPhotos.find(p => p.src.includes('yosemite-main') || p.src.includes('toronto-skyline-evening')) || allPhotos[0];
+  const buildingsPhoto = allPhotos.find(p => p.src.includes('cn-tower.jpeg')) || allPhotos.find(p => p.categoryId === 'buildings') || allPhotos[0];
+  const landscapePhoto = allPhotos.find(p => p.src.includes('cover-big-surf-costline')) || allPhotos.find(p => p.categoryId === 'landscape') || allPhotos[1];
+  const wildlifePhoto = allPhotos.find(p => p.src.includes('cover-bird') || p.src.includes('seagulls-flying') || p.src.includes('GOAT')) || allPhotos.find(p => p.categoryId === 'wildlife') || allPhotos[2];
+
+  // Interactive category filter state for Selected Work gallery
+  let activeFilter = $state('all');
+
+  const filterTabs = [
+    { id: 'all', label: 'All', count: totalPhotos },
+    ...categories.map((c) => {
+      const cPhotos = allPhotos.filter((p) => p.categoryId === c.id);
+      return {
+        id: c.id,
+        label: c.name,
+        count: cPhotos.length,
+      };
+    }),
+  ];
+
+  let activeTab = $derived(
+    filterTabs.find((t) => t.id === activeFilter) || filterTabs[0],
+  );
+
+  let filteredPhotos = $derived.by(() => {
+    if (activeFilter === 'all') {
+      return getFeaturedPhotos(9);
+    }
+    const catPhotos = allPhotos.filter((p) => p.categoryId === activeFilter);
+    return catPhotos.slice(0, 9);
+  });
 
   let lightboxPhotos = $state([]);
   let lightboxOpen = $state(false);
@@ -70,13 +96,7 @@
     return () => observer.disconnect();
   });
 
-  // Hero image selection: high-resolution, visually striking photograph
-  const heroPhoto =
-    (galleryData.heroImages && galleryData.heroImages.length > 0)
-      ? galleryData.heroImages[0]
-      : categories[0]?.coverPhoto || allPhotos[0];
-
-  const lcpHref = typeof heroPhoto === 'object' && heroPhoto ? (heroPhoto.src1400 || heroPhoto.src800 || heroPhoto.srcWebp || heroPhoto.src || '') : '';
+  const lcpHref = typeof heroPhoto === 'object' && heroPhoto ? (heroPhoto.src600 || heroPhoto.srcWebp || heroPhoto.src || '') : '';
   const lcpSrcset = typeof heroPhoto === 'object' && heroPhoto ? heroPhoto.srcsetWebp : undefined;
 </script>
 
@@ -84,7 +104,7 @@
   <title>Pratik Gupta | Engineer × Photographer</title>
   <meta
     name="description"
-    content="Photography portfolio by Pratik Gupta — a software engineer capturing architecture, landscapes, and wildlife through an engineer's perspective."
+    content="Photography portfolio by Pratik Gupta — Architecture, landscapes, and wildlife through my lens."
   />
 
   {#if lcpHref}
@@ -95,7 +115,7 @@
       type="image/webp"
       href={lcpHref}
       imagesrcset={lcpSrcset || undefined}
-      imagesizes="(max-width: 768px) 94vw, (max-width: 1200px) 90vw, 1150px"
+      imagesizes="(max-width: 640px) 600px, (max-width: 1024px) 85vw, 1150px"
       fetchpriority="high"
     />
   {/if}
@@ -105,7 +125,7 @@
   <meta property="og:title" content="Pratik Gupta | Engineer × Photographer" />
   <meta
     property="og:description"
-    content="Photography portfolio by Pratik Gupta — Architecture, landscapes, and wildlife captured through an engineer's perspective."
+    content="Architecture, landscapes, and wildlife through my lens. Captured through an engineer's perspective."
   />
   <meta property="og:url" content="https://gallery-rho-two.vercel.app/" />
   <meta property="og:image" content="https://gallery-rho-two.vercel.app/og-image.jpg" />
@@ -115,7 +135,7 @@
   <meta name="twitter:title" content="Pratik Gupta | Engineer × Photographer" />
   <meta
     name="twitter:description"
-    content="Photography portfolio by Pratik Gupta — Architecture, landscapes, and wildlife captured through an engineer's perspective."
+    content="Architecture, landscapes, and wildlife through my lens."
   />
   <meta name="twitter:image" content="https://gallery-rho-two.vercel.app/og-image.jpg" />
 
@@ -141,220 +161,324 @@
   </script>
 </svelte:head>
 
-<!-- Refined Hero Section -->
-<section class="hero-section">
-  <div class="dot-pattern" aria-hidden="true"></div>
-  <div class="container hero-container">
-    <div class="hero-content">
-      <span class="hero-eyebrow">PRATIK GUPTA</span>
-      <h1 class="hero-title">Photography through a different perspective.</h1>
-      <p class="hero-subtitle">
-        Architecture, landscapes, and wildlife captured through an engineer's perspective.
-      </p>
-      <div class="hero-actions">
-        <a href="#collections" class="btn btn-primary">Explore Collections</a>
-        <a href="#work" class="btn btn-ghost">Selected Work</a>
+<div class="homepage-editorial">
+  <!-- 1. Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-header-block">
+        <span class="hero-eyebrow">ENGINEER / PHOTOGRAPHER</span>
+        <h1 class="hero-title">A different perspective.</h1>
+        <p class="hero-subtitle">
+          Architecture, landscapes, and wildlife through my lens.
+        </p>
       </div>
-    </div>
 
-    <!-- Prominent Hero Photograph -->
-    {#if heroPhoto}
-      <div 
-        class="hero-media-wrap"
-        role="button"
-        tabindex="0"
-        aria-label="View featured photograph: {heroPhoto.title || 'Toronto Skyline'} in full screen"
-        onclick={() => openLightbox(0, [heroPhoto])}
-        onkeydown={(e) => { 
-          if (e.key === 'Enter' || e.key === ' ') { 
-            e.preventDefault(); 
-            openLightbox(0, [heroPhoto]); 
-          } 
-        }}
-      >
-        <img
-          src={lcpHref}
-          srcset={lcpSrcset}
-          sizes="(max-width: 768px) 94vw, (max-width: 1200px) 90vw, 1150px"
-          width={heroPhoto.width || 1400}
-          height={heroPhoto.height || 933}
-          style="aspect-ratio: {heroPhoto.width || 1400} / {heroPhoto.height || 933};"
-          alt={heroPhoto.title || "Featured Photograph — Pratik Gupta Photography"}
-          class="hero-img"
-          loading="eager"
-          fetchpriority="high"
-          decoding="async"
-        />
-        <div class="hero-img-overlay">
-          <div class="hero-img-info">
-            {#if heroPhoto.title}
-              <span class="hero-img-title">{heroPhoto.title}</span>
-            {/if}
-            {#if heroPhoto.location}
-              <span class="hero-img-location">📍 {heroPhoto.location}</span>
-            {/if}
-          </div>
-          <span class="hero-expand-badge" aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 3 21 3 21 9"></polyline>
-              <polyline points="9 21 3 21 3 15"></polyline>
-              <line x1="21" y1="3" x2="14" y2="10"></line>
-              <line x1="3" y1="21" x2="10" y2="14"></line>
-            </svg>
-            Full resolution
-          </span>
-        </div>
-      </div>
-    {/if}
-
-    <!-- Discoverable Vertical Scroll Cue -->
-    <a href="#collections" class="scroll-discover">
-      <span class="scroll-discover-text">Scroll to discover</span>
-      <svg class="scroll-arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="5" x2="12" y2="19"></line>
-        <polyline points="19 12 12 19 5 12"></polyline>
-      </svg>
-    </a>
-  </div>
-</section>
-
-<!-- Collections Section -->
-<section class="section" id="collections">
-  <div class="container">
-    <div class="section-header">
-      <span class="section-label">collections</span>
-      <h2 class="section-title">Explore Collections</h2>
-      <p class="section-subtitle">
-        {totalPhotos} photographs across {categories.length} curated collections
-      </p>
-    </div>
-    <div class="categories-grid">
-      {#each categories as category}
-        <div class="category-wrapper">
-          <CategoryCard {category} />
-        </div>
-      {/each}
-    </div>
-  </div>
-</section>
-
-<!-- Selected Work Section: Responsive Vertical Gallery Grid -->
-<section class="section section-dark" id="work">
-  <div class="container">
-    <div class="section-header">
-      <span class="section-label">selected work</span>
-      <h2 class="section-title">Featured Photographs</h2>
-      <p class="section-subtitle">
-        A vertical gallery showcasing highlights from across all collections. Click any photograph to view in full resolution.
-      </p>
-    </div>
-    <div class="vertical-gallery-wrap">
-      <Masonry items={selectedPhotos}>
-        {#snippet children({ item: photo, index })}
-          <PhotoCard 
-            {photo} 
-            {index} 
-            onclick={() => openLightbox(index, selectedPhotos)} 
+      <!-- Hero Image -->
+      {#if heroPhoto}
+        <div 
+          class="hero-media-wrap"
+          role="button"
+          tabindex="0"
+          onclick={() => openLightbox(0, [heroPhoto])}
+          onkeydown={(e) => { 
+            if (e.key === 'Enter' || e.key === ' ') { 
+              e.preventDefault(); 
+              openLightbox(0, [heroPhoto]); 
+            } 
+          }}
+        >
+          <img
+            src={heroPhoto.src600 || heroPhoto.srcWebp || lcpHref}
+            srcset={lcpSrcset}
+            sizes="(max-width: 640px) 600px, (max-width: 1024px) 85vw, 1150px"
+            width={heroPhoto.width || 1400}
+            height={heroPhoto.height || 933}
+            style="aspect-ratio: {heroPhoto.width || 1400} / {heroPhoto.height || 933};"
+            alt={heroPhoto.title || "Featured Photograph — Pratik Gupta"}
+            class="hero-img"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
           />
-        {/snippet}
-      </Masonry>
-    </div>
-    <div class="gallery-footer-cta">
-      <a href="/gallery" class="btn btn-primary">
-        <span>View Full Archive</span>
-        <span class="btn-count">({totalPhotos} photos)</span>
-        <span class="btn-arrow" aria-hidden="true">→</span>
-      </a>
-    </div>
-  </div>
-</section>
+          <div class="hero-pill-badge" aria-hidden="true">
+            {heroPhoto.location || '📍 Yosemite National Park'}
+          </div>
+        </div>
+      {/if}
 
-<!-- Curated Editorial Series (Discoverable Carousel with Prev/Next, Dots, Snap) -->
-<section class="section curated-wrap" id="series">
-  <HorizontalScroll
-    photos={seriesPhotos}
-    title="Curated Series"
-    subtitle="Selected frames from across collections presented in an editorial sequence"
-    onclick={(idx) => openLightbox(idx, seriesPhotos)}
-  />
-</section>
-
-<!-- Engineering × Photography Narrative -->
-<section class="intro-strip" id="about-teaser">
-  <div class="dot-pattern" aria-hidden="true"></div>
-  <div class="container intro-inner">
-    <div class="code-block">
-      <div class="code-line">
-        <span class="code-keyword">const</span>
-        <span class="code-var">pratik</span>
-        <span class="code-punct">=</span>
-        <span class="code-bracket">{"{"}</span>
-      </div>
-      <div class="code-line code-indent">
-        <span class="code-key">role</span><span class="code-punct">:</span>
-        <span class="code-string">'Software Engineer'</span><span class="code-punct">,</span>
-      </div>
-      <div class="code-line code-indent">
-        <span class="code-key">passion</span><span class="code-punct">:</span>
-        <span class="code-string">'Photography'</span><span class="code-punct">,</span>
-      </div>
-      <div class="code-line code-indent">
-        <span class="code-key">focus</span><span class="code-punct">:</span>
-        <span class="code-bracket">[</span>
-        <span class="code-string">'Landscapes'</span><span class="code-punct">,</span>
-        <span class="code-string">'Buildings'</span><span class="code-punct">,</span>
-        <span class="code-string">'Wildlife'</span>
-        <span class="code-bracket">]</span>
-      </div>
-      <div class="code-line">
-        <span class="code-bracket">{"}"}</span><span class="code-punct">;</span>
-      </div>
-    </div>
-    <div class="intro-text">
-      <h2 class="about-lead-title">The logic of software.<br />The art of the lens.</h2>
-      <p>
-        There's a quiet symmetry between writing elegant code and composing a
-        photograph. Both demand patience, precision, and an eye for the details
-        others overlook. By day I architect software systems; by golden hour I
-        chase the algorithms of light — debugging compositions until every pixel
-        feels intentional.
-      </p>
-      <div class="about-action-row">
-        <a href="/about" class="btn btn-ghost">
-          <span class="btn-decorator">&lt;/&gt;</span>
-          Learn More About Pratik
+      <!-- Links Row Directly Below Hero -->
+      <div class="hero-bottom-row">
+        <a href="#work" class="hero-link-left">Selected work</a>
+        <a href="#collections" class="hero-link-right">
+          <span>Explore Gallery</span>
+          <span class="arrow-down" aria-hidden="true">↓</span>
         </a>
       </div>
     </div>
+  </section>
+
+  <!-- Horizontal Section Divider -->
+  <div class="container">
+    <div class="section-divider" aria-hidden="true"></div>
   </div>
 
-  <div class="container about-stats-container">
-    <div class="about-stats">
-      <div class="stat-card">
-        <span class="stat-number">{photosCount}</span>
-        <span class="stat-label">Photographs</span>
+  <!-- 2. Collections Section (Editorial Grid Matching Mockup) -->
+  <section class="collections-section" id="collections">
+    <div class="container">
+      <div class="collections-header">
+        <h2 class="collections-title">Collections</h2>
+        <span class="collections-counter" aria-hidden="true">01 / 03</span>
       </div>
-      <div class="stat-card">
-        <span class="stat-number">{collectionsCount}</span>
-        <span class="stat-label">Collections</span>
+
+      <!-- Top Row: Buildings & Landscape (Side-by-side vertical cards) -->
+      <div class="collections-top-grid">
+        <!-- Buildings Card -->
+        {#if buildingsPhoto}
+          <a href="/gallery/buildings" class="editorial-card">
+            <div class="card-img-wrap tall-card">
+              <img
+                src={buildingsPhoto.src600 || buildingsPhoto.srcWebp}
+                srcset={buildingsPhoto.srcsetWebp}
+                sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 540px"
+                width={buildingsPhoto.width || 800}
+                height={buildingsPhoto.height || 1067}
+                style="aspect-ratio: {buildingsPhoto.width || 800} / {buildingsPhoto.height || 1067};"
+                alt="Buildings collection"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <div class="card-caption">
+              <h3 class="card-name">Buildings</h3>
+              <p class="card-sub">Architecture and geometry</p>
+            </div>
+          </a>
+        {/if}
+
+        <!-- Landscape Card -->
+        {#if landscapePhoto}
+          <a href="/gallery/landscape" class="editorial-card">
+            <div class="card-img-wrap tall-card">
+              <img
+                src={landscapePhoto.src600 || landscapePhoto.srcWebp}
+                srcset={landscapePhoto.srcsetWebp}
+                sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 540px"
+                width={landscapePhoto.width || 800}
+                height={landscapePhoto.height || 1067}
+                style="aspect-ratio: {landscapePhoto.width || 800} / {landscapePhoto.height || 1067};"
+                alt="Landscape collection"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <div class="card-caption">
+              <h3 class="card-name">Landscape</h3>
+              <p class="card-sub">Nature and atmosphere</p>
+            </div>
+          </a>
+        {/if}
       </div>
-      <div class="stat-card">
-        <span class="stat-number">{subcategoriesCount}</span>
-        <span class="stat-label">Categories</span>
+
+      <!-- Bottom Row: Wildlife (Full-width wide card) -->
+      {#if wildlifePhoto}
+        <div class="collections-bottom-wrap">
+          <a href="/gallery/wildlife" class="editorial-card">
+            <div class="card-img-wrap wide-card">
+              <img
+                src={wildlifePhoto.src900 || wildlifePhoto.srcWebp}
+                srcset={wildlifePhoto.srcsetWebp}
+                sizes="(max-width: 768px) 94vw, (max-width: 1200px) 90vw, 1150px"
+                width={wildlifePhoto.width || 1400}
+                height={wildlifePhoto.height || 788}
+                style="aspect-ratio: {wildlifePhoto.width || 1400} / {wildlifePhoto.height || 788};"
+                alt="Wildlife collection"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="hero-pill-badge" aria-hidden="true">
+                {wildlifePhoto.location || '📍 Ontario, Canada'}
+              </div>
+            </div>
+            <div class="card-caption">
+              <h3 class="card-name">Wildlife</h3>
+              <p class="card-sub">Life in the natural world</p>
+            </div>
+          </a>
+        </div>
+      {/if}
+    </div>
+  </section>
+
+  <!-- Horizontal Section Divider -->
+  <div class="container">
+    <div class="section-divider" aria-hidden="true"></div>
+  </div>
+
+  <!-- 3. Through the Lens (Selected Work with Interactive Filter) -->
+  <section class="selected-work-section" id="work">
+    <div class="container">
+      <div class="section-header-clean">
+        <div class="section-heading-group">
+          <h2 class="section-title-clean">Through the lens</h2>
+          <p class="section-sub-clean">
+            A selection of photographs exploring light, form, and the natural world.
+          </p>
+        </div>
+
+        <!-- Interactive Category Filtering Tabs (Option 4) -->
+        <div 
+          class="filter-tabs-bar" 
+          role="tablist" 
+          aria-label="Filter photographs by collection"
+        >
+          {#each filterTabs as tab}
+            <button
+              type="button"
+              role="tab"
+              id="tab-{tab.id}"
+              aria-selected={activeFilter === tab.id}
+              aria-controls="gallery-grid"
+              class="filter-tab-btn"
+              class:active={activeFilter === tab.id}
+              onclick={() => { activeFilter = tab.id; }}
+            >
+              <span class="tab-label">{tab.label}</span>
+              <span class="tab-count" aria-hidden="true">{tab.count}</span>
+            </button>
+          {/each}
+        </div>
+      </div>
+
+      <!-- Responsive Vertical Gallery Grid (Masonry) -->
+      <div 
+        class="vertical-gallery-wrap" 
+        id="gallery-grid" 
+        role="tabpanel" 
+        aria-labelledby="tab-{activeFilter}"
+      >
+        {#key activeFilter}
+          <div class="gallery-fade-container">
+            <Masonry items={filteredPhotos}>
+              {#snippet children({ item: photo, index })}
+                <PhotoCard 
+                  {photo} 
+                  {index} 
+                  onclick={() => openLightbox(index, filteredPhotos)} 
+                />
+              {/snippet}
+            </Masonry>
+          </div>
+        {/key}
+      </div>
+
+      <div class="gallery-footer-cta">
+        {#if activeFilter === 'all'}
+          <a href="/gallery" class="btn btn-primary">
+            <span>Explore complete gallery</span>
+            <span class="btn-count">({totalPhotos} photographs)</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+          </a>
+        {:else}
+          <a href="/gallery/{activeFilter}" class="btn btn-primary">
+            <span>Explore all {activeTab.label} photographs</span>
+            <span class="btn-count">({activeTab.count} works)</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+          </a>
+        {/if}
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- CTA Section -->
-<section class="cta-section">
-  <div class="container cta-inner">
-    <span class="cta-decorator" aria-hidden="true">{"{"} ⏤ {"}"}</span>
-    <h2 class="cta-title">Ready to explore?</h2>
-    <p class="cta-subtitle">Browse all {totalPhotos} photographs across the collection</p>
-    <a href="/gallery" class="btn btn-primary">Browse All Collections</a>
+  <!-- Horizontal Section Divider -->
+  <div class="container">
+    <div class="section-divider" aria-hidden="true"></div>
   </div>
-</section>
+
+  <!-- 4. Behind the Camera (About Section) -->
+  <section class="intro-strip" id="about-teaser">
+    <div class="dot-pattern" aria-hidden="true"></div>
+    <div class="container intro-inner">
+      <div class="code-block">
+        <div class="code-line">
+          <span class="code-keyword">const</span>
+          <span class="code-var">pratik</span>
+          <span class="code-punct">=</span>
+          <span class="code-bracket">{"{"}</span>
+        </div>
+        <div class="code-line code-indent">
+          <span class="code-key">role</span><span class="code-punct">:</span>
+          <span class="code-string">'Software Engineer'</span><span class="code-punct">,</span>
+        </div>
+        <div class="code-line code-indent">
+          <span class="code-key">passion</span><span class="code-punct">:</span>
+          <span class="code-string">'Photography'</span><span class="code-punct">,</span>
+        </div>
+        <div class="code-line code-indent">
+          <span class="code-key">focus</span><span class="code-punct">:</span>
+          <span class="code-bracket">[</span>
+          <span class="code-string">'Buildings'</span><span class="code-punct">,</span>
+          <span class="code-string">'Landscape'</span><span class="code-punct">,</span>
+          <span class="code-string">'Wildlife'</span>
+          <span class="code-bracket">]</span>
+        </div>
+        <div class="code-line">
+          <span class="code-bracket">{"}"}</span><span class="code-punct">;</span>
+        </div>
+      </div>
+      <div class="intro-text">
+        <span class="section-label-behind">BEHIND THE CAMERA</span>
+        <h2 class="about-lead-title">The engineer and the photographer.</h2>
+        <p class="about-subtext">
+          Exploring the intersection of technical precision, creativity, and visual storytelling.
+        </p>
+        <p>
+          There's a quiet symmetry between writing elegant code and composing a
+          photograph. Both demand patience, precision, and an eye for the details
+          others overlook. By day I architect software systems; by golden hour I
+          chase the algorithms of light — debugging compositions until every pixel
+          feels intentional.
+        </p>
+        <div class="about-action-row">
+          <a href="/about" class="btn btn-ghost">
+            <span>More about me</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container about-stats-container">
+      <div class="about-stats">
+        <div class="stat-card">
+          <span class="stat-number">{photosCount}</span>
+          <span class="stat-label">Photographs</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">{collectionsCount}</span>
+          <span class="stat-label">Collections</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">{subcategoriesCount}</span>
+          <span class="stat-label">Categories</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. CTA Section -->
+  <section class="cta-section">
+    <div class="container cta-inner">
+      <div class="cta-divider" aria-hidden="true">
+        <span class="divider-line"></span>
+        <span class="divider-diamond">◆</span>
+        <span class="divider-line"></span>
+      </div>
+      <h2 class="cta-title">Ready to explore?</h2>
+      <p class="cta-subtitle">Browse all {totalPhotos} photographs across the complete archive</p>
+      <a href="/gallery" class="btn btn-primary">Browse All Collections</a>
+    </div>
+  </section>
+</div>
 
 {#if lightboxOpen}
   <Lightbox
@@ -367,86 +491,80 @@
 {/if}
 
 <style>
-  /* ---- Hero Section ---- */
-  .hero-section {
-    position: relative;
-    padding-top: calc(var(--nav-height, 72px) + 40px);
-    padding-bottom: 60px;
+  /* ---- Page Container ---- */
+  .homepage-editorial {
+    min-height: 100vh;
     background: var(--color-bg-primary);
-    overflow: hidden;
   }
 
-  .hero-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+  .container {
+    max-width: 1150px;
+    margin: 0 auto;
+    padding: 0 24px;
   }
 
-  .hero-content {
-    max-width: 820px;
-    margin: 0 auto 40px;
+  .section-divider {
+    height: 1px;
+    background: var(--color-border);
+    margin: 40px 0;
+  }
+
+  /* ---- 1. Hero Section ---- */
+  .hero-section {
+    padding-top: calc(var(--nav-height, 72px) + 28px);
+    padding-bottom: 0;
+    position: relative;
+  }
+
+  .hero-header-block {
+    text-align: left;
+    margin-bottom: 24px;
   }
 
   .hero-eyebrow {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.85rem;
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 0.78rem;
     font-weight: 500;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.14em;
     color: var(--color-text-secondary);
     text-transform: uppercase;
     display: block;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
 
   .hero-title {
-    font-family: "Playfair Display", serif;
-    font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
     color: var(--color-text-primary);
-    font-weight: 400;
     line-height: 1.15;
-    letter-spacing: -0.02em;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
   }
 
   .hero-subtitle {
-    font-family: "Inter", sans-serif;
-    font-size: clamp(1.05rem, 2vw, 1.3rem);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 1.15rem;
+    font-weight: 400;
     color: var(--color-text-secondary);
-    font-weight: 300;
-    line-height: 1.6;
-    max-width: 680px;
-    margin: 0 auto 32px;
+    margin: 0;
+    line-height: 1.5;
   }
 
-  .hero-actions {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  /* ---- Hero Media Wrap ---- */
   .hero-media-wrap {
     position: relative;
     width: 100%;
-    max-width: 1150px;
-    border-radius: 20px;
+    border-radius: 14px;
     overflow: hidden;
     cursor: pointer;
     background: var(--color-bg-surface);
-    border: 1px solid var(--color-border);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-    margin-bottom: 40px;
     line-height: 0;
-    transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
   .hero-media-wrap:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 28px 75px rgba(0, 0, 0, 0.45);
-    border-color: var(--color-border-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
   }
 
   .hero-media-wrap:focus-visible {
@@ -460,186 +578,307 @@
     max-height: 72vh;
     object-fit: cover;
     display: block;
-    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   .hero-media-wrap:hover .hero-img {
     transform: scale(1.02);
   }
 
-  .hero-img-overlay {
+  .hero-pill-badge {
     position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.1) 40%, transparent 70%);
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    padding: 28px 36px;
-    opacity: 0.9;
-    transition: opacity 0.3s ease;
-  }
-
-  .hero-media-wrap:hover .hero-img-overlay {
-    opacity: 1;
-  }
-
-  .hero-img-info {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    text-align: left;
-  }
-
-  .hero-img-title {
-    font-family: "Playfair Display", serif;
-    font-size: 1.5rem;
-    font-weight: 600;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(28, 28, 28, 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     color: #ffffff;
-    line-height: 1.2;
-  }
-
-  .hero-img-location {
-    font-family: "Inter", sans-serif;
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.8);
-    letter-spacing: 0.02em;
-  }
-
-  .hero-expand-badge {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
     padding: 6px 14px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    letter-spacing: 0.02em;
+    pointer-events: none;
+  }
+
+  .hero-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 0 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+  }
+
+  .hero-link-left {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .hero-link-left:hover {
+    color: var(--color-text-primary);
+  }
+
+  .hero-link-right {
+    color: var(--color-text-primary);
+    text-decoration: none;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  /* ---- Scroll Discover Indicator ---- */
-  .scroll-discover {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    color: var(--color-text-secondary);
-    text-decoration: none;
-    cursor: pointer;
+    font-weight: 500;
     transition: color 0.2s ease, transform 0.2s ease;
-    padding: 8px 16px;
   }
 
-  .scroll-discover:hover {
+  .hero-link-right:hover {
     color: var(--color-accent);
-    transform: translateY(2px);
+    transform: translateY(1px);
   }
 
-  .scroll-discover-text {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+  .arrow-down {
+    font-size: 1.1rem;
+    line-height: 1;
   }
 
-  .scroll-arrow-icon {
-    animation: bounceDown 2s infinite ease-in-out;
-  }
-
-  @keyframes bounceDown {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(6px);
-    }
-  }
-
-  /* ---- Sections ---- */
-  .section {
-    padding: 100px 0;
-    position: relative;
-  }
-
-  .section-dark {
-    background: linear-gradient(
-      180deg,
-      var(--color-bg-secondary) 0%,
-      var(--color-bg-primary) 100%
-    );
-  }
-
-  .curated-wrap {
+  /* ---- 2. Collections Section ---- */
+  .collections-section {
     padding: 0;
   }
 
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
+  .collections-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
   }
 
-  .section-header {
-    text-align: center;
-    margin-bottom: 56px;
-  }
-
-  .section-label {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.75rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-text-secondary);
-    display: block;
-    margin-bottom: 12px;
-  }
-
-  .section-title {
-    font-family: "Playfair Display", serif;
-    font-size: clamp(2rem, 4vw, 3rem);
+  .collections-title {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 1.55rem;
+    font-weight: 700;
     color: var(--color-text-primary);
-    margin-bottom: 14px;
-    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin: 0;
   }
 
-  .section-subtitle {
+  .collections-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
     color: var(--color-text-secondary);
-    font-size: 1.05rem;
-    font-weight: 300;
-    max-width: 600px;
-    margin: 0 auto;
-    line-height: 1.6;
+    letter-spacing: 0.05em;
   }
 
-  /* ---- Categories Grid (3 Columns) ---- */
-  .categories-grid {
+  .collections-top-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 24px;
+    margin-bottom: 24px;
   }
 
-  .category-wrapper {
+  .collections-bottom-wrap {
     width: 100%;
   }
 
-  /* ---- Vertical Gallery Wrap ---- */
+  .editorial-card {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+  }
+
+  .card-img-wrap {
+    position: relative;
+    width: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--color-bg-surface);
+    line-height: 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card-img-wrap:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
+  }
+
+  .card-img-wrap:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+
+  .tall-card img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 0.82;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .wide-card img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1.85;
+    max-height: 60vh;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .editorial-card:hover img {
+    transform: scale(1.02);
+  }
+
+  .card-caption {
+    padding-top: 14px;
+    text-align: left;
+  }
+
+  .card-name {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0 0 3px 0;
+    line-height: 1.25;
+  }
+
+  .card-sub {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 0.88rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* ---- 3. Selected Work Section ---- */
+  .selected-work-section {
+    padding: 0;
+  }
+
+  .section-header-clean {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .section-heading-group {
+    text-align: left;
+  }
+
+  .section-title-clean {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    letter-spacing: -0.02em;
+    margin: 0 0 6px 0;
+  }
+
+  .section-sub-clean {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Interactive Filter Tabs Bar */
+  .filter-tabs-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--color-bg-surface);
+    padding: 4px;
+    border-radius: 9999px;
+    border: 1px solid var(--color-border);
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter-tab-btn {
+    appearance: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .filter-tab-btn:hover {
+    color: var(--color-text-primary);
+  }
+
+  .filter-tab-btn.active {
+    background: var(--color-text-primary);
+    color: var(--color-bg-primary);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  }
+
+  .filter-tab-btn:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .tab-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    padding: 1px 6px;
+    border-radius: 9999px;
+    background: rgba(125, 125, 125, 0.16);
+    color: inherit;
+    transition: background 0.2s ease;
+  }
+
+  .filter-tab-btn.active .tab-count {
+    background: rgba(0, 0, 0, 0.22);
+  }
+
+  :root[data-theme="light"] .filter-tab-btn.active .tab-count {
+    background: rgba(255, 255, 255, 0.24);
+  }
+
   .vertical-gallery-wrap {
     width: 100%;
+  }
+
+  .gallery-fade-container {
+    animation: fadeInGallery 0.3s ease-out forwards;
+  }
+
+  @keyframes fadeInGallery {
+    from {
+      opacity: 0.65;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .gallery-footer-cta {
     display: flex;
     justify-content: center;
-    margin-top: 56px;
+    margin-top: 48px;
   }
 
   .btn-count {
-    opacity: 0.7;
+    opacity: 0.75;
     margin-left: 4px;
   }
 
@@ -652,7 +891,7 @@
     transform: translateX(4px);
   }
 
-  /* ---- Introduction Strip / Engineering Perspective ---- */
+  /* ---- 4. Behind the Camera (About Section) ---- */
   .intro-strip {
     position: relative;
     background: var(--color-bg-surface);
@@ -728,18 +967,38 @@
     color: var(--color-secondary);
   }
 
+  .section-label-behind {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    display: block;
+    margin-bottom: 10px;
+  }
+
   .about-lead-title {
-    font-family: "Playfair Display", serif;
+    font-family: 'Inter', -apple-system, sans-serif;
     font-size: clamp(1.8rem, 3.2vw, 2.5rem);
     color: var(--color-text-primary);
-    font-weight: 400;
-    margin-bottom: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
     line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+
+  .about-subtext {
+    font-family: "Inter", sans-serif;
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--color-accent);
+    margin-bottom: 16px;
+    line-height: 1.6;
   }
 
   .intro-text p {
     color: var(--color-text-secondary);
-    font-size: 1.05rem;
+    font-size: 1.02rem;
     line-height: 1.8;
     font-weight: 300;
     max-width: 540px;
@@ -747,15 +1006,7 @@
   }
 
   .about-action-row {
-    margin-top: 16px;
-  }
-
-  .btn-decorator {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.8rem;
-    color: var(--color-accent);
-    opacity: 0.7;
-    margin-right: 6px;
+    margin-top: 20px;
   }
 
   .about-stats-container {
@@ -800,31 +1051,43 @@
     letter-spacing: 1.5px;
   }
 
-  /* ---- CTA Section ---- */
+  /* ---- 5. CTA Section ---- */
   .cta-section {
     padding: 80px 0 120px;
-    border-top: 1px solid var(--color-border);
   }
 
   .cta-inner {
     text-align: center;
   }
 
-  .cta-decorator {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 1.2rem;
+  .cta-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    color: var(--color-border-accent);
+  }
+
+  .divider-line {
+    width: 48px;
+    height: 1px;
+    background: var(--color-border);
+  }
+
+  .divider-diamond {
+    font-size: 0.75rem;
     color: var(--color-accent);
-    opacity: 0.3;
-    display: block;
-    margin-bottom: 20px;
+    opacity: 0.8;
   }
 
   .cta-title {
-    font-family: "Playfair Display", serif;
+    font-family: 'Inter', -apple-system, sans-serif;
     font-size: clamp(1.8rem, 3vw, 2.5rem);
     color: var(--color-text-primary);
-    font-weight: 400;
-    margin-bottom: 12px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
   }
 
   .cta-subtitle {
@@ -835,7 +1098,16 @@
   }
 
   /* ---- Responsive Adjustments ---- */
-  @media (max-width: 1024px) {
+  @media (max-width: 900px) {
+    .collections-top-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .wide-card img {
+      aspect-ratio: 1.33;
+    }
+
     .intro-inner {
       grid-template-columns: 1fr;
       gap: 36px;
@@ -844,39 +1116,31 @@
     .code-block {
       overflow-x: auto;
     }
-
-    .intro-text p {
-      max-width: 100%;
-    }
   }
 
-  @media (max-width: 900px) {
-    .categories-grid {
-      grid-template-columns: 1fr;
-      gap: 20px;
+  @media (max-width: 768px) {
+    .section-header-clean {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
     }
 
-    .section {
-      padding: 70px 0;
+    .filter-tabs-bar {
+      width: 100%;
+      justify-content: flex-start;
+      padding: 3px;
+      gap: 4px;
     }
 
-    .hero-img-overlay {
-      padding: 18px 22px;
-    }
-
-    .hero-img-title {
-      font-size: 1.2rem;
-    }
-
-    .hero-expand-badge {
-      display: none;
+    .filter-tab-btn {
+      padding: 6px 12px;
+      font-size: 0.8rem;
     }
   }
 
   @media (max-width: 640px) {
     .hero-section {
-      padding-top: calc(var(--nav-height, 72px) + 24px);
-      padding-bottom: 40px;
+      padding-top: calc(var(--nav-height, 72px) + 20px);
     }
 
     .hero-title {
@@ -885,16 +1149,17 @@
 
     .hero-subtitle {
       font-size: 1rem;
-      margin-bottom: 24px;
     }
 
-    .hero-actions {
-      flex-direction: column;
-      width: 100%;
+    .hero-pill-badge {
+      bottom: 12px;
+      left: 12px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
     }
 
-    .hero-actions .btn {
-      width: 100%;
+    .tall-card img {
+      aspect-ratio: 1;
     }
 
     .about-stats {
@@ -912,6 +1177,18 @@
 
     .cta-section {
       padding: 60px 0 80px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gallery-fade-container,
+    .hero-img,
+    .tall-card img,
+    .wide-card img,
+    .stat-card {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
     }
   }
 </style>

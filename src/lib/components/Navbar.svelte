@@ -6,9 +6,8 @@
 	let hamburgerButton = $state(null);
 
 	const navLinks = [
-		{ label: 'Work', href: '/gallery' },
-		{ label: 'About', href: '/about' },
-		{ label: 'Contact', href: 'mailto:pratikngupta@outlook.com' }
+		{ label: 'Gallery', href: '/gallery' },
+		{ label: 'About', href: '/about' }
 	];
 
 	$effect(() => {
@@ -77,9 +76,8 @@
 
 <nav class="navbar" class:scrolled aria-label="Main Navigation">
 	<div class="navbar-inner">
-		<a href="/" class="logo">
-			<span class="logo-bracket">&lt;</span><span class="logo-text">PG</span>
-			<span class="logo-bracket">&nbsp;/&gt;</span>
+		<a href="/" class="logo" aria-label="Pratik Gupta — Homepage">
+			<span class="logo-name">PRATIK GUPTA</span>
 		</a>
 
 		<ul class="nav-links">
@@ -197,33 +195,24 @@
 		z-index: 1100;
 	}
 
-	/* Logo: <PG /> */
+	/* Brand Logo: PRATIK GUPTA */
 	.logo {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 1.35rem;
-		font-weight: 500;
-		color: var(--color-text-primary);
 		text-decoration: none;
-		letter-spacing: 0.02em;
-		transition: all 0.3s ease;
 		display: inline-flex;
 		align-items: center;
+		transition: opacity 0.2s ease;
 	}
 
 	.logo:hover {
-		filter: drop-shadow(0 0 8px var(--color-accent-glow));
+		opacity: 0.85;
 	}
 
-	.logo-bracket {
-		color: var(--color-accent);
-		transition: color 0.3s ease;
-	}
-
-	.logo:hover .logo-bracket {
-		color: var(--color-accent-light);
-	}
-
-	.logo-text {
+	.logo-name {
+		font-family: 'Inter', sans-serif;
+		font-size: 1.05rem;
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
 		color: var(--color-text-primary);
 	}
 
@@ -311,14 +300,6 @@
 
 	:global([data-theme="light"]) .logo {
 		color: var(--color-text-primary);
-	}
-
-	:global([data-theme="light"]) .logo-text {
-		color: var(--color-text-primary);
-	}
-
-	:global([data-theme="light"]) .logo-bracket {
-		color: var(--color-accent);
 	}
 
 	:global([data-theme="light"]) .navbar.scrolled {

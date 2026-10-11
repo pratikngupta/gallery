@@ -145,9 +145,9 @@ export function generateGalleryData() {
 			const coverPhoto = explicitCategoryCover || subcategories[0].coverPhoto;
 			const cover = coverPhoto ? coverPhoto.src : subcategories[0].cover;
 			const categoryDescriptions = {
-				buildings: 'Architectural geometry, cityscapes, and structural symmetry captured across North American cities.',
-				landscape: 'Serene vistas, tranquil lakes, and sweeping horizons across Canadian provincial and national parks.',
-				wildlife: 'Native fauna and avian portraits captured in their natural habitats with patience and precision.'
+				buildings: 'Architecture and geometry',
+				landscape: 'Nature and atmosphere',
+				wildlife: 'Life in the natural world'
 			};
 
 			categories.push({

@@ -19,7 +19,7 @@
 			height={photo.height || 533}
 			style="aspect-ratio: {photo.width || 800} / {photo.height || 533};"
 			alt={photo.title || 'Photo'}
-			loading={loading}
+			loading={loading === 'eager' ? 'eager' : 'lazy'}
 			decoding="async"
 			class="photo-image"
 		/>

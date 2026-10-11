@@ -12,7 +12,6 @@
 <a
 	href="/gallery/{category.id}"
 	class="category-card"
-	aria-label="{category.name} — Explore collection ({photoCount} photos)"
 >
 	<img
 		class="card-image"

@@ -202,11 +202,26 @@
 					<h3 class="info-title">{currentPhoto.title}</h3>
 				{/if}
 				<div class="info-meta">
+					{#if currentPhoto.categoryName}
+						<span class="info-pill">{currentPhoto.categoryName}</span>
+					{/if}
+					{#if currentPhoto.subcategoryName}
+						<span class="info-pill">{currentPhoto.subcategoryName}</span>
+					{/if}
 					{#if currentPhoto.location}
 						<span class="info-location">📍 {currentPhoto.location}</span>
 					{/if}
 					{#if currentPhoto.date}
 						<span class="info-date">{currentPhoto.date}</span>
+					{/if}
+					{#if currentPhoto.camera}
+						<span class="info-pill info-camera">📷 {currentPhoto.camera}</span>
+					{/if}
+					{#if currentPhoto.lens}
+						<span class="info-pill info-lens">{currentPhoto.lens}</span>
+					{/if}
+					{#if currentPhoto.settings}
+						<span class="info-pill info-settings">{currentPhoto.settings}</span>
 					{/if}
 				</div>
 				{#if currentPhoto.description}
@@ -349,8 +364,30 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 1.25rem;
+		flex-wrap: wrap;
+		gap: 0.6rem;
 		margin-bottom: 0.5rem;
+	}
+
+	.info-pill {
+		display: inline-flex;
+		align-items: center;
+		padding: 2px 9px;
+		border-radius: 9999px;
+		background: rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.14);
+		font-family: 'Inter', sans-serif;
+		font-size: 0.72rem;
+		color: #E2E2DF;
+		letter-spacing: 0.02em;
+	}
+
+	.info-pill.info-camera,
+	.info-pill.info-lens,
+	.info-pill.info-settings {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.7rem;
+		color: #D1D1CE;
 	}
 
 	.info-location,
@@ -367,6 +404,16 @@
 		color: var(--color-text-secondary);
 		line-height: 1.6;
 		margin: 0.25rem 0 0 0;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.lightbox-image,
+		.info-content,
+		.close-btn,
+		.nav-btn {
+			transition: none !important;
+			animation: none !important;
+		}
 	}
 
 	@media (max-width: 768px) {

@@ -147,7 +147,6 @@
 					class:active={i === currentIndex}
 					role="button"
 					tabindex="0"
-					aria-label="{photo.title ? 'View photograph: ' + photo.title : 'View curated photograph'} ({i + 1} of {photos.length})"
 					onclick={() => onclick?.(i)}
 					onkeydown={(e) => { 
 						if (e.key === 'Enter' || e.key === ' ') { 
