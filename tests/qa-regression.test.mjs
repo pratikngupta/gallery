@@ -247,8 +247,8 @@ async function runTests() {
     const buildingsGridCount = await cdp.eval('document.querySelectorAll("#gallery-grid .photo-card").length');
     assert(buildingsGridCount === 6, `Clicking Buildings filter displays 6 photographs in grid (Found: ${buildingsGridCount})`);
 
-    const ctaTextBuildings = await cdp.eval('document.querySelector(".gallery-footer-cta a")?.textContent?.trim() || ""');
-    assert(ctaTextBuildings.includes('Buildings') && ctaTextBuildings.includes('6'), `CTA dynamically updates for Buildings: "${ctaTextBuildings}"`);
+    const footerCtaExists = await cdp.eval('!!document.querySelector(".gallery-footer-cta")');
+    assert(!footerCtaExists, 'Gallery footer button is removed from Selected Work section');
 
     // Click Landscape filter tab
     await cdp.eval('document.querySelector("#tab-landscape").click()');
