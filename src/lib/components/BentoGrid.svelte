@@ -9,7 +9,7 @@
 			class="bento-item bento-{i % 6}"
 			role="button"
 			tabindex="0"
-			aria-label="{photo.title ? 'View photo: ' + photo.title : 'View featured photograph'}"
+			aria-label="{photo.title ? photo.title : 'Featured photograph'}"
 			onclick={() => onclick?.(i)}
 			onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onclick?.(i); } }}
 		>

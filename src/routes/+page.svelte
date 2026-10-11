@@ -337,6 +337,22 @@
           </div>
         {/key}
       </div>
+
+      <div class="gallery-footer-cta">
+        {#if activeFilter === 'all'}
+          <a href="/gallery" class="btn btn-primary">
+            <span>Explore complete gallery</span>
+            <span class="btn-count">({totalPhotos} photographs)</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+          </a>
+        {:else}
+          <a href="/gallery/{activeFilter}" class="btn btn-primary">
+            <span>Explore all {activeTab.label} photographs</span>
+            <span class="btn-count">({activeTab.count} works)</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+          </a>
+        {/if}
+      </div>
     </div>
   </section>
 

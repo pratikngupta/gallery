@@ -6,7 +6,7 @@
 	class="photo-card"
 	role="button"
 	tabindex="0"
-	aria-label="{photo.title ? 'View photo: ' + photo.title : 'View photo'}"
+	aria-label="{photo.title ? `${photo.title}${photo.location ? ', ' + photo.location : ''}` : 'Photograph'}"
 	onclick={onclick}
 	onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onclick?.(); } }}
 >
