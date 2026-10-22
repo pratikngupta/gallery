@@ -111,23 +111,33 @@ const {
       }
 
       // ——— blur-up: swap the 40px thumbnail for the full grid image ———
-      document.querySelectorAll('.masonry').forEach((m) => {
-        m.addEventListener(
-          'load',
-          (e) => {
-            const img = e.target;
-            if (!img.matches || !img.matches('.ph-img')) return;
-            const full = img.dataset.full;
-            if (full && !img.dataset.upgraded) {
-              img.dataset.upgraded = '1';
-              img.src = full;
-            } else {
-              img.classList.add('is-loaded');
-            }
-          },
-          true // load events don't bubble; capture on the container
-        );
-      });
+      // Listened on `document` (capture) so it survives View Transition
+      // navigations, plus a sweep for images that finished loading before
+      // this script ran (cached 40px thumbs on a fast local server).
+      const upgrade = (img) => {
+        const full = img.dataset.full;
+        if (full && !img.dataset.upgraded) {
+          img.dataset.upgraded = '1';
+          img.src = full;
+        } else {
+          img.classList.add('is-loaded');
+        }
+      };
+      document.addEventListener(
+        'load',
+        (e) => {
+          const t = e.target;
+          if (t instanceof HTMLImageElement && t.classList.contains('ph-img')) upgrade(t);
+        },
+        true
+      );
+      const sweep = () =>
+        document
+          .querySelectorAll('.ph-img')
+          .forEach((img) => {
+            if (img.complete && img.naturalWidth > 0 && !img.dataset.upgraded) upgrade(img);
+          });
+      sweep();
     </script>
   </body>
 </html>
