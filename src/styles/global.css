@@ -401,53 +401,69 @@ button {
 
 @media (max-width: 640px) {
   .site-header {
-    padding: 0.75rem var(--gutter);
-  }
-
-  .site-header-inner {
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
-    row-gap: 0.4rem;
+    height: 3.5rem;
+    padding: 0 var(--gutter);
+    display: flex;
     align-items: center;
   }
 
+  .site-header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    grid-template-columns: none;
+    grid-template-rows: none;
+  }
+
   .wordmark {
-    grid-row: 1;
-    grid-column: 1;
-    font-size: 0.9375rem;
-    letter-spacing: 0.07em;
-  }
-
-  .header-actions {
-    grid-row: 1;
-    grid-column: 2;
-    justify-self: end;
-  }
-
-  .theme-toggle {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  .theme-toggle svg {
-    width: 15px;
-    height: 15px;
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .site-nav {
-    grid-row: 2;
-    grid-column: 1 / -1;
-    justify-self: start;
-    gap: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    margin-left: auto;
   }
 
   .site-nav a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.5rem;
     font-size: 0.75rem;
     letter-spacing: 0.05em;
   }
 
+  .header-actions {
+    margin-left: 0.25rem;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .theme-toggle {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .theme-toggle svg {
+    width: 17px;
+    height: 17px;
+  }
+
   .hero-editorial {
-    padding: 6.25rem var(--gutter) 2rem;
+    padding: 4.75rem var(--gutter) 1.25rem;
   }
 
   .hero-editorial-head {
@@ -474,7 +490,7 @@ button {
 
   .hero-showcase {
     aspect-ratio: 3 / 2;
-    border-radius: 12px;
+    border-radius: var(--radius);
   }
 
   .hero-location-pill {
@@ -496,8 +512,33 @@ button {
     margin-top: 0.85rem;
   }
 
+  .featured {
+    padding: 2.25rem var(--gutter) 2.5rem;
+  }
+
+  .featured-head {
+    margin-bottom: 1.75rem;
+  }
+
+  .photo-page {
+    padding: 5rem var(--gutter) 3rem;
+  }
+
+  .breadcrumb-desktop {
+    display: none !important;
+  }
+
+  .breadcrumb-mobile {
+    display: inline-flex;
+  }
+
+  .spec-row {
+    padding: 0.8125rem 0;
+    font-size: 0.875rem;
+  }
+
   .about-page {
-    padding-top: 6.5rem;
+    padding-top: 5rem;
   }
 }
 
@@ -713,6 +754,22 @@ button {
 .breadcrumb-current {
   color: var(--text);
   font-weight: 500;
+}
+
+.breadcrumb-mobile {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--meta);
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-mobile:hover {
+  color: var(--accent);
 }
 
 /* ——— collection pill switchers ——— */
@@ -983,7 +1040,7 @@ button {
   display: grid;
   grid-template-columns: 7.25rem 1fr;
   align-items: baseline;
-  padding: 0.55rem 0;
+  padding: 0.7rem 0;
   border-bottom: 1px solid color-mix(in srgb, var(--frame) 70%, transparent);
   font-size: 0.8125rem;
   line-height: 1.4;

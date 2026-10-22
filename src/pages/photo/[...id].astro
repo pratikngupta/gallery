@@ -53,7 +53,14 @@ const byId = new Map(relatedUrls.map((p) => [p.id, p]));
 
 <Layout title={`${photo.title} — Pratik Gupta`}>
   <div class="photo-page">
-    <nav class="breadcrumb" aria-label="Breadcrumb">
+    <!-- Mobile single back-affordance -->
+    <a class="breadcrumb-mobile" href={`/collections/${photo.category}/`}>
+      <span aria-hidden="true">←</span>
+      <span>{photo.subcategory ? photo.subcategory : (cat?.name ?? 'Collection')}</span>
+    </a>
+
+    <!-- Desktop full breadcrumb hierarchy -->
+    <nav class="breadcrumb breadcrumb-desktop" aria-label="Breadcrumb">
       <a href="/collections/" class="breadcrumb-link">Gallery</a>
       <span class="breadcrumb-sep" aria-hidden="true">/</span>
       <a href={`/collections/${photo.category}/`} class="breadcrumb-link">{cat?.name ?? 'Collection'}</a>

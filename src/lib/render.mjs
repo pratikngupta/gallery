@@ -34,9 +34,10 @@ export function groupsFor(c, byId) {
 // Home-page featured: every "main" photo first, then the category covers,
 // then the rest of the library in scan order, until the cap. Capped so the
 // home page stays short.
-export function featuredFor(photos, categories, cap = 9) {
-  const mains = photos.filter((p) => p.isMain);
+export function featuredFor(photos, categories, cap = 9, excludeId = null) {
+  const mains = photos.filter((p) => p.isMain && p.id !== excludeId);
   const seen = new Set(mains.map((p) => p.id));
+  if (excludeId) seen.add(excludeId);
   const picks = [...mains];
   const topUp = (p) => {
     if (picks.length >= cap || !p || seen.has(p.id)) return;
