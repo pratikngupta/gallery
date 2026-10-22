@@ -66,6 +66,16 @@ tokens and typefaces.
   (score 1), capped at 8. The zoom is a native `popover` element (no JS).
 - **Sharp script over `astro:assets`:** Astro 7's `getImage` rejects file-path
   strings and our photos are discovered, not imported (see ARCHITECTURE).
+- **No route may collide with an index route:** a `src/pages/collections.astro`
+  stub used to shadow `collections/index.astro` — Astro warns and skips the
+  duplicate at build time (the file silently never ships), while in dev its
+  meta-refresh got stuck under client-side navigation ("Moving to…" screen).
+  It was deleted. URLs use trailing slashes; static hosts resolve the
+  directory form, the dev server redirects the bare form.
+- **Collection pages show the full collection.** (An early 12-photo cap with
+  a "Load more" button was added for "pages become too long" and later
+  removed at the owner's request — the per-category page structure is what
+  keeps pages short.)
 - **WebP renditions over AVIF:** AVIF quality-per-byte is better but encode time
   at build grows fast with a large library; WebP is the pragmatic 90%.
 - **CSS columns masonry over JS masonry:** no layout shift, no JS cost,

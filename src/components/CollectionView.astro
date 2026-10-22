@@ -33,8 +33,7 @@ const { title, description, active, categories, groups, emptyMessage } = Astro.p
         {emptyMessage ?? 'No photographs yet — drop images into src/photos/ and rebuild.'}
       </p>
     ) : (
-      // 12 visible at a time; the rest wait behind "Load more".
-      <PhotoMasonry groups={groups} limit={12} step={12} />
+      <PhotoMasonry groups={groups} />
     )
   }
 </section>

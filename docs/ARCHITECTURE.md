@@ -24,7 +24,7 @@ server, no database, and no client framework.
 │   prunes renditions of deleted photos                          │
 │        │                                                       │
 │        ▼                                                       │
-│  src/pages/  ── index (hero + featured wall + index)           │
+│  src/pages/  ── index (hero + featured wall)                   │
 │   collections/index  (All, pill switcher)                      │
 │   collections/[category]  (getStaticPaths from the scan)       │
 │   photo/[...id]  (one per photo: metadata, related, zoom)      │
@@ -47,8 +47,9 @@ server, no database, and no client framework.
 | `scripts/build-renditions.mjs` | sharp-based rendition generator into `public/renditions/` (gitignored). Runs via npm `predev`/`prebuild`. |
 | `src/styles/global.css` | All design tokens + component styles. Theme = CSS custom properties on `:root[data-theme]`. |
 | `src/layouts/Layout.astro` | Head, theme pre-paint script, header/footer, site-wide JS (toggle, cue fade, index hover-develop, blur-up). |
-| `src/components/CollectionView.astro` | Shared shell for all collection pages (title, pills, masonry, lightbox). |
-| `src/components/Lightbox.astro` | Viewer dialog + its JS. Receives the manifest as a prop (Astro serializes it). |
+| `src/components/CollectionView.astro` | Shared shell for all collection pages (title, chips, capped masonry + reveal). |
+| `src/components/PhotoMasonry.astro` | The grid: tiles, hover titles, and the blur-up attributes. |
+| `src/pages/photo/[...id].astro` | Per-photo page: image, sticky metadata, related wall, native-popover zoom. |
 
 ## Image pipeline
 - Why a script instead of `astro:assets`: Astro 7's `getImage` refuses raw file
@@ -75,7 +76,9 @@ The zoom popover ignores the theme (always near-black `rgba(14,13,11,.94)`).
 Photo id = its path under `src/photos/` minus the extension
 (e.g. `/photo/aircraft/f-16-falcon/f-16-falcon-1`); the route is a rest param
 (`[...id]`) because ids contain slashes.
-`/collections` (no slash) is a meta-refresh stub pointing at `/collections/`.
+`/collections` (no slash) resolves to the same directory index on static
+hosts; the old meta-refresh stub page was deleted because it collided with
+the index route (Astro warns and skips duplicate routes).
 Navigation is SPA-style via `ClientRouter` (Astro View Transitions, on by
 default in Astro 7); direct URLs still work fully static.
 

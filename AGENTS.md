@@ -1,8 +1,8 @@
 # AGENTS.md — working agreement for AI agents in this repo
 
 ## What this project is
-A static photography portfolio for Pratik Gupta. Home (hero → featured wall →
-category index) plus per-collection pages (`/collections/`,
+A static photography portfolio for Pratik Gupta. Home (hero → featured wall)
+plus per-collection pages (`/collections/`,
 `/collections/<category>` with a pill switcher) and per-photo detail pages
 (`/photo/<id>`: metadata, related wall, native-popover zoom). SPA-style
 navigation via Astro View Transitions with shared-element morphs.

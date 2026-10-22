@@ -3,103 +3,39 @@
 // Each print links to its detail page (/photo/<id>) and carries a
 // transition:name so Astro View Transitions can morph the tile into the
 // detail page's image.
-//
-// With `limit`, only the first `limit` prints are visible; the rest are
-// revealed by the "Load more" button (in `step` batches per click) so a
-// long collection never becomes a too-long page.
 export interface Props {
   groups: Array<{ label: string | null; photos: Record<string, unknown>[] }>;
-  limit?: number;
-  step?: number;
 }
-const { groups, limit, step = 12 } = Astro.props;
-
-let offset = 0;
-const blocks = groups.map((g) => {
-  const visibleCount = limit ? Math.max(0, limit - offset) : g.photos.length;
-  offset += g.photos.length;
-  return { ...g, visibleCount };
-});
-const total = groups.reduce((n, g) => n + g.photos.length, 0);
-const remaining = limit ? Math.max(0, total - limit) : 0;
+const { groups } = Astro.props;
 ---
 
-<div class="masonry-wrap">
-  {
-    blocks.map((g) => (
-      <div class="masonry-block" hidden={g.visibleCount === 0}>
-        {g.label && <h3 class="subcat-label">{g.label}</h3>}
-        <div class="masonry">
-          {
-            g.photos.map((p, i) => (
-              <a
-                class="ph-frame"
-                hidden={i >= g.visibleCount}
-                href={`/photo/${p.id}`}
-                transition:name={`image-${p.id}`}
-                aria-label={`View ${p.title}`}
-              >
-                <img
-                  class="ph-img"
-                  src={p.thumb}
-                  loading="lazy"
-                  alt={p.title}
-                  data-full={p.gridSrc}
-                />
-                <span class="ph-scrim" aria-hidden="true">
-                  <span>{p.title}</span>
-                </span>
-              </a>
-            ))
-          }
-        </div>
-      </div>
-    ))
-  }
-  {
-    remaining > 0 && (
-      <button class="load-more" data-load-more data-step={step} type="button">
-        Load more <span class="mono" data-remaining>{remaining}</span>
-      </button>
-    )
-  }
-</div>
-
 {
-  remaining > 0 && (
-    <script>
-      document.querySelectorAll('button[data-load-more]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const wrap = btn.closest('.masonry-wrap');
-          if (!wrap) return;
-          const n = Number(btn.dataset.step) || 12;
-          const shown = [];
-          wrap
-            .querySelectorAll('.ph-frame[hidden]')
-            .forEach((el) => {
-              if (shown.length < n) {
-                el.removeAttribute('hidden');
-                shown.push(el);
-              }
-            });
-          // A lazy image that sat in a display:none container is not
-          // guaranteed to start loading when it becomes visible (Safari in
-          // particular). Nudge each one explicitly.
-          shown.forEach((el) => {
-            const img = el.querySelector('img');
-            if (!img) return;
-            img.loading = 'eager';
-            if (!img.complete) img.src = img.src;
-          });
-          wrap.querySelectorAll('.masonry-block[hidden]').forEach((b) => {
-            if (b.querySelector('.ph-frame:not([hidden])')) b.removeAttribute('hidden');
-          });
-          const left = wrap.querySelectorAll('.ph-frame[hidden]').length;
-          const count = btn.querySelector('[data-remaining]');
-          if (left === 0) btn.remove();
-          else if (count) count.textContent = String(left);
-        });
-      });
-    </script>
-  )
+  groups.map((g) => (
+    <div class="masonry-block">
+      {g.label && <h3 class="subcat-label">{g.label}</h3>}
+      <div class="masonry">
+        {
+          g.photos.map((p) => (
+            <a
+              class="ph-frame"
+              href={`/photo/${p.id}`}
+              transition:name={`image-${p.id}`}
+              aria-label={`View ${p.title}`}
+            >
+              <img
+                class="ph-img"
+                src={p.thumb}
+                loading="lazy"
+                alt={p.title}
+                data-full={p.gridSrc}
+              />
+              <span class="ph-scrim" aria-hidden="true">
+                <span>{p.title}</span>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  ))
 }

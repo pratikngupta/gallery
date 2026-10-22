@@ -33,24 +33,22 @@ astro-frame-shift contributed the **per-photo detail pages** (`/photo/<id>`),
 related-photo ranking, the native-popover zoom, and Astro View Transitions
 with shared-element morphs. No page is ever longer than one body of work.
 
-1. **Home (`/`)** — hero → featured wall → index. Deliberately short.
+1. **Home (`/`)** — hero → featured wall. Deliberately short (the category
+   index section was removed on the owner's request — the gallery chips on
+   the collection pages are the table of contents).
    - **Hero**: full-bleed photograph, 100svh, slow 18s zoom (the single
      page-load motion moment) under a tone scrim. Centered on it: name in
      Fraunces, a one-line tagline, and a bordered "View the gallery" button.
-     A "Featured work ⌄" invitation at bottom-center fades out once the page
-     moves.
    - **Featured**: a short masonry wall — every `main` photo first, topped up
-     with category covers (capped at 8).
-   - **Index**: vertical table of contents, one row per category (mono number,
-     Fraunces name, count); hovering a row develops that category's cover into
-     the background; rows link to `/collections/<category>`.
+     with category covers, then the rest of the library (capped at 8).
 2. **Collections (`/collections/` and `/collections/<category>`)** — centered
    Fraunces title ("Gallery" on the all-photos page; the folder's
    `description.txt` line or category name below), centered bordered filter
    chips (All + categories, active in safelight red), then CSS multi-column
    masonry of clean tiles (6px radius, title revealed on a hover scrim —
    full metadata is on the detail page). Subcategories render as labeled
-   sub-blocks before the category's loose photos.
+   sub-blocks before the category's loose photos. Pages show the full
+   collection — the per-category structure is what keeps them short.
 4. **Photo detail (`/photo/<id>`)** — one photograph, full attention:
    back link ("← Aircraft"), large image (2/3, object-contain, max 85svh,
    `cursor: zoom-in`) beside a sticky metadata column (Fraunces title,
@@ -76,7 +74,6 @@ with shared-element morphs. No page is ever longer than one body of work.
 
 ## Motion budget
 - Hero slow-zoom: the one ambient moment.
-- Index cover develop (hover): fade 0.6s + settle 1.4s.
 - Blur-up image load: filter/transform 0.6s.
 - Everything else instant. `prefers-reduced-motion` disables all of it.
 
@@ -111,7 +108,7 @@ src/photos/                        ← as of Oct 2026:
 1. **Skeleton** — Astro scaffold, tokens (both themes), layout, header/footer, theme toggle ✅
 2. **Photo scanner** — folder walk → categories/subcategories/covers/hero, EXIF, ids ✅
 3. **Rendition pipeline** — sharp script (40/900/1600/2400/2560 WebP), incremental ✅
-4. **Home** — hero with scroll cue, featured wall, hover-develop index ✅
+4. **Home** — hero with centered CTA, featured wall ✅
 5. **Collections** — per-category pages + All page, pill switcher, masonry,
    blur-up loading, subcategory blocks ✅
 6. **Real photos** — library copied in (56 photos, 4 categories) ✅

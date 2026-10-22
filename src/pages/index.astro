@@ -3,21 +3,15 @@ import Layout from '../layouts/Layout.astro';
 import { scanPhotos } from '../lib/photos.mjs';
 import { withUrls, featuredFor } from '../lib/render.mjs';
 import Hero from '../components/Hero.astro';
-import CategoryIndex from '../components/CategoryIndex.astro';
 import PhotoMasonry from '../components/PhotoMasonry.astro';
 
-// Home is deliberately short: hero → a featured selection → the index that
-// hands you off to the collection pages.
+// Home is deliberately short: a plain hero, then the featured wall.
+// Everything else lives on the collection pages.
 const { categories, photos, hero, empty } = await scanPhotos();
 
 const featured = featuredFor(photos, categories);
 const featuredUrls = featured.map(withUrls);
 const byId = new Map(featuredUrls.map((p) => [p.id, p]));
-
-const indexCategories = categories.map((c) => {
-  const cover = featuredUrls.find((p) => p.id === c.cover?.id);
-  return { ...c, coverUrl: cover?.gridSrc };
-});
 
 const heroImage = hero
   ? {
@@ -29,29 +23,25 @@ const heroImage = hero
 ---
 
 <Layout title="Pratik Gupta — Photographs">
-  <Hero image={heroImage} cue="#featured" />
+  <Hero image={heroImage} />
 
-  {
-    empty ? (
-      <section class="index" id="featured">
-        <p class="index-empty">
+  <section class="featured" id="featured">
+    {
+      empty ? (
+        <p class="featured-empty">
           No photographs yet. Drop images into
           <code class="mono">src/photos/&#123;category&#125;/</code> and rebuild — the featured
-          wall, the index and every collection page build themselves from the folders.
+          wall and every collection page build themselves from the folders.
         </p>
-      </section>
-    ) : (
-      <>
-        <section class="featured" id="featured">
+      ) : (
+        <>
           <div class="featured-head">
             <h2 class="featured-title">Featured works</h2>
             <p class="featured-sub">A selection of my best photographs from the collections</p>
           </div>
           <PhotoMasonry groups={[{ label: null, photos: featuredUrls.map((p) => byId.get(p.id)) }]} />
-        </section>
-
-        <CategoryIndex categories={indexCategories} />
-      </>
-    )
-  }
+        </>
+      )
+    }
+  </section>
 </Layout>

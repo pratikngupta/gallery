@@ -7,10 +7,12 @@ import '../styles/global.css';
 export interface Props {
   title: string;
   description?: string;
+  canonical?: string;
 }
 const {
   title,
   description = 'Photographs by Pratik Gupta — aircraft, birds, animals, nature, buildings and field notes.',
+  canonical,
 } = Astro.props;
 ---
 
@@ -19,8 +21,10 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
     <!-- Resolve the theme before first paint to avoid a flash -->
     <script is:inline>
       (function () {
@@ -83,31 +87,6 @@ const {
         addEventListener('scroll', () => {
           header.classList.toggle('is-scrolled', scrollY > 24);
         }, { passive: true });
-      }
-
-      // ——— index: hover a row, its cover develops into the background ———
-      const indexBg = document.querySelector('[data-index-bg]');
-      const indexSection = indexBg ? indexBg.closest('.index') : null;
-      if (indexBg && indexSection) {
-        indexSection.querySelectorAll('[data-cover]').forEach((row) => {
-          row.addEventListener('mouseenter', () => {
-            indexBg.src = row.dataset.cover;
-            indexBg.classList.add('is-showing');
-          });
-        });
-        indexSection.addEventListener('mouseleave', () => {
-          indexBg.classList.remove('is-showing');
-        });
-      }
-
-      // ——— the hero's scroll invitation steps aside once the page moves ———
-      const cue = document.querySelector('.hero-cue');
-      if (cue) {
-        addEventListener(
-          'scroll',
-          () => cue.classList.toggle('is-hidden', scrollY > 120),
-          { passive: true }
-        );
       }
 
       // ——— blur-up: swap the 40px thumbnail for the full grid image ———

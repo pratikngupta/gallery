@@ -83,12 +83,6 @@ button {
   font-family: var(--font-mono);
 }
 
-/* Author styles (e.g. .ph-frame { display: block }) would otherwise win
-   over the UA sheet, and the Load-more reveal relies on hidden. */
-[hidden] {
-  display: none !important;
-}
-
 ::selection {
   background: var(--accent);
   color: #f6f3ee;
@@ -258,135 +252,13 @@ button {
   color: var(--accent);
 }
 
-/* ——— category index ——— */
+/* ——— home: featured (empty state) ——— */
 
-.index {
-  position: relative;
-  overflow: hidden;
-  padding: var(--section-y) var(--gutter) clamp(3rem, 7vw, 5rem);
-}
-
-.index-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transform: scale(1.03);
-  transition: opacity 0.6s ease, transform 1.4s ease;
-}
-
-.index-bg.is-showing {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.index-veil {
-  position: absolute;
-  inset: 0;
-  background: color-mix(in srgb, var(--bg) 58%, transparent);
-}
-
-.index-list {
-  position: relative;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.index-row {
-  display: grid;
-  grid-template-columns: 3.5rem 1fr auto;
-  align-items: baseline;
-  gap: 1rem;
-  padding: 1.4rem 0;
-  border-top: 1px solid var(--frame);
-}
-
-.index-list li:last-child .index-row {
-  border-bottom: 1px solid var(--frame);
-}
-
-.index-num {
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
+.featured-empty {
   color: var(--meta);
-}
-
-.index-name {
-  font-family: var(--font-display);
-  font-size: clamp(1.6rem, 4vw, 2.5rem);
-  letter-spacing: -0.015em;
-  line-height: 1.1;
-  transition: color 0.2s ease;
-}
-
-.index-count {
-  font-size: 0.8125rem;
-  color: var(--meta);
-}
-
-.index-row:hover .index-name,
-.index-row:focus-visible .index-name {
-  color: var(--accent);
-}
-
-.index-row.is-active .index-num,
-.index-row.is-active .index-name {
-  color: var(--accent);
-}
-
-@media (max-width: 640px) {
-  .index-row {
-    grid-template-columns: 2.5rem 1fr;
-  }
-  .index-count {
-    display: none;
-  }
-}
-
-/* ——— hero scroll invitation ——— */
-
-.hero-cue {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.6rem;
-  padding-bottom: 1.25rem;
-  font-size: 0.8125rem;
-  color: var(--meta);
-  transition: color 0.3s ease, opacity 0.4s ease;
-}
-
-.hero-cue:hover {
-  color: var(--text);
-}
-
-.hero-cue.is-hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.hero-cue svg {
-  width: 20px;
-  height: 20px;
-  animation: cue-bob 2.2s ease-in-out infinite;
-}
-
-@keyframes cue-bob {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(6px);
-  }
+  max-width: 46ch;
+  margin-inline: auto;
+  padding: 3rem 0;
 }
 
 /* ——— home: featured ——— */
@@ -468,27 +340,6 @@ button {
 .pill.is-active {
   color: var(--accent);
   border-color: var(--accent);
-}
-
-.load-more {
-  display: block;
-  margin: 2.5rem auto 0;
-  padding: 0.6rem 1.6rem;
-  border: 1px solid var(--frame);
-  border-radius: 6px;
-  font-size: 0.9375rem;
-  color: var(--meta);
-  transition: color 0.2s ease, border-color 0.2s ease;
-}
-
-.load-more:hover {
-  color: var(--text);
-  border-color: var(--meta);
-}
-
-.load-more .mono {
-  font-size: 0.8125rem;
-  margin-left: 0.35rem;
 }
 
 .subcat-label {

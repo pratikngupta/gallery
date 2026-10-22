@@ -2,13 +2,10 @@
 // Full-bleed opening photograph with the name set in the center on a scrim —
 // the name, a line about the work, and an invitation to the gallery.
 // If the library is empty, a quiet dark hero carries the name alone.
-// `cue` adds a "Featured work" scroll invitation that fades away once the
-// page moves.
 export interface Props {
   image?: { src: string; srcset?: string; alt: string };
-  cue?: string;
 }
-const { image, cue } = Astro.props;
+const { image } = Astro.props;
 ---
 
 <section class="hero" id="top">
@@ -30,22 +27,4 @@ const { image, cue } = Astro.props;
     <p class="hero-sub">Photographs of aircraft, wildlife, nature and cities</p>
     <a class="hero-cta" href="/collections/">View the gallery</a>
   </div>
-  {
-    cue && (
-      <a class="hero-cue" href={cue}>
-        <span>Featured work</span>
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M6 9l6 6 6-6" />
-        </svg>
-      </a>
-    )
-  }
 </section>
