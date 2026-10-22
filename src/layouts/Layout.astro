@@ -1,0 +1,128 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description?: string;
+}
+const {
+  title,
+  description = 'Photographs by Pratik Gupta — aircraft, birds, animals, nature, buildings and field notes.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <!-- Resolve the theme before first paint to avoid a flash -->
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem('darkroom-theme');
+          if (t !== 'light' && t !== 'dark') {
+            t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+          }
+          document.documentElement.dataset.theme = t;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+    <noscript>
+      <style>.ph-img { filter: none !important; transform: none !important; }</style>
+    </noscript>
+
+    <script>
+      // ——— theme toggle ———
+      const root = document.documentElement;
+      const toggle = document.querySelector('[data-theme-toggle]');
+      function describeTheme(t) {
+        return t === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
+      }
+      if (toggle) {
+        toggle.setAttribute('aria-label', describeTheme(root.dataset.theme));
+        toggle.addEventListener('click', () => {
+          const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+          root.dataset.theme = next;
+          try {
+            localStorage.setItem('darkroom-theme', next);
+          } catch (e) {
+            // private mode etc. — theme just won't persist
+          }
+          toggle.setAttribute('aria-label', describeTheme(next));
+        });
+      }
+
+      // ——— header background after the hero ———
+      const header = document.querySelector('[data-header]');
+      if (header) {
+        addEventListener('scroll', () => {
+          header.classList.toggle('is-scrolled', scrollY > 24);
+        }, { passive: true });
+      }
+
+      // ——— index: hover a row, its cover develops into the background ———
+      const indexBg = document.querySelector('[data-index-bg]');
+      const indexSection = indexBg ? indexBg.closest('.index') : null;
+      if (indexBg && indexSection) {
+        indexSection.querySelectorAll('[data-cover]').forEach((row) => {
+          row.addEventListener('mouseenter', () => {
+            indexBg.src = row.dataset.cover;
+            indexBg.classList.add('is-showing');
+          });
+        });
+        indexSection.addEventListener('mouseleave', () => {
+          indexBg.classList.remove('is-showing');
+        });
+      }
+
+      // ——— the hero's scroll invitation steps aside once the page moves ———
+      const cue = document.querySelector('.hero-cue');
+      if (cue) {
+        addEventListener(
+          'scroll',
+          () => cue.classList.toggle('is-hidden', scrollY > 120),
+          { passive: true }
+        );
+      }
+
+      // ——— blur-up: swap the 40px thumbnail for the full grid image ———
+      document.querySelectorAll('.masonry').forEach((m) => {
+        m.addEventListener(
+          'load',
+          (e) => {
+            const img = e.target;
+            if (!img.matches || !img.matches('.ph-img')) return;
+            const full = img.dataset.full;
+            if (full && !img.dataset.upgraded) {
+              img.dataset.upgraded = '1';
+              img.src = full;
+            } else {
+              img.classList.add('is-loaded');
+            }
+          },
+          true // load events don't bubble; capture on the container
+        );
+      });
+    </script>
+  </body>
+</html>

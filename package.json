@@ -1,0 +1,18 @@
+{
+  "name": "darkroom-gallery",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "predev": "node scripts/build-renditions.mjs",
+    "dev": "astro dev",
+    "prebuild": "node scripts/build-renditions.mjs",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "astro": "^7.4.2",
+    "exifr": "^7.1.3"
+  }
+}

@@ -1,0 +1,61 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { scanPhotos } from '../lib/photos.mjs';
+import { withUrls, toManifest, featuredFor } from '../lib/render.mjs';
+import Hero from '../components/Hero.astro';
+import CategoryIndex from '../components/CategoryIndex.astro';
+import PhotoMasonry from '../components/PhotoMasonry.astro';
+import Lightbox from '../components/Lightbox.astro';
+
+// Home is deliberately short: hero → a featured selection → the index that
+// hands you off to the collection pages.
+const { categories, photos, hero, empty } = await scanPhotos();
+
+const featured = featuredFor(photos, categories);
+const featuredUrls = featured.map(withUrls);
+const byId = new Map(featuredUrls.map((p) => [p.id, p]));
+
+const indexCategories = categories.map((c) => {
+  const cover = featuredUrls.find((p) => p.id === c.cover?.id);
+  return { ...c, coverUrl: cover?.gridSrc };
+});
+
+const heroImage = hero
+  ? {
+      src: `/renditions/${hero.id.replace(/\//g, '-')}-1600.webp`,
+      srcset: `/renditions/${hero.id.replace(/\//g, '-')}-1600.webp 1600w, /renditions/${hero.id.replace(/\//g, '-')}-2560.webp 2560w`,
+      alt: `${hero.title} — photograph by Pratik Gupta`,
+    }
+  : undefined;
+---
+
+<Layout title="Pratik Gupta — Photographs">
+  <Hero image={heroImage} cue="#featured" />
+
+  {
+    empty ? (
+      <section class="index" id="featured">
+        <p class="index-empty">
+          No photographs yet. Drop images into
+          <code class="mono">src/photos/&#123;category&#125;/</code> and rebuild — the featured
+          wall, the index and every collection page build themselves from the folders.
+        </p>
+      </section>
+    ) : (
+      <>
+        <section class="featured" id="featured">
+          <div class="featured-head">
+            <h2 class="featured-title">Featured</h2>
+            <span class="featured-count">
+              {featuredUrls.length} {featuredUrls.length === 1 ? 'photograph' : 'photographs'}
+            </span>
+          </div>
+          <PhotoMasonry groups={[{ label: null, photos: featuredUrls.map((p) => byId.get(p.id)) }]} />
+        </section>
+
+        <CategoryIndex categories={indexCategories} />
+        <Lightbox manifest={toManifest(featuredUrls)} />
+      </>
+    )
+  }
+</Layout>

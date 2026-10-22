@@ -1,0 +1,22 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CollectionView from '../../components/CollectionView.astro';
+import { scanPhotos } from '../../lib/photos.mjs';
+import { withUrls, toManifest } from '../../lib/render.mjs';
+
+// /collections/ — every photograph, switchable by the pill bar.
+const { categories, photos } = await scanPhotos();
+const urls = photos.map(withUrls);
+const byId = new Map(urls.map((p) => [p.id, p]));
+const groups = urls.length ? [{ label: null, photos: urls }] : [];
+---
+
+<Layout title="Collections — Pratik Gupta">
+  <CollectionView
+    title="All photographs"
+    active="all"
+    categories={categories}
+    groups={groups.map((g) => ({ ...g, photos: g.photos.map((p) => byId.get(p.id)) }))}
+    manifest={toManifest(urls)}
+  />
+</Layout>

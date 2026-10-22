@@ -1,0 +1,35 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CollectionView from '../../components/CollectionView.astro';
+import { scanPhotos } from '../../lib/photos.mjs';
+import { withUrls, toManifest, groupsFor } from '../../lib/render.mjs';
+
+// /collections/<category> — one series at a time, so no page is ever longer
+// than one body of work.
+export const getStaticPaths = async () => {
+  const { categories } = await scanPhotos();
+  return categories.map((c) => ({
+    params: { category: c.key },
+    props: { categoryKey: c.key },
+  }));
+};
+
+const { categoryKey } = Astro.props;
+const { categories, photos } = await scanPhotos();
+const cat = categories.find((c) => c.key === categoryKey) ?? categories[0];
+const urls = cat.photos.map(withUrls);
+const byId = new Map(urls.map((p) => [p.id, p]));
+const groups = urls.length ? groupsFor(cat, byId) : [];
+---
+
+<Layout title={`${cat.name} — Pratik Gupta`} description={cat.description ?? undefined}>
+  <CollectionView
+    title={cat.name}
+    description={cat.description}
+    active={cat.key}
+    categories={categories}
+    groups={groups}
+    manifest={toManifest(urls)}
+    emptyMessage={`Nothing in ${cat.name} yet — add a folder under src/photos/ and rebuild.`}
+  />
+</Layout>

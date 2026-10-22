@@ -1,0 +1,37 @@
+---
+// Masonry blocks: an optional label, then a CSS-columns masonry of prints.
+// Used by the home page (featured) and every collection page.
+export interface Props {
+  groups: Array<{ label: string | null; photos: Record<string, unknown>[] }>;
+}
+const { groups } = Astro.props;
+---
+
+{
+  groups.map((g) => (
+    <div class="masonry-block">
+      {g.label && <h3 class="subcat-label">{g.label}</h3>}
+      <div class="masonry">
+        {
+          g.photos.map((p) => (
+            <figure class="ph-item">
+              <button class="ph-frame" data-open={p.id} aria-label={`View ${p.title}`}>
+                <img
+                  class="ph-img"
+                  src={p.thumb}
+                  loading="lazy"
+                  alt={p.title}
+                  data-full={p.gridSrc}
+                />
+              </button>
+              <figcaption class="ph-cap">
+                <span class="ph-title">{p.title}</span>
+                <span class="ph-year">{p.year}</span>
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  ))
+}

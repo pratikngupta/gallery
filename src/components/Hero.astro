@@ -1,0 +1,38 @@
+---
+// Full-bleed opening photograph. The name is set into the image, lower-left.
+// If the library is empty, a quiet dark hero carries the name alone.
+// `cue` adds a small scroll invitation that fades away once the page moves.
+export interface Props {
+  image?: { src: string; srcset?: string; alt: string };
+  cue?: string;
+}
+const { image, cue } = Astro.props;
+---
+
+<section class="hero" id="top">
+  {
+    image && (
+      <>
+        <img
+          src={image.src}
+          {...(image.srcset ? { srcset: image.srcset, sizes: '100vw' } : {})}
+          alt={image.alt}
+          fetchpriority="high"
+        />
+        <div class="hero-scrim" aria-hidden="true"></div>
+      </>
+    )
+  }
+  <div class="hero-text">
+    <h1 class="hero-name">Pratik Gupta</h1>
+    <p class="hero-sub">photographs</p>
+  </div>
+  {
+    cue && (
+      <a class="hero-cue" href={cue}>
+        <span>Featured</span>
+        <span class="hero-cue-line" aria-hidden="true"></span>
+      </a>
+    )
+  }
+</section>
