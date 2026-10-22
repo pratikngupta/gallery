@@ -1,29 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { scanPhotos } from '../lib/photos.mjs';
-import { withUrls, featuredFor } from '../lib/render.mjs';
+import { withUrls, featuredFor, heroSlidesFor } from '../lib/render.mjs';
 import Hero from '../components/Hero.astro';
 import PhotoMasonry from '../components/PhotoMasonry.astro';
 
-// Home is deliberately short: a plain hero, then the featured wall.
-// Everything else lives on the collection pages.
-const { categories, photos, hero, empty } = await scanPhotos();
+// Home: Editorial hero with switching photo showcase, followed by the featured wall.
+const { categories, photos, empty } = await scanPhotos();
 
+const heroSlides = heroSlidesFor(photos);
 const featured = featuredFor(photos, categories);
 const featuredUrls = featured.map(withUrls);
 const byId = new Map(featuredUrls.map((p) => [p.id, p]));
-
-const heroImage = hero
-  ? {
-      src: `/renditions/${hero.id.replace(/\//g, '-')}-1600.webp`,
-      srcset: `/renditions/${hero.id.replace(/\//g, '-')}-1600.webp 1600w, /renditions/${hero.id.replace(/\//g, '-')}-2560.webp 2560w`,
-      alt: `${hero.title} — photograph by Pratik Gupta`,
-    }
-  : undefined;
 ---
 
 <Layout title="Pratik Gupta — Photographs">
-  <Hero image={heroImage} />
+  <Hero slides={heroSlides} />
 
   <section class="featured" id="featured">
     {

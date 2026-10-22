@@ -1,30 +1,141 @@
 ---
-// Full-bleed opening photograph with the name set in the center on a scrim —
-// the name, a line about the work, and an invitation to the gallery.
-// If the library is empty, a quiet dark hero carries the name alone.
-export interface Props {
-  image?: { src: string; srcset?: string; alt: string };
+// Editorial Hero layout inspired by clean magazine design:
+// Eyebrow, bold statement headline, subtitle, and an auto-switching
+// featured photo showcase with location pill badge.
+export interface Slide {
+  id: string;
+  title: string;
+  location: string;
+  src: string;
+  srcset?: string;
+  href: string;
+  alt?: string;
 }
-const { image } = Astro.props;
+
+export interface Props {
+  slides?: Slide[];
+}
+
+const { slides = [] } = Astro.props;
+const hasSlides = slides.length > 0;
+const firstSlide = slides[0];
 ---
 
-<section class="hero" id="top">
+<section class="hero-editorial" id="top">
+  <div class="hero-editorial-head">
+    <p class="hero-eyebrow">ENGINEER / PHOTOGRAPHER</p>
+    <h1 class="hero-headline">A different perspective.</h1>
+    <p class="hero-subhead">Architecture, landscapes, and wildlife through my lens.</p>
+  </div>
+
   {
-    image && (
-      <>
-        <img
-          src={image.src}
-          {...(image.srcset ? { srcset: image.srcset, sizes: '100vw' } : {})}
-          alt={image.alt}
-          fetchpriority="high"
-        />
-        <div class="hero-scrim" aria-hidden="true"></div>
-      </>
+    hasSlides && (
+      <div class="hero-showcase" data-hero-showcase aria-roledescription="carousel" aria-label="Featured Photography Showcase">
+        <div class="hero-slides">
+          {slides.map((slide, index) => (
+            <div
+              class={`hero-slide ${index === 0 ? 'is-active' : ''}`}
+              data-hero-slide
+              data-index={index}
+              data-location={slide.location}
+              data-title={slide.title}
+              aria-hidden={index === 0 ? 'false' : 'true'}
+            >
+              <a href={slide.href} class="hero-slide-link" title={`View ${slide.title}`}>
+                <img
+                  src={slide.src}
+                  {...(slide.srcset ? { srcset: slide.srcset, sizes: '(max-width: 768px) 100vw, (max-width: 1440px) 94vw, 1360px' } : {})}
+                  alt={slide.alt || slide.title}
+                  class="hero-slide-img"
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  fetchpriority={index === 0 ? 'high' : 'auto'}
+                />
+              </a>
+            </div>
+          ))}
+        </div>
+
+        <div class="hero-location-pill" data-hero-location>
+          <span class="hero-location-pin" aria-hidden="true">📍</span>
+          <span class="hero-location-text" data-hero-location-text>{firstSlide?.location || 'Toronto, Canada'}</span>
+        </div>
+      </div>
     )
   }
-  <div class="hero-center">
-    <h1 class="hero-name">Pratik Gupta</h1>
-    <p class="hero-sub">Photographs of aircraft, wildlife, nature and cities</p>
-    <a class="hero-cta" href="/collections/">View the gallery</a>
+
+  <div class="hero-bottom">
+    <div class="hero-bar">
+      <span class="hero-bar-label">Selected work</span>
+      <a href="#featured" class="hero-bar-link">
+        Explore Gallery <span class="hero-bar-arrow" aria-hidden="true">↓</span>
+      </a>
+    </div>
+    <hr class="hero-divider" aria-hidden="true" />
   </div>
 </section>
+
+<script>
+  function setupHeroShowcase() {
+    const showcase = document.querySelector('[data-hero-showcase]');
+    if (!showcase) return;
+
+    const slides = Array.from(showcase.querySelectorAll<HTMLElement>('[data-hero-slide]'));
+    const locationText = showcase.querySelector<HTMLElement>('[data-hero-location-text]');
+    if (slides.length <= 1) return;
+
+    let currentIndex = 0;
+    let timer: number | null = null;
+    const INTERVAL = 5000;
+
+    function goToSlide(nextIndex: number) {
+      if (nextIndex === currentIndex) return;
+      slides[currentIndex].classList.remove('is-active');
+      slides[currentIndex].setAttribute('aria-hidden', 'true');
+
+      currentIndex = (nextIndex + slides.length) % slides.length;
+
+      const activeSlide = slides[currentIndex];
+      activeSlide.classList.add('is-active');
+      activeSlide.setAttribute('aria-hidden', 'false');
+
+      const nextLocation = activeSlide.dataset.location;
+      if (locationText && nextLocation && locationText.textContent !== nextLocation) {
+        locationText.style.opacity = '0';
+        setTimeout(() => {
+          locationText.textContent = nextLocation;
+          locationText.style.opacity = '1';
+        }, 220);
+      }
+    }
+
+    function startTimer() {
+      if (timer) clearInterval(timer);
+      // Respect prefers-reduced-motion
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      timer = window.setInterval(() => {
+        goToSlide(currentIndex + 1);
+      }, INTERVAL);
+    }
+
+    function stopTimer() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    showcase.addEventListener('mouseenter', stopTimer);
+    showcase.addEventListener('mouseleave', startTimer);
+    showcase.addEventListener('focusin', stopTimer);
+    showcase.addEventListener('focusout', startTimer);
+
+    startTimer();
+
+    // Clean up timer on page transitions with Astro ClientRouter
+    document.addEventListener('astro:before-swap', stopTimer, { once: true });
+  }
+
+  // Run on initial load and on Astro view transition navigations
+  setupHeroShowcase();
+  document.addEventListener('astro:page-load', setupHeroShowcase);
+</script>

@@ -47,3 +47,53 @@ export function featuredFor(photos, categories, cap = 8) {
   for (const p of photos) topUp(p);
   return picks.slice(0, cap);
 }
+
+// Curated showcase slides for the home hero switcher.
+// Begins with the Toronto CN Tower skyline (from design reference), followed by
+// standout landscape, architecture, aircraft and nature captures.
+export function heroSlidesFor(photos) {
+  const preferredIds = [
+    'buildings/modern/cn-tower-main',
+    'landscape/mountains/yosemite-main',
+    'buildings/modern/chicago-skyline',
+    'landscape/coastal/toronto-skyline-main',
+    'aircraft/f-22-raptor/f_22_raptor_2-coverart',
+    'landscape/coastal/port-stanley-sunset-2',
+    'wildlife/seagulls/coverart-cover-seagulls-flying-100',
+  ];
+
+  const map = new Map(photos.map((p) => [p.id, p]));
+  const picked = [];
+  const seen = new Set();
+
+  for (const id of preferredIds) {
+    const p = map.get(id);
+    if (p && !seen.has(p.id)) {
+      seen.add(p.id);
+      picked.push(p);
+    }
+  }
+
+  for (const p of photos) {
+    if (picked.length >= 6) break;
+    if (p.isMain && !seen.has(p.id)) {
+      seen.add(p.id);
+      picked.push(p);
+    }
+  }
+
+  // Graceful fallback if library is sparse
+  if (picked.length === 0 && photos.length > 0) {
+    picked.push(...photos.slice(0, 4));
+  }
+
+  return picked.map((p) => ({
+    id: p.id,
+    title: p.title,
+    location: p.location || 'Toronto, Canada',
+    src: R(p, 1600),
+    srcset: `${R(p, 900)} 900w, ${R(p, 1600)} 1600w, ${R(p, 2560)} 2560w`,
+    href: `/photo/${p.id}`,
+    alt: p.title,
+  }));
+}

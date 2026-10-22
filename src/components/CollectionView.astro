@@ -1,7 +1,7 @@
 ---
 // Shared shell for /collections/ and /collections/<category>:
-// title, optional description, the pill switcher, masonry.
-import PillNav from './PillNav.astro';
+// title, optional description, the pill switcher with subcategories, masonry.
+import PillNav, { type Subcategory } from './PillNav.astro';
 import PhotoMasonry from './PhotoMasonry.astro';
 
 export interface Props {
@@ -9,13 +9,14 @@ export interface Props {
   description?: string | null;
   active: string;
   categories: Array<{ key: string; name: string }>;
+  subcategories?: Subcategory[];
   groups: Array<{ label: string | null; photos: Record<string, unknown>[] }>;
   emptyMessage?: string;
 }
-const { title, description, active, categories, groups, emptyMessage } = Astro.props;
+const { title, description, active, categories, subcategories = [], groups, emptyMessage } = Astro.props;
 ---
 
-<section class="collection">
+<section class="collection" data-collection-view>
   <header class="collection-head">
     <h1 class="collection-title">{title}</h1>
     {
@@ -25,7 +26,7 @@ const { title, description, active, categories, groups, emptyMessage } = Astro.p
     }
   </header>
 
-  <PillNav categories={categories} active={active} />
+  <PillNav categories={categories} active={active} subcategories={subcategories} />
 
   {
     groups.length === 0 ? (
@@ -37,3 +38,48 @@ const { title, description, active, categories, groups, emptyMessage } = Astro.p
     )
   }
 </section>
+
+<script>
+  function setupSubcatFilter() {
+    const nav = document.querySelector('[data-subcat-nav]');
+    if (!nav) return;
+
+    const pills = Array.from(nav.querySelectorAll<HTMLButtonElement>('[data-subcat-filter]'));
+    const frames = Array.from(document.querySelectorAll<HTMLElement>('.ph-frame[data-subcat]'));
+    const blocks = Array.from(document.querySelectorAll<HTMLElement>('[data-subcat-block]'));
+
+    pills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        const target = pill.dataset.subcatFilter;
+        if (!target) return;
+
+        pills.forEach((p) => p.classList.toggle('is-active', p === pill));
+
+        if (frames.length > 0) {
+          frames.forEach((frame) => {
+            const sub = frame.dataset.subcat;
+            if (target === 'all' || sub === target) {
+              frame.style.display = '';
+            } else {
+              frame.style.display = 'none';
+            }
+          });
+        }
+
+        if (blocks.length > 0) {
+          blocks.forEach((block) => {
+            const blockSlug = block.dataset.subcatBlock;
+            if (!blockSlug || target === 'all' || blockSlug === target) {
+              block.style.display = '';
+            } else {
+              block.style.display = 'none';
+            }
+          });
+        }
+      });
+    });
+  }
+
+  setupSubcatFilter();
+  document.addEventListener('astro:page-load', setupSubcatFilter);
+</script>

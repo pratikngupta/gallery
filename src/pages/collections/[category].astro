@@ -19,7 +19,7 @@ const { categories, photos } = await scanPhotos();
 const cat = categories.find((c) => c.key === categoryKey) ?? categories[0];
 const urls = cat.photos.map(withUrls);
 const byId = new Map(urls.map((p) => [p.id, p]));
-const groups = urls.length ? groupsFor(cat, byId) : [];
+const groups = urls.length ? [{ label: null, photos: urls }] : [];
 ---
 
 <Layout title={`${cat.name} — Pratik Gupta`} description={cat.description ?? undefined}>
@@ -28,6 +28,7 @@ const groups = urls.length ? groupsFor(cat, byId) : [];
     description={cat.description}
     active={cat.key}
     categories={categories}
+    subcategories={cat.subcategories}
     groups={groups}
     emptyMessage={`Nothing in ${cat.name} yet — add a folder under src/photos/ and rebuild.`}
   />

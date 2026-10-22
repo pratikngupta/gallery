@@ -70,9 +70,21 @@ async function readDescription(dir) {
   }
 }
 
+function inferLocation(id, title, category, subcategory) {
+  const text = `${id} ${title} ${category} ${subcategory || ''}`.toLowerCase();
+  if (text.includes('cn-tower') || text.includes('toronto')) return 'Toronto, Canada';
+  if (text.includes('chicago')) return 'Chicago, USA';
+  if (text.includes('yosemite')) return 'Yosemite National Park, USA';
+  if (text.includes('port-stanley') || text.includes('port stanley')) return 'Port Stanley, Canada';
+  if (text.includes('big-surf') || text.includes('big sur')) return 'Big Sur, USA';
+  if (text.includes('raptor') || text.includes('falcon') || text.includes('hornet') || text.includes('osprey') || text.includes('t33') || text.includes('aircraft')) return 'Toronto Air Show';
+  if (text.includes('seagull') || text.includes('goat') || text.includes('chipmunk') || text.includes('squirrel') || text.includes('wildlife')) return 'Ontario, Canada';
+  return 'Toronto, Canada';
+}
+
 // EXIF + optional sidecar override. A bad file must never kill the build.
 async function readMeta(file, title) {
-  const meta = { title, isMain: /\bmain\b/i.test(path.basename(file)), exif: null };
+  const meta = { title, isMain: /\bmain\b/i.test(path.basename(file)), exif: null, location: null };
 
   try {
     const sidecar = await fs.readFile(file + '.txt', 'utf8');
@@ -80,6 +92,8 @@ async function readMeta(file, title) {
     if (m) meta.title = m[1].trim();
     const n = sidecar.match(/note:\s*(.+)/i);
     if (n) meta.note = n[1].trim();
+    const l = sidecar.match(/location:\s*(.+)/i);
+    if (l) meta.location = l[1].trim();
   } catch {
     // no sidecar — fine
   }
@@ -123,12 +137,14 @@ export async function scanPhotos() {
     const meta = await readMeta(file, titleFromName(base));
     const st = await fs.stat(file);
     const year = meta.exif?.date ? meta.exif.date.getFullYear() : st.mtime.getFullYear();
+    const location = meta.location || inferLocation(rel, meta.title, category, subcategory);
 
     photos.push({
       id: rel.toLowerCase().replace(/\.[^.]+$/, '').replace(/[^a-z0-9/_-]/g, '-'),
       src: path.relative(process.cwd(), file).split(path.sep).join('/'), // for the rendition script
       title: meta.title,
       note: meta.note,
+      location,
       category,
       subcategory,
       atRoot,
