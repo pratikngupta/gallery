@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import CollectionView from '../../components/CollectionView.astro';
 import { scanPhotos } from '../../lib/photos.mjs';
-import { withUrls, toManifest, groupsFor } from '../../lib/render.mjs';
+import { withUrls, groupsFor } from '../../lib/render.mjs';
 
 // /collections/<category> — one series at a time, so no page is ever longer
 // than one body of work.
@@ -29,7 +29,6 @@ const groups = urls.length ? groupsFor(cat, byId) : [];
     active={cat.key}
     categories={categories}
     groups={groups}
-    manifest={toManifest(urls)}
     emptyMessage={`Nothing in ${cat.name} yet — add a folder under src/photos/ and rebuild.`}
   />
 </Layout>

@@ -17,13 +17,19 @@
 - [x] Home: hero (slow zoom + scroll cue), featured wall, hover-develop index
 - [x] Collection pages: /collections/ (All) + per-category, pill switcher
 - [x] Masonry with subcategory blocks
-- [x] Lightbox: EXIF line, ←/→/Esc, swipe, focus trap, `#photo/` deep links
 
 ## Phase 5 — Real photos ✅
 - [x] Library copied from ~/Pictures/photos (56 photos, 4 categories)
-- [x] Production build passes (6 pages)
+- [x] Production build passes
 
-## Phase 6 — Owner QA & launch
+## Phase 6 — Photo detail pages (frame-shift IA) ✅
+- [x] /photo/<id> pages (56): large image + sticky metadata (Series/Date/Camera/Settings)
+- [x] Related wall ranked by subseries/series match (8)
+- [x] Native-popover zoom to 2400px (replaces the old hash lightbox)
+- [x] View Transitions: ClientRouter + shared-element tile→detail morphs
+- [x] photo.txt sidecars now support a Note: line (shown on the detail page)
+
+## Phase 7 — Owner QA & launch
 - [ ] Owner tests the site (dev server: `npm run dev`)
 - [ ] Pick the hero photo (`main_*.jpg` at src/photos root to force it)
 - [ ] Mark one `main` cover per category (aircraft and wildlife have none yet)

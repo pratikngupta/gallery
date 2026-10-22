@@ -26,9 +26,12 @@ captions) · **JetBrains Mono** (EXIF, numbering, counts). Scale: hero
 `clamp(1.6rem, 4vw, 2.5rem)`, body 1rem/1.6, small 0.8125rem.
 
 ## Layout (information architecture)
-Borrowed from the astro-photography-portfolio template (adapted, not copied):
-**per-collection pages** instead of one endless scroll — no page is ever
-longer than one body of work.
+Borrowed from two Astro templates (adapted to the darkroom system, not
+copied): astro-photography-portfolio contributed the **per-collection pages**
+(pill switcher, featured home, hero scroll cue, nav underline hover);
+astro-frame-shift contributed the **per-photo detail pages** (`/photo/<id>`),
+related-photo ranking, the native-popover zoom, and Astro View Transitions
+with shared-element morphs. No page is ever longer than one body of work.
 
 1. **Home (`/`)** — hero → featured wall → index. Deliberately short.
    - **Hero**: full-bleed photograph, 100svh, slow 18s zoom (the single
@@ -44,9 +47,19 @@ longer than one body of work.
    (All + categories, active in safelight red), then CSS multi-column masonry.
    Full-width prints, no frames. Caption below: title + year (mono, meta).
    Subcategories render as labeled sub-blocks before the category's loose photos.
-3. **Lightbox** — fixed darkroom overlay on every page: title, counter, close;
-   EXIF line in mono; ←/→/Esc, swipe on touch, focus trap, shareable
-   `#photo/<id>` hashes. Cycles within the current page's photos.
+4. **Photo detail (`/photo/<id>`)** — one photograph, full attention:
+   back link ("← Aircraft"), large image (2/3, object-contain, max 85svh,
+   `cursor: zoom-in`) beside a sticky metadata column (Fraunces title,
+   series, optional note, and a facts list: Series / Date / Camera /
+   Settings in mono). Clicking the image opens a **native popover zoom**
+   (2400px rendition, scale+fade, darkroom background, click to close).
+   Below: "More from {series}" — up to 8 related photos ranked by
+   subseries match first, then series match.
+5. **View Transitions** — SPA-style navigation via `ClientRouter`; grid
+   tiles and the detail image share `transition:name="image-<id>"` so a
+   tile morphs into the detail page; the footer persists across navigations.
+   (The earlier `#photo/` hash lightbox was replaced by these real routes —
+   better sharing, SEO, and no in-page state to lose.)
 
 ## Alignment & type rules
 - Everything left-aligned, ragged right. Nothing centered except the lightbox image.
@@ -95,7 +108,9 @@ src/photos/                        ← as of Oct 2026:
 4. **Home** — hero with scroll cue, featured wall, hover-develop index ✅
 5. **Collections** — per-category pages + All page, pill switcher, masonry,
    blur-up loading, subcategory blocks ✅
-6. **Lightbox** — EXIF, keyboard/swipe, focus trap, `#photo/` deep links ✅
-7. **Real photos** — library copied in (56 photos, 4 categories); owner QA,
-   then performance + a11y audit, OG images, deploy
+6. **Real photos** — library copied in (56 photos, 4 categories) ✅
+7. **Photo detail pages** (frame-shift IA) — `/photo/<id>`, related wall,
+   popover zoom, view transitions ✅
+8. **Owner QA & launch** — owner testing, hero/cover picks, caption cleanup,
+   performance + a11y audit, OG images, deploy
    (GitHub Pages / Netlify / Cloudflare Pages)

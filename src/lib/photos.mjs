@@ -78,6 +78,8 @@ async function readMeta(file, title) {
     const sidecar = await fs.readFile(file + '.txt', 'utf8');
     const m = sidecar.match(/title:\s*(.+)/i);
     if (m) meta.title = m[1].trim();
+    const n = sidecar.match(/note:\s*(.+)/i);
+    if (n) meta.note = n[1].trim();
   } catch {
     // no sidecar — fine
   }
@@ -124,8 +126,9 @@ export async function scanPhotos() {
 
     photos.push({
       id: rel.toLowerCase().replace(/\.[^.]+$/, '').replace(/[^a-z0-9/_-]/g, '-'),
-      src: path.relative(process.cwd(), file).split(path.sep).join('/'), // for astro:assets
+      src: path.relative(process.cwd(), file).split(path.sep).join('/'), // for the rendition script
       title: meta.title,
+      note: meta.note,
       category,
       subcategory,
       atRoot,

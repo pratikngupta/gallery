@@ -13,16 +13,8 @@ export function withUrls(p) {
   };
 }
 
-export function toManifest(photos) {
-  return photos.map((p) => ({
-    id: p.id,
-    title: p.title,
-    full: p.full,
-    exif: p.exif
-      ? [p.exif.camera, p.exif.lens, p.exif.focal, p.exif.aperture, p.exif.shutter, p.exif.iso].filter(Boolean)
-      : [],
-  }));
-}
+export const exifLine = (ex) =>
+  ex ? [ex.lens, ex.focal, ex.aperture, ex.shutter, ex.iso].filter(Boolean) : [];
 
 // A category's photos as masonry blocks: subcategory blocks first, then the
 // category's own loose photos.

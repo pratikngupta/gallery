@@ -1,5 +1,7 @@
 import { defineConfig } from 'astro/config';
 
-// Static site. No integrations needed: the photo pipeline is a plain
-// build-time scanner (src/lib/photos.mjs) + astro:assets for renditions.
-export default defineConfig({});
+// Static site. View Transitions are on by default in Astro 7; the layout adds
+// <ClientRouter /> for SPA-style navigation between pages.
+export default defineConfig({
+  prefetch: { defaultStrategy: 'viewport' },
+});

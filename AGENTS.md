@@ -3,7 +3,9 @@
 ## What this project is
 A static photography portfolio for Pratik Gupta. Home (hero → featured wall →
 category index) plus per-collection pages (`/collections/`,
-`/collections/<category>`) with a pill switcher and a full-page lightbox.
+`/collections/<category>` with a pill switcher) and per-photo detail pages
+(`/photo/<id>`: metadata, related wall, native-popover zoom). SPA-style
+navigation via Astro View Transitions with shared-element morphs.
 No framework JS, no CMS, no server. Pages are kept short on purpose — the
 owner rejected the single endless-scroll version.
 
@@ -12,8 +14,8 @@ owner rejected the single endless-scroll version.
 2. **Design system is fixed** (see `docs/KNOWLEDGE.md`). Tokens live in `src/styles/global.css`. Do not introduce new colors, fonts, or type treatments without updating the knowledge doc.
 3. **Folder structure IS the content model.** Categories come from folders under `src/photos/`, subcategories from subfolders, covers from `main` in the filename. Nothing in the site hardcodes a category name. Adding photos = adding files. Never edit a config to add content.
 4. **Zero required metadata.** EXIF is parsed from the file at build time (`exifr`). Titles fall back to the filename. A `photo.txt` sidecar is the only optional override.
-5. **The accent (safelight red) is spent on state only**: active category row, hover, focus rings. Never as decoration.
-6. **The lightbox is always dark**, in both themes — it is the darkroom.
+5. **The accent (safelight red) is spent on state only**: active pill, hover, focus rings. Never as decoration.
+6. **The zoom popover is always dark**, in both themes — it is the darkroom.
 
 ## Commands
 ```
@@ -32,6 +34,7 @@ npm run preview  # serve the production build
 ## Definition of done for any change
 - `npm run build` passes
 - No horizontal scroll at 360px, 768px, and 1440px
-- Keyboard: Tab reaches every interactive element; focus rings visible; Esc closes the lightbox; ←/→ navigate
+- Keyboard: Tab reaches every interactive element; focus rings visible;
+  the zoom popover opens/closes by click and is reachable without a mouse
 - `prefers-reduced-motion` respected
 - Both themes (dark + light) checked

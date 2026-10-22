@@ -1,9 +1,8 @@
 ---
 // Shared shell for /collections/ and /collections/<category>:
-// title, optional description, the pill switcher, masonry, lightbox.
+// title, optional description, the pill switcher, masonry.
 import PillNav from './PillNav.astro';
 import PhotoMasonry from './PhotoMasonry.astro';
-import Lightbox from './Lightbox.astro';
 
 export interface Props {
   title: string;
@@ -11,10 +10,9 @@ export interface Props {
   active: string;
   categories: Array<{ key: string; name: string }>;
   groups: Array<{ label: string | null; photos: Record<string, unknown>[] }>;
-  manifest: Array<Record<string, unknown>>;
   emptyMessage?: string;
 }
-const { title, description, active, categories, groups, manifest, emptyMessage } = Astro.props;
+const { title, description, active, categories, groups, emptyMessage } = Astro.props;
 ---
 
 <section class="collection">
@@ -38,6 +36,4 @@ const { title, description, active, categories, groups, manifest, emptyMessage }
       <PhotoMasonry groups={groups} />
     )
   }
-
-  <Lightbox manifest={manifest} />
 </section>

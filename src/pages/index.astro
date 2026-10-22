@@ -1,11 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { scanPhotos } from '../lib/photos.mjs';
-import { withUrls, toManifest, featuredFor } from '../lib/render.mjs';
+import { withUrls, featuredFor } from '../lib/render.mjs';
 import Hero from '../components/Hero.astro';
 import CategoryIndex from '../components/CategoryIndex.astro';
 import PhotoMasonry from '../components/PhotoMasonry.astro';
-import Lightbox from '../components/Lightbox.astro';
 
 // Home is deliberately short: hero → a featured selection → the index that
 // hands you off to the collection pages.
@@ -54,7 +53,6 @@ const heroImage = hero
         </section>
 
         <CategoryIndex categories={indexCategories} />
-        <Lightbox manifest={toManifest(featuredUrls)} />
       </>
     )
   }

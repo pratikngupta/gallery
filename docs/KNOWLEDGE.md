@@ -38,7 +38,8 @@ were added (see Decisions).
    proper caption.)
 6. A `description.txt` in a category folder: first line shown under the title.
 7. Camera settings display automatically (read from the JPEG). To override a
-   caption, add a `photo.txt` sidecar with a `Title: ...` line.
+   caption or add a blurb to the detail page, add a `photo.txt` sidecar with
+   `Title: ...` and/or `Note: ...` lines.
 8. After adding files: `npm run build` (renditions regenerate only for what's
    new) and deploy. Nothing else.
 
@@ -51,6 +52,11 @@ were added (see Decisions).
   `~/Downloads/astro-photography-portfolio-main` (its collection routes +
   pill switcher + hero scroll cue + nav underline hover) — its Tailwind/
   Playfair/white visual system was NOT adopted; only the IA and micro-UX.
+- **Per-photo detail pages + popover zoom + view transitions:** borrowed from
+  `~/Downloads/astro-frame-shift-main` on the owner's request. Replaced the
+  hash-based lightbox entirely — real `/photo/<id>` routes are shareable and
+  SEO-friendly. Related ranking: same subseries (score 2) before same series
+  (score 1), capped at 8. The zoom is a native `popover` element (no JS).
 - **Sharp script over `astro:assets`:** Astro 7's `getImage` rejects file-path
   strings and our photos are discovered, not imported (see ARCHITECTURE).
 - **WebP renditions over AVIF:** AVIF quality-per-byte is better but encode time
@@ -67,10 +73,13 @@ were added (see Decisions).
   the `.masonry` container. If you move images elsewhere, move the listener too.
 - The theme script in `Layout.astro` must stay `is:inline` and in `<head>`;
   Astro will otherwise bundle it and you get a light/dark flash on load.
-- Photo ids are filesystem paths — moving a file breaks its `#photo/` hash.
-  Fine today; note it before building a favorites/bookmarks feature.
+- Photo ids are filesystem paths — moving a file changes its
+  `/photo/...` URL (old links 404). Note it before any reorganization.
 - `exifr` can throw on unusual containers (HEIC, truncated files). The scanner
   catches it and moves on — never let one bad photo kill the build.
+- **Astro hoists `getStaticPaths`** out of the frontmatter: its body can only
+  see imports, not consts declared in the frontmatter (bit us once with
+  RELATED_LIMIT). Keep `getStaticPaths` bodies self-contained.
 
 ## Open questions for the owner
 - Contact / commission details for the footer (currently "prints available on request").

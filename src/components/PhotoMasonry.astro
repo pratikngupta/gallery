@@ -1,6 +1,8 @@
 ---
 // Masonry blocks: an optional label, then a CSS-columns masonry of prints.
-// Used by the home page (featured) and every collection page.
+// Each print links to its detail page (/photo/<id>) and carries a
+// transition:name so Astro View Transitions can morph the tile into the
+// detail page's image.
 export interface Props {
   groups: Array<{ label: string | null; photos: Record<string, unknown>[] }>;
 }
@@ -15,7 +17,12 @@ const { groups } = Astro.props;
         {
           g.photos.map((p) => (
             <figure class="ph-item">
-              <button class="ph-frame" data-open={p.id} aria-label={`View ${p.title}`}>
+              <a
+                class="ph-frame"
+                href={`/photo/${p.id}`}
+                transition:name={`image-${p.id}`}
+                aria-label={`View ${p.title}`}
+              >
                 <img
                   class="ph-img"
                   src={p.thumb}
@@ -23,7 +30,7 @@ const { groups } = Astro.props;
                   alt={p.title}
                   data-full={p.gridSrc}
                 />
-              </button>
+              </a>
               <figcaption class="ph-cap">
                 <span class="ph-title">{p.title}</span>
                 <span class="ph-year">{p.year}</span>

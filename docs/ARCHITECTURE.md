@@ -24,10 +24,12 @@ server, no database, and no client framework.
 │   prunes renditions of deleted photos                          │
 │        │                                                       │
 │        ▼                                                       │
-│  src/pages/  ── index (hero + featured + index)                │
+│  src/pages/  ── index (hero + featured wall + index)           │
 │   collections/index  (All, pill switcher)                      │
 │   collections/[category]  (getStaticPaths from the scan)       │
-│   each renders PhotoMasonry + Lightbox (manifest prop)         │
+│   photo/[...id]  (one per photo: metadata, related, zoom)      │
+│   grids render PhotoMasonry; tiles link to /photo/<id> with    │
+│   transition:name for the shared-element view transition       │
 │        │                                                       │
 │        ▼                                                       │
 │  dist/  (html + public/renditions + vendored js/css)           │
@@ -67,12 +69,14 @@ from `localStorage` → `prefers-color-scheme` → dark default, so there is no 
 The lightbox ignores the theme (always `#0e0d0b`).
 
 ## URLs
-`/` home · `/collections/` all photos · `/collections/<category>` per series.
-Photos are hash routes on the current page (`#photo/<id>`) handled by the
-lightbox JS; deep links and the back button work.
+`/` home · `/collections/` all photos · `/collections/<category>` per series ·
+`/photo/<id>` per photograph (62 pages total as of Oct 2026).
 Photo id = its path under `src/photos/` minus the extension
-(e.g. `aircraft/f-16-falcon/f-16-falcon-1`).
+(e.g. `/photo/aircraft/f-16-falcon/f-16-falcon-1`); the route is a rest param
+(`[...id]`) because ids contain slashes.
 `/collections` (no slash) is a meta-refresh stub pointing at `/collections/`.
+Navigation is SPA-style via `ClientRouter` (Astro View Transitions, on by
+default in Astro 7); direct URLs still work fully static.
 
 ## Why no CMS
 Content is files. Git gives versioning, PR review, and free hosting. The cost

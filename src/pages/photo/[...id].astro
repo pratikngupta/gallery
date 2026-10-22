@@ -1,0 +1,129 @@
+---
+// /photo/<id> — one photograph, full attention: large image, sticky
+// metadata, a related wall, and a native-popover zoom to the 2400px
+// rendition. Structure adapted from astro-frame-shift; styling stays in the
+// darkroom design system.
+import Layout from '../../layouts/Layout.astro';
+import PhotoMasonry from '../../components/PhotoMasonry.astro';
+import { scanPhotos } from '../../lib/photos.mjs';
+import { withUrls, exifLine } from '../../lib/render.mjs';
+
+// Note: getStaticPaths is hoisted by Astro and can only see imports —
+// keep its body free of frontmatter-local consts.
+export const getStaticPaths = async () => {
+  const { photos } = await scanPhotos();
+  return photos.map((photo) => {
+    // Same subseries first, then the rest of the series.
+    const related = photos
+      .filter((p) => p.id !== photo.id)
+      .map((p) => {
+        let score = p.category === photo.category ? 1 : 0;
+        if (p.subcategory && p.subcategory === photo.subcategory) score += 2;
+        return { p, score };
+      })
+      .filter(({ score }) => score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 8)
+      .map(({ p }) => p.id);
+
+    return { params: { id: photo.id }, props: { photoId: photo.id, related } };
+  });
+};
+
+const { photoId, related } = Astro.props;
+const { photos, categories } = await scanPhotos();
+const photo = photos.find((p) => p.id === photoId);
+if (!photo) return null;
+
+const cat = categories.find((c) => c.key === photo.category);
+const seriesLabel = [cat?.name, photo.subcategory].filter(Boolean).join(' / ');
+const dateLabel = photo.exif?.date
+  ? new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(
+      photo.exif.date
+    )
+  : String(photo.year);
+const settings = exifLine(photo.exif);
+const fullLine = photo.exif ? [photo.exif.camera, ...settings].filter(Boolean) : [];
+
+const display = `/renditions/${photo.id.replace(/\//g, '-')}-1600.webp`;
+const zoom = `/renditions/${photo.id.replace(/\//g, '-')}-2400.webp`;
+const relatedUrls = related.map((id) => withUrls(photos.find((p) => p.id === id)));
+const byId = new Map(relatedUrls.map((p) => [p.id, p]));
+---
+
+<Layout title={`${photo.title} — Pratik Gupta`}>
+  <div class="photo-page">
+    <a class="photo-back" href={`/collections/${photo.category}/`}>← {cat?.name ?? 'Collections'}</a>
+
+    <div class="photo-grid">
+      <div class="photo-display" transition:name={`image-${photo.id}`}>
+        <button
+          type="button"
+          class="zoom-trigger"
+          popovertarget="photo-zoom"
+          aria-label={`View larger: ${photo.title}`}
+        >
+          <img src={display} alt={photo.title} loading="eager" decoding="async" />
+        </button>
+      </div>
+
+      <aside class="photo-meta">
+        <h1 class="photo-title">{photo.title}</h1>
+        <p class="photo-series">{seriesLabel}</p>
+        {
+          photo.note && (
+            <p class="photo-note">{photo.note}</p>
+          )
+        }
+        <dl class="photo-facts">
+          <div>
+            <dt>Series</dt>
+            <dd>{seriesLabel}</dd>
+          </div>
+          <div>
+            <dt>Date</dt>
+            <dd>{dateLabel}</dd>
+          </div>
+          {
+            photo.exif?.camera && (
+              <div>
+                <dt>Camera</dt>
+                <dd>{photo.exif.camera}</dd>
+              </div>
+            )
+          }
+          {
+            settings.length > 0 && (
+              <div>
+                <dt>Settings</dt>
+                <dd class="mono">{settings.join('  ·  ')}</dd>
+              </div>
+            )
+          }
+        </dl>
+        {fullLine.length > 0 && <p class="photo-exif mono">{fullLine.join('  ·  ')}</p>}
+      </aside>
+    </div>
+
+    {
+      relatedUrls.length > 0 && (
+        <section class="photo-related">
+          <h2 class="related-title">More from {cat?.name ?? 'the gallery'}</h2>
+          <PhotoMasonry groups={[{ label: null, photos: relatedUrls.map((p) => byId.get(p.id)) }]} />
+        </section>
+      )
+    }
+  </div>
+
+  <div id="photo-zoom" popover class="zoom-popover">
+    <button
+      type="button"
+      class="zoom-backdrop"
+      popovertarget="photo-zoom"
+      popovertargetaction="hide"
+      aria-label="Close larger image"
+    >
+      <img src={zoom} alt={photo.title} />
+    </button>
+  </div>
+</Layout>
