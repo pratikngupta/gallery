@@ -44,10 +44,8 @@ const heroImage = hero
       <>
         <section class="featured" id="featured">
           <div class="featured-head">
-            <h2 class="featured-title">Featured</h2>
-            <span class="featured-count">
-              {featuredUrls.length} {featuredUrls.length === 1 ? 'photograph' : 'photographs'}
-            </span>
+            <h2 class="featured-title">Featured works</h2>
+            <p class="featured-sub">A selection of my best photographs from the collections</p>
           </div>
           <PhotoMasonry groups={[{ label: null, photos: featuredUrls.map((p) => byId.get(p.id)) }]} />
         </section>

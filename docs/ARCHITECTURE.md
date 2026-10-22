@@ -18,8 +18,8 @@ server, no database, and no client framework.
 │        │                                                       │
 │        ▼   (npm predev / prebuild)                             │
 │  scripts/build-renditions.mjs  ── sharp → public/renditions/   │
-│   40w (blur-up thumb)  900w+1600w (grid srcset)                │
-│   2400w (lightbox)     2560w (hero)         [webp q80]         │
+│   40w (blur-up thumb)  900w+1600w (grid)                       │
+│   2400w (zoom)         2560w (hero)         [webp q80]         │
 │   incremental: skips originals whose rendition is newer;       │
 │   prunes renditions of deleted photos                          │
 │        │                                                       │
@@ -56,9 +56,10 @@ server, no database, and no client framework.
   script keeps the pipeline explicit and incremental.
 - Renditions are WebP q80 in `public/renditions/` (gitignored), so original
   JPEGs are never shipped and `dist/` stays static.
-- Grid images load 40px blurred first, then upgrade to the 900/1600 srcset on
-  load (capture-phase `load` listener — see KNOWN gotchas).
-- The lightbox lazy-loads the 2400px rendition and preloads its two neighbors.
+- Grid images load 40px blurred first, then upgrade to the 1600px rendition on
+  load (capture-phase `load` listener on `document` + a startup sweep — see
+  gotchas).
+- The zoom popover loads the 2400px rendition on demand.
 - Re-runs are cheap: a rendition is only rewritten when its original is newer.
   If the library ever exceeds ~500 photos, move originals off-repo and generate
   renditions in CI or on upload. Not a concern now.
@@ -66,7 +67,7 @@ server, no database, and no client framework.
 ## Theming
 `data-theme="dark" | "light"` on `<html>`. A pre-paint inline script resolves it
 from `localStorage` → `prefers-color-scheme` → dark default, so there is no flash.
-The lightbox ignores the theme (always `#0e0d0b`).
+The zoom popover ignores the theme (always near-black `rgba(14,13,11,.94)`).
 
 ## URLs
 `/` home · `/collections/` all photos · `/collections/<category>` per series ·

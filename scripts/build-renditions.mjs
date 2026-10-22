@@ -7,7 +7,7 @@
 //   40    blur-up thumbnail in the grid
 //   900   grid srcset (mobile/tablet)
 //   1600  grid srcset (desktop) + category-index cover
-//   2400  lightbox
+//   2400  zoom popover
 //   2560  hero (retina)
 
 import sharp from 'sharp';

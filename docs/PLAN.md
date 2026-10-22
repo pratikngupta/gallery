@@ -35,18 +35,22 @@ with shared-element morphs. No page is ever longer than one body of work.
 
 1. **Home (`/`)** — hero → featured wall → index. Deliberately short.
    - **Hero**: full-bleed photograph, 100svh, slow 18s zoom (the single
-     page-load motion moment). Name in Fraunces lower-left. A small "Featured"
-     scroll invitation at bottom-center that fades out once the page moves.
+     page-load motion moment) under a tone scrim. Centered on it: name in
+     Fraunces, a one-line tagline, and a bordered "View the gallery" button.
+     A "Featured work ⌄" invitation at bottom-center fades out once the page
+     moves.
    - **Featured**: a short masonry wall — every `main` photo first, topped up
      with category covers (capped at 8).
    - **Index**: vertical table of contents, one row per category (mono number,
      Fraunces name, count); hovering a row develops that category's cover into
      the background; rows link to `/collections/<category>`.
-2. **Collections (`/collections/` and `/collections/<category>`)** — Fraunces
-   title (+ the folder's `description.txt` line if present), a pill switcher
-   (All + categories, active in safelight red), then CSS multi-column masonry.
-   Full-width prints, no frames. Caption below: title + year (mono, meta).
-   Subcategories render as labeled sub-blocks before the category's loose photos.
+2. **Collections (`/collections/` and `/collections/<category>`)** — centered
+   Fraunces title ("Gallery" on the all-photos page; the folder's
+   `description.txt` line or category name below), centered bordered filter
+   chips (All + categories, active in safelight red), then CSS multi-column
+   masonry of clean tiles (6px radius, title revealed on a hover scrim —
+   full metadata is on the detail page). Subcategories render as labeled
+   sub-blocks before the category's loose photos.
 4. **Photo detail (`/photo/<id>`)** — one photograph, full attention:
    back link ("← Aircraft"), large image (2/3, object-contain, max 85svh,
    `cursor: zoom-in`) beside a sticky metadata column (Fraunces title,
@@ -62,7 +66,9 @@ with shared-element morphs. No page is ever longer than one body of work.
    better sharing, SEO, and no in-page state to lose.)
 
 ## Alignment & type rules
-- Everything left-aligned, ragged right. Nothing centered except the lightbox image.
+- Left-aligned by default. Centered, by owner approval (Oct 2026): the hero
+  composition, the "Featured works" heading, and collection headings + chips.
+  Nothing else.
 - Line length < 70ch on prose.
 - No all-caps labels. No accent on a single word in a headline. No `·`-joined
   decorative meta strings (EXIF lines are data, and may use `·`).

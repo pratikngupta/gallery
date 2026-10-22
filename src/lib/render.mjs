@@ -31,18 +31,19 @@ export function groupsFor(c, byId) {
   return groups;
 }
 
-// Home-page featured: every "main" photo first, topped up with the covers of
-// categories that have no "main" yet. Capped so the home page stays short.
+// Home-page featured: every "main" photo first, then the category covers,
+// then the rest of the library in scan order, until the cap. Capped so the
+// home page stays short.
 export function featuredFor(photos, categories, cap = 8) {
   const mains = photos.filter((p) => p.isMain);
   const seen = new Set(mains.map((p) => p.id));
   const picks = [...mains];
-  for (const c of categories) {
-    if (picks.length >= cap) break;
-    if (c.cover && !seen.has(c.cover.id)) {
-      seen.add(c.cover.id);
-      picks.push(c.cover);
-    }
-  }
+  const topUp = (p) => {
+    if (picks.length >= cap || !p || seen.has(p.id)) return;
+    seen.add(p.id);
+    picks.push(p);
+  };
+  for (const c of categories) topUp(c.cover);
+  for (const p of photos) topUp(p);
   return picks.slice(0, cap);
 }

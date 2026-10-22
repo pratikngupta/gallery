@@ -11,7 +11,10 @@ osprey/rca f t33), buildings (8, modern/), landscape (8, coastal/ + mountains/),
 wildlife (15, per-species subfolders). Photos are high quality and real — the
 footer explicitly says "All photos are real, not AI generated". His feedback
 history: the single endless page was too long to scroll → per-collection pages
-were added (see Decisions).
+were added (see Decisions); then (Oct 2026) he asked for the home/collection
+pages to match a centered reference layout — hero CTA, centered headings and
+filter chips, clean tiles with hover titles — while keeping the darkroom
+tokens and typefaces.
 
 ## Design system (the contract)
 - **Two themes, one token set.** Dark "darkroom" is the default; light "gallery"
@@ -21,10 +24,14 @@ were added (see Decisions).
   numbers). Loaded from Google Fonts in `Layout.astro`. Never add a fourth.
 - **Accent discipline:** `--accent` (safelight red) appears only on
   active/hover/focus. If a mockup shows it anywhere else, the mockup is wrong.
-- **No photo chrome:** zero borders, shadows, radii, or overlays on grid images.
-  Captions sit *below*, never on, the photo.
-- **Layout:** left-aligned, ragged right; masonry via CSS `columns` (3/2/1 at
-  1024/640px); lightbox is the only centered surface and it is always dark.
+- **No photo chrome:** no cards, borders, or shadows on grid images. The only
+  tile chrome (owner-approved Oct 2026) is a 6px radius and a title-only hover
+  scrim (shown on hover-capable devices; never on touch). Full metadata —
+  title, series, EXIF — lives on the `/photo/<id>` detail page.
+- **Layout:** left-aligned by default; the hero, the "Featured works" heading
+  and collection headings + filter chips are centered (owner-approved Oct
+  2026). Masonry via CSS `columns` (3/2/1 at 1024/640px). The zoom popover is
+  always dark, in both themes.
 
 ## Content conventions (teach these to anyone adding photos)
 1. Put photos in `src/photos/<category>/` — any folder works, no config.
@@ -63,14 +70,17 @@ were added (see Decisions).
   at build grows fast with a large library; WebP is the pragmatic 90%.
 - **CSS columns masonry over JS masonry:** no layout shift, no JS cost,
   and reading order is column-wise, which reads fine for a gallery.
-- **Hash-based photo routes** (`#photo/...`) over real routes: the lightbox is
-  an overlay, not a page; hashes survive any static host without rewrites.
+- **Real `/photo/<id>` routes over the old hash lightbox** (`#photo/...`):
+  the hash lightbox was replaced entirely — real routes are shareable and
+  SEO-friendly.
 - **exifr at build time** rather than storing EXIF in files: the photographer
   will never want to write metadata by hand, and JPEGs already carry it.
 
 ## Gotchas
-- `load` events don't bubble — the blur-up upgrade listens in capture phase on
-  the `.masonry` container. If you move images elsewhere, move the listener too.
+- `load` events don't bubble — the blur-up upgrade listens on `document` in
+  capture phase (survives View Transition navigations) plus a start-of-script
+  sweep for images already complete. Cached 40px thumbs never fire `load`
+  again, so the sweep is load-bearing, not belt-and-braces.
 - The theme script in `Layout.astro` must stay `is:inline` and in `<head>`;
   Astro will otherwise bundle it and you get a light/dark flash on load.
 - Photo ids are filesystem paths — moving a file changes its
