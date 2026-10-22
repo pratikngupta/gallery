@@ -40,14 +40,43 @@ async function imageFiles(dir) {
 }
 
 function titleFromName(name) {
-  // Underscores separate words; hyphens and spaces stay as-is ("F-16",
-  // "squirrel-eating-2" keep their character, "f_16_falcon" gets spaces).
-  return name
-    .replace(/_+/g, ' ')
-    .replace(/\bmain\b/gi, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .replace(/^./, (c) => c.toUpperCase());
+  let s = name
+    .replace(/\bcoverart\b/gi, ' ')
+    .replace(/\bcover\b/gi, ' ')
+    .replace(/\bmain\b/gi, ' ')
+    .trim();
+
+  // Replace underscores and hyphens with spaces
+  s = s.replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+
+  // Standardize known models, acronyms, and places
+  s = s
+    .replace(/\bf\s*16\b/gi, 'F-16')
+    .replace(/\bf\s*18\b/gi, 'F-18')
+    .replace(/\bf\s*22\b/gi, 'F-22')
+    .replace(/\bcmv\s*22\b/gi, 'CMV-22')
+    .replace(/\brca\s*f\s*t\s*33\b/gi, 'RCAF T-33')
+    .replace(/\bcn\s*tower\b/gi, 'CN Tower')
+    .replace(/\bbig\s*surf?\b/gi, 'Big Sur')
+    .replace(/\bcostline\b/gi, 'Coastline');
+
+  const words = s.split(' ').map((word) => {
+    if (/^[Ff]-\d+/.test(word) || (/^[A-Z0-9-]+$/.test(word) && word.length > 1 && !/^\d+$/.test(word))) {
+      return word.toUpperCase();
+    }
+    if (/^#\d+/.test(word)) return word;
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  });
+
+  if (words.length > 1) {
+    const last = words[words.length - 1];
+    if (/^\d+$/.test(last)) {
+      const num = last.length < 2 ? last.padStart(2, '0') : last;
+      words[words.length - 1] = `#${num}`;
+    }
+  }
+
+  return words.join(' ');
 }
 
 function prettyKey(key) {
@@ -104,14 +133,18 @@ async function readMeta(file, title) {
     });
     if (ex) {
       const exif = {};
-      if (ex.Make || ex.Model) exif.camera = [ex.Make, ex.Model].filter(Boolean).join(' ');
+      if (ex.Make || ex.Model) {
+        const m = (ex.Model || '').trim();
+        const make = (ex.Make || '').trim();
+        exif.camera = m.toLowerCase().startsWith(make.toLowerCase()) ? m : [make, m].filter(Boolean).join(' ');
+      }
       if (ex.LensModel) exif.lens = ex.LensModel;
       if (ex.FocalLength) {
         const f = Array.isArray(ex.FocalLength) ? ex.FocalLength[0] : ex.FocalLength;
         exif.focal = `${Math.round(f)}mm`;
       }
       if (ex.FNumber) exif.aperture = `ƒ/${ex.FNumber}`;
-      if (ex.ExposureTime) exif.shutter = ex.ExposureTime >= 1 ? `${ex.ExposureTime}s` : `1/${Math.round(1 / ex.ExposureTime)}`;
+      if (ex.ExposureTime) exif.shutter = ex.ExposureTime >= 1 ? `${ex.ExposureTime}s` : `1/${Math.round(1 / ex.ExposureTime)}s`;
       if (ex.ISO && ex.ISO !== 0) exif.iso = `ISO ${ex.ISO}`;
       if (ex.DateTimeOriginal) exif.date = new Date(ex.DateTimeOriginal);
       meta.exif = Object.keys(exif).length ? exif : null;

@@ -1,6 +1,6 @@
 ---
 // Shared shell for /collections/ and /collections/<category>:
-// title, optional description, the pill switcher with subcategories, masonry.
+// lightweight breadcrumb, title, optional description, single-tier pill switcher, masonry.
 import PillNav, { type Subcategory } from './PillNav.astro';
 import PhotoMasonry from './PhotoMasonry.astro';
 
@@ -14,10 +14,24 @@ export interface Props {
   emptyMessage?: string;
 }
 const { title, description, active, categories, subcategories = [], groups, emptyMessage } = Astro.props;
+const isAll = active === 'all';
 ---
 
 <section class="collection" data-collection-view>
   <header class="collection-head">
+    {
+      !isAll && (
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/collections/" class="breadcrumb-link">Gallery</a>
+          <span class="breadcrumb-sep" aria-hidden="true">/</span>
+          <a href={`/collections/${active}/`} class="breadcrumb-link breadcrumb-current" data-breadcrumb-cat>{title}</a>
+          <span data-breadcrumb-sub-wrap style="display: none;">
+            <span class="breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="breadcrumb-current" data-breadcrumb-sub></span>
+          </span>
+        </nav>
+      )
+    }
     <h1 class="collection-title">{title}</h1>
     {
       description && (
@@ -54,6 +68,20 @@ const { title, description, active, categories, subcategories = [], groups, empt
         if (!target) return;
 
         pills.forEach((p) => p.classList.toggle('is-active', p === pill));
+
+        const subWrap = document.querySelector<HTMLElement>('[data-breadcrumb-sub-wrap]');
+        const subText = document.querySelector<HTMLElement>('[data-breadcrumb-sub]');
+        const catLink = document.querySelector<HTMLElement>('[data-breadcrumb-cat]');
+        if (subWrap && subText) {
+          if (target === 'all') {
+            subWrap.style.display = 'none';
+            catLink?.classList.add('breadcrumb-current');
+          } else {
+            subWrap.style.display = 'inline';
+            subText.textContent = pill.textContent?.trim() || '';
+            catLink?.classList.remove('breadcrumb-current');
+          }
+        }
 
         if (frames.length > 0) {
           frames.forEach((frame) => {

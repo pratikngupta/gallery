@@ -53,7 +53,21 @@ const byId = new Map(relatedUrls.map((p) => [p.id, p]));
 
 <Layout title={`${photo.title} — Pratik Gupta`}>
   <div class="photo-page">
-    <a class="photo-back" href={`/collections/${photo.category}/`}>← {cat?.name ?? 'Collections'}</a>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/collections/" class="breadcrumb-link">Gallery</a>
+      <span class="breadcrumb-sep" aria-hidden="true">/</span>
+      <a href={`/collections/${photo.category}/`} class="breadcrumb-link">{cat?.name ?? 'Collection'}</a>
+      {
+        photo.subcategory && (
+          <>
+            <span class="breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="breadcrumb-link">{photo.subcategory}</span>
+          </>
+        )
+      }
+      <span class="breadcrumb-sep" aria-hidden="true">/</span>
+      <span class="breadcrumb-current">{photo.title}</span>
+    </nav>
 
     <div class="photo-grid">
       <div class="photo-display" transition:name={`image-${photo.id}`}>
@@ -75,33 +89,64 @@ const byId = new Map(relatedUrls.map((p) => [p.id, p]));
             <p class="photo-note">{photo.note}</p>
           )
         }
-        <dl class="photo-facts">
-          <div>
-            <dt>Series</dt>
-            <dd>{seriesLabel}</dd>
-          </div>
-          <div>
-            <dt>Date</dt>
-            <dd>{dateLabel}</dd>
-          </div>
+        <dl class="spec-table">
           {
             photo.exif?.camera && (
-              <div>
+              <div class="spec-row">
                 <dt>Camera</dt>
                 <dd>{photo.exif.camera}</dd>
               </div>
             )
           }
           {
-            settings.length > 0 && (
-              <div>
-                <dt>Settings</dt>
-                <dd class="mono">{settings.join('  ·  ')}</dd>
+            photo.exif?.lens && (
+              <div class="spec-row">
+                <dt>Lens</dt>
+                <dd>{photo.exif.lens}</dd>
+              </div>
+            )
+          }
+          {
+            photo.exif?.focal && (
+              <div class="spec-row">
+                <dt>Focal Length</dt>
+                <dd class="mono">{photo.exif.focal}</dd>
+              </div>
+            )
+          }
+          {
+            photo.exif?.aperture && (
+              <div class="spec-row">
+                <dt>Aperture</dt>
+                <dd class="mono">{photo.exif.aperture.replace('ƒ/', 'f/')}</dd>
+              </div>
+            )
+          }
+          {
+            photo.exif?.shutter && (
+              <div class="spec-row">
+                <dt>Shutter</dt>
+                <dd class="mono">{photo.exif.shutter}</dd>
+              </div>
+            )
+          }
+          {
+            photo.exif?.iso && (
+              <div class="spec-row">
+                <dt>ISO</dt>
+                <dd class="mono">{photo.exif.iso.replace(/^ISO\s*/i, '')}</dd>
+              </div>
+            )
+          }
+          {
+            dateLabel && (
+              <div class="spec-row">
+                <dt>Captured</dt>
+                <dd>{dateLabel}</dd>
               </div>
             )
           }
         </dl>
-        {fullLine.length > 0 && <p class="photo-exif mono">{fullLine.join('  ·  ')}</p>}
       </aside>
     </div>
 

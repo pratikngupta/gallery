@@ -1,6 +1,7 @@
 ---
-// Collection switcher: All + one link per category.
-// When subcategories exist for the active category, renders a secondary subcategory row.
+// Collection switcher:
+// - On '/collections/' (active === 'all'): renders primary category pills [All, Aircraft, ...]
+// - On dedicated category pages (active !== 'all'): renders only the category's sub-filters [All Aircraft, F-16, ...]
 export interface Subcategory {
   key: string;
   name: string;
@@ -14,31 +15,26 @@ export interface Props {
 }
 
 const { categories, active, subcategories = [] } = Astro.props;
+const isAll = active === 'all';
 const activeCategoryName = categories.find((c) => c.key === active)?.name || 'Works';
 const slug = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '-');
 ---
 
-<nav class="pill-nav-container" aria-label="Collections and Subcategories">
-  <!-- Primary: Category Switcher -->
-  <div class="pill-nav" aria-label="Categories">
-    <a class="pill" href="/collections/" class:list={{ 'is-active': active === 'all' }}>All</a>
-    {
-      categories.map((c) => (
-        <a
-          class="pill"
-          href={`/collections/${c.key}`}
-          class:list={{ 'is-active': active === c.key }}
-        >
-          {c.name}
-        </a>
-      ))
-    }
-  </div>
-
-  <!-- Secondary: Subcategory Switcher -->
-  {
+{
+  isAll ? (
+    <nav class="pill-nav" aria-label="Categories">
+      <a class="pill is-active" href="/collections/">All</a>
+      {
+        categories.map((c) => (
+          <a class="pill" href={`/collections/${c.key}`}>
+            {c.name}
+          </a>
+        ))
+      }
+    </nav>
+  ) : (
     subcategories.length > 0 && (
-      <div class="subcat-nav" data-subcat-nav aria-label="Subcategories">
+      <nav class="subcat-nav" data-subcat-nav aria-label={`${activeCategoryName} sub-categories`}>
         <button class="subcat-pill is-active" data-subcat-filter="all" type="button">
           All {activeCategoryName}
         </button>
@@ -50,11 +46,10 @@ const slug = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '-');
               type="button"
             >
               {s.name}
-              {s.count ? <span class="subcat-pill-count">{s.count}</span> : null}
             </button>
           ))
         }
-      </div>
+      </nav>
     )
-  }
-</nav>
+  )
+}
