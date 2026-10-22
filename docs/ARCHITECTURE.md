@@ -24,10 +24,10 @@ server, no database, and no client framework.
 │   prunes renditions of deleted photos                          │
 │        │                                                       │
 │        ▼                                                       │
-│  src/pages/  ── index (hero + featured wall)                   │
+│  src/pages/  ── index (hero + featured wall + full gallery portal)
 │   collections/index  (All, pill switcher)                      │
 │   collections/[category]  (getStaticPaths from the scan)       │
-│   photo/[...id]  (one per photo: metadata, related, zoom)      │
+│   photo/[...id]  (one per photo: spec table, related, zoom)    │
 │   grids render PhotoMasonry; tiles link to /photo/<id> with    │
 │   transition:name for the shared-element view transition       │
 │        │                                                       │
@@ -42,14 +42,14 @@ server, no database, and no client framework.
 ## Key files
 | File | Job |
 |---|---|
-| `src/lib/photos.mjs` | The content model. Pure function: filesystem in → `{categories, photos, hero}` out. No Astro imports, no image processing. |
-| `src/lib/render.mjs` | Page-assembly helpers: rendition URLs, masonry groups, lightbox manifests, the featured selection. |
+| `src/lib/photos.mjs` | The content model. Pure function: filesystem in → `{categories, photos, hero}` out. Normalizes titles, models, and numbers (`F-22 Raptor #07`). No Astro imports, no image processing. |
+| `src/lib/render.mjs` | Page-assembly helpers: rendition URLs, masonry groups, lightbox manifests, deduplicated featured selection (`excludeId`), and hero slides. |
 | `scripts/build-renditions.mjs` | sharp-based rendition generator into `public/renditions/` (gitignored). Runs via npm `predev`/`prebuild`. |
-| `src/styles/global.css` | All design tokens + component styles. Theme = CSS custom properties on `:root[data-theme]`. |
-| `src/layouts/Layout.astro` | Head, theme pre-paint script, header/footer, site-wide JS (toggle, cue fade, index hover-develop, blur-up). |
-| `src/components/CollectionView.astro` | Shared shell for all collection pages (title, chips, capped masonry + reveal). |
+| `src/styles/global.css` | All design tokens (`--radius: 8px;`, `--font-heading: Archivo`) + component and responsive styles. Theme = CSS custom properties on `:root[data-theme]`. |
+| `src/layouts/Layout.astro` | Head, pre-paint inline theme script, header/footer, site-wide JS (event-delegated theme toggle, `astro:after-swap` theme sync, blur-up). |
+| `src/components/CollectionView.astro` | Shared shell for all collection pages (breadcrumb, dynamic subcategory chips, masonry). |
 | `src/components/PhotoMasonry.astro` | The grid: tiles, hover titles, and the blur-up attributes. |
-| `src/pages/photo/[...id].astro` | Per-photo page: image, sticky metadata, related wall, native-popover zoom. |
+| `src/pages/photo/[...id].astro` | Per-photo page: 85vh image, responsive breadcrumbs, sticky metadata sidebar with structured spec table, related wall, native-popover zoom. |
 
 ## Image pipeline
 - Why a script instead of `astro:assets`: Astro 7's `getImage` refuses raw file
@@ -66,13 +66,16 @@ server, no database, and no client framework.
   renditions in CI or on upload. Not a concern now.
 
 ## Theming
-`data-theme="dark" | "light"` on `<html>`. A pre-paint inline script resolves it
-from `localStorage` → `prefers-color-scheme` → dark default, so there is no flash.
-The zoom popover ignores the theme (always near-black `rgba(14,13,11,.94)`).
+`data-theme="dark" | "light"` on `<html>`. A pre-paint inline script in `<head>` resolves it
+from `localStorage` → `prefers-color-scheme` → dark default without flash, and hooks
+`astro:after-swap` so client-side navigation never resets the theme.
+Click interaction is handled via document-level event delegation so theme switching
+persists reliably across all Astro View Transitions. The zoom popover ignores the theme
+(always near-black `rgba(14,13,11,.94)`).
 
 ## URLs
 `/` home · `/collections/` all photos · `/collections/<category>` per series ·
-`/photo/<id>` per photograph (62 pages total as of Oct 2026).
+`/photo/<id>` per photograph (63 pages total as of Oct 2026).
 Photo id = its path under `src/photos/` minus the extension
 (e.g. `/photo/aircraft/f-16-falcon/f-16-falcon-1`); the route is a rest param
 (`[...id]`) because ids contain slashes.

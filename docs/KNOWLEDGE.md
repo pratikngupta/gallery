@@ -20,18 +20,27 @@ tokens and typefaces.
 - **Two themes, one token set.** Dark "darkroom" is the default; light "gallery"
   is the alternate. Tokens and their values: `docs/PLAN.md` → "Design tokens"
   (the source of truth in code is `:root` in `src/styles/global.css`).
-- **Typefaces:** Fraunces (display), Archivo (body), JetBrains Mono (EXIF +
-  numbers). Loaded from Google Fonts in `Layout.astro`. Never add a fourth.
+  `--meta` is `#a8a29e` (dark) and `#57534e` (light) to meet WCAG AA contrast.
+  Theme switching is event-delegated with `astro:after-swap` persistence across View Transitions.
+- **Typefaces:** Archivo is standardized as `--font-heading` and `--font-body` across all
+  headings and prose to maintain cohesive editorial geometry. JetBrains Mono is used for
+  EXIF, specs, numbering, and counts.
 - **Accent discipline:** `--accent` (safelight red) appears only on
-  active/hover/focus. If a mockup shows it anywhere else, the mockup is wrong.
+  active/hover/focus states. Never as decoration.
 - **No photo chrome:** no cards, borders, or shadows on grid images. The only
-  tile chrome (owner-approved Oct 2026) is a 6px radius and a title-only hover
-  scrim (shown on hover-capable devices; never on touch). Full metadata —
-  title, series, EXIF — lives on the `/photo/<id>` detail page.
-- **Layout:** left-aligned by default; the hero, the "Featured works" heading
-  and collection headings + filter chips are centered (owner-approved Oct
-  2026). Masonry via CSS `columns` (3/2/1 at 1024/640px). The zoom popover is
-  always dark, in both themes.
+  tile chrome is a unified 8px radius (`--radius: 8px`) and a title-only hover
+  scrim (shown on hover-capable devices; never on touch). Full metadata lives on
+  the `/photo/<id>` detail page.
+- **Layout & Header:**
+  - Header is a single compact horizontal bar (`h-14` / 56px) on mobile with 44×44px touch targets;
+    on desktop it is a sticky glass bar constrained to the 1320px content grid container.
+  - Home: editorial hero slideshow, featured works wall (9 items, balanced 3 columns, excluding the hero photo),
+    and an "Explore the full gallery" (`#full-gallery`) archive portal.
+  - Collections: dynamic breadcrumbs (`Gallery / Aircraft / [Subcategory]`), single-tier subcategory pills,
+    high-contrast solid active pills.
+  - Detail: responsive breadcrumb (`← Back` on mobile, full path on desktop), `85vh` `object-contain`
+    image, and a 340px sticky sidebar with a structured spec table.
+  - Masonry via CSS `columns` (3/2/1 at 1024/640px). The zoom popover is always dark in both themes.
 
 ## Content conventions (teach these to anyone adding photos)
 1. Put photos in `src/photos/<category>/` — any folder works, no config.
@@ -39,16 +48,14 @@ tokens and typefaces.
    its category's cover in the index and lands on the home featured wall.
 3. Subfolders become subcategories (e.g. `aircraft/F-16 Falcon/`).
 4. Files at the `src/photos/` root land in Field Notes.
-5. The filename is the title: underscores become spaces, hyphens and spaces
-   stay, `main` is removed, first letter capitalized. Rename to retitle.
-   (`f_16_falcon.jpg` → "F 16 Falcon" — rename to `F-16 falcon.jpg` for the
-   proper caption.)
+5. The filename is dynamically normalized into a polished title: underscores/hyphens become spaces,
+   model acronyms are standardized (`F-16`, `F-18`, `F-22`, `CMV-22`, `RCAF T-33`, `CN Tower`, `Big Sur`),
+   trailing numbers become `#07`, and cover tags are stripped (`f_22_raptor_7.jpg` → "F-22 Raptor #07").
 6. A `description.txt` in a category folder: first line shown under the title.
-7. Camera settings display automatically (read from the JPEG). To override a
-   caption or add a blurb to the detail page, add a `photo.txt` sidecar with
-   `Title: ...` and/or `Note: ...` lines.
-8. After adding files: `npm run build` (renditions regenerate only for what's
-   new) and deploy. Nothing else.
+7. Camera settings display automatically in a structured spec table (Camera, Lens, Focal Length, Aperture,
+   Shutter, ISO, Captured). To override a caption or add a blurb to the detail page, add a `photo.txt` sidecar
+   with `Title: ...` and/or `Note: ...` lines.
+8. After adding files: `npm run build` (renditions regenerate only for what's new) and deploy. Nothing else.
 
 ## Decisions made (and why — don't re-litigate without a reason)
 - **Astro, not React/Next:** the site is content, not an app; zero-JS output

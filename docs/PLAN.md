@@ -9,59 +9,39 @@ Photography's own vernacular is the darkroom: deep warm darkness, images
 "developing" out of black. The site treats photographs as prints hanging on a
 dark wall. Darkness is tonal separation, not mood. One accent — safelight red —
 is spent only on state (active, hover, focus). Light mode exists as "gallery
-mode": warm paper, same tokens, same layout.
+mode": warm paper, same tokens, same layo## Design tokens (canonical copy in `src/styles/global.css`)
+| Token            | Dark (default) | Light          | Role                                  |
+|------------------|----------------|----------------|---------------------------------------|
+| `--bg`           | `#1a1815`      | `#f6f3ee`      | page background                        |
+| `--text`         | `#ede8e0`      | `#1a1815`      | primary text                           |
+| `--accent`       | `#d03a2b`      | `#b23225`      | safelight: active/hover/focus only     |
+| `--meta`         | `#a8a29e`      | `#57534e`      | counts, years, secondary text (WCAG AA)|
+| `--frame`        | `#2c2823`      | `#ddd8cf`      | hairlines, dividers                    |
+| `--radius`       | `8px`          | `8px`          | unified corner radius for tiles/cards  |
 
-## Design tokens (canonical copy in `src/styles/global.css`)
-| Token      | Dark (default) | Light          | Role                                  |
-|------------|----------------|----------------|---------------------------------------|
-| `--bg`     | `#1a1815`      | `#f6f3ee`      | page background                        |
-| `--text`   | `#ede8e0`      | `#1a1815`      | primary text                           |
-| `--accent` | `#d03a2b`      | `#b23225`      | safelight: active/hover/focus only     |
-| `--meta`   | `#8a857c`      | `#6e6a62`      | counts, years, secondary text          |
-| `--frame`  | `#2c2823`      | `#ddd8cf`      | hairlines, dividers                    |
-
-Type: **Fraunces** (display: name, category titles) · **Archivo** (body, nav,
-captions) · **JetBrains Mono** (EXIF, numbering, counts). Scale: hero
-`clamp(2.75rem, 9vw, 7rem)`, category `clamp(2rem, 5vw, 3.25rem)`, index
-`clamp(1.6rem, 4vw, 2.5rem)`, body 1rem/1.6, small 0.8125rem.
+Type: **Archivo** (unified heading and body family: wordmark, headlines, section titles,
+captions) · **JetBrains Mono** (EXIF, numbering, counts).
 
 ## Layout (information architecture)
-Borrowed from two Astro templates (adapted to the darkroom system, not
-copied): astro-photography-portfolio contributed the **per-collection pages**
-(pill switcher, featured home, hero scroll cue, nav underline hover);
-astro-frame-shift contributed the **per-photo detail pages** (`/photo/<id>`),
-related-photo ranking, the native-popover zoom, and Astro View Transitions
-with shared-element morphs. No page is ever longer than one body of work.
-
-1. **Home (`/`)** — hero → featured wall. Deliberately short (the category
-   index section was removed on the owner's request — the gallery chips on
-   the collection pages are the table of contents).
-   - **Hero**: full-bleed photograph, 100svh, slow 18s zoom (the single
-     page-load motion moment) under a tone scrim. Centered on it: name in
-     Fraunces, a one-line tagline, and a bordered "View the gallery" button.
-   - **Featured**: a short masonry wall — every `main` photo first, topped up
-     with category covers, then the rest of the library (capped at 8).
-2. **Collections (`/collections/` and `/collections/<category>`)** — centered
-   Fraunces title ("Gallery" on the all-photos page; the folder's
-   `description.txt` line or category name below), centered bordered filter
-   chips (All + categories, active in safelight red), then CSS multi-column
-   masonry of clean tiles (6px radius, title revealed on a hover scrim —
-   full metadata is on the detail page). Subcategories render as labeled
-   sub-blocks before the category's loose photos. Pages show the full
-   collection — the per-category structure is what keeps them short.
-4. **Photo detail (`/photo/<id>`)** — one photograph, full attention:
-   back link ("← Aircraft"), large image (2/3, object-contain, max 85svh,
-   `cursor: zoom-in`) beside a sticky metadata column (Fraunces title,
-   series, optional note, and a facts list: Series / Date / Camera /
-   Settings in mono). Clicking the image opens a **native popover zoom**
-   (2400px rendition, scale+fade, darkroom background, click to close).
-   Below: "More from {series}" — up to 8 related photos ranked by
-   subseries match first, then series match.
-5. **View Transitions** — SPA-style navigation via `ClientRouter`; grid
-   tiles and the detail image share `transition:name="image-<id>"` so a
-   tile morphs into the detail page; the footer persists across navigations.
-   (The earlier `#photo/` hash lightbox was replaced by these real routes —
-   better sharing, SEO, and no in-page state to lose.)
+1. **Header (`.site-header`)**:
+   - Mobile ($\le 640\text{px}$): Single compact bar (`h-14` / 56px) with `PRATIK GUPTA` on the left and `HOME GALLERY ABOUT` + theme toggle in one line with 44×44px touch hitboxes.
+   - Desktop: Sticky glass header (`backdrop-blur-md`) constrained to the 1320px content grid container.
+2. **Home (`/`)**:
+   - **Hero**: 3:2 photography showcase with auto-switching slideshow, location pill, and editorial statement.
+   - **Featured**: 9-item balanced 3-column masonry wall, automatically deduplicated to exclude the active hero image.
+   - **Full Gallery Portal (`#full-gallery`)**: An editorial archive section with category preview cards (Aircraft, Buildings, Landscape, Wildlife with photograph counts) and a high-contrast pill CTA linking to `/collections/`.
+3. **Collections (`/collections/` and `/collections/<category>`)**:
+   - Top-level `/collections/`: shows all categories via primary pill bar.
+   - Dedicated category `/collections/<category>`: lightweight breadcrumb (`Gallery / Category` dynamically updating to `Gallery / Category / Subcategory`), single-tier subcategory pill switcher, high-contrast solid active pills.
+4. **Photo detail (`/photo/<id>`)**:
+   - Responsive breadcrumb: clean single back affordance (`← [Subcategory]`) on mobile ($<640\text{px}$), full hierarchy on desktop.
+   - Framing: image expands up to `85vh` with `object-contain`.
+   - Metadata: 340px sticky right sidebar with a clean, structured spec table (Camera, Lens, Focal Length, Aperture, Shutter, ISO, Captured).
+   - Zoom: native popover darkroom zoom to 2400px.
+   - Related wall: "More from {series}" ranked by subseries and category.
+5. **View Transitions & Theming**:
+   - Client-side navigation via Astro `ClientRouter` with shared-element image morphs.
+   - Theme toggle uses document-level event delegation and `<head>` `astro:after-swap` listener to guarantee persistence and reactivity across all page transitions.
 
 ## Alignment & type rules
 - Left-aligned by default. Centered, by owner approval (Oct 2026): the hero
@@ -114,6 +94,14 @@ src/photos/                        ← as of Oct 2026:
 6. **Real photos** — library copied in (56 photos, 4 categories) ✅
 7. **Photo detail pages** (frame-shift IA) — `/photo/<id>`, related wall,
    popover zoom, view transitions ✅
-8. **Owner QA & launch** — owner testing, hero/cover picks, caption cleanup,
-   performance + a11y audit, OG images, deploy
-   (GitHub Pages / Netlify / Cloudflare Pages)
+8. **Owner QA & polish** —
+   - Typography standardized to Archivo across all headings and body ✅
+   - Dynamic title normalization (`f_22_raptor_7` → `F-22 Raptor #07`) ✅
+   - Mobile single-row header (`h-14`, 44×44px hitboxes) and compact spacing ✅
+   - Hero photo deduplication from featured works & balanced 9-item grid ✅
+   - Detail view structured spec table, 85vh framing, responsive breadcrumb ✅
+   - Main page "Explore the full gallery" archive portal (`#full-gallery`) ✅
+   - Theme toggle event delegation & persistence across View Transitions ✅
+9. **Launch & Deploy** —
+   - OG image + social metadata
+   - Domain + deploy (GitHub Pages / Netlify / Cloudflare Pages)

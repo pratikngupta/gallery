@@ -29,19 +29,24 @@
 - [x] View Transitions: ClientRouter + shared-element tile→detail morphs
 - [x] photo.txt sidecars now support a Note: line (shown on the detail page)
 
-## Phase 7 — Owner QA & launch
-- [ ] Owner tests the site (dev server: `npm run dev`)
-- [ ] Pick the hero photo (`main_*.jpg` at src/photos root to force it)
-- [ ] Mark one `main` cover per category (aircraft and wildlife have none yet)
-- [ ] Caption cleanup: rename raw camera filenames or add `photo.txt` sidecars
-- [ ] Visual QA pass, both themes, 360/768/1440px
-- [ ] Lighthouse performance pass (image sizes, LCP hero)
-- [ ] Accessibility audit (screen-reader pass over grid + lightbox)
-- [ ] OG image + site metadata (title, description, social card)
-- [ ] Domain + deploy (GitHub Pages / Netlify / Cloudflare Pages)
+## Phase 7 — Owner QA & Polish ✅
+- [x] Visual QA pass across both themes at 360px, 768px, and 1440px
+- [x] Typography standardization: unified Archivo across all headings and body
+- [x] WCAG AA contrast compliance for `--meta` sub-labels (`#a8a29e` / `#57534e`)
+- [x] Title normalization: dynamic model, place, and pass formatting (`F-22 Raptor #07`)
+- [x] Mobile header optimization: single compact bar (`h-14` / 56px) with 44×44px touch targets
+- [x] Hero photo deduplication from `Featured works` wall
+- [x] Detail view: structured spec table, 85vh object-contain framing, 340px sticky sidebar
+- [x] Detail view: responsive breadcrumb (`← Back` on mobile, full path on desktop)
+- [x] Main page: "Explore the full gallery" archive portal (`#full-gallery`) with collection covers and CTA
+- [x] Theme toggle: event delegation on document + `astro:after-swap` persistence across View Transitions
+
+## Phase 8 — Launch & Deployment
+- [ ] Final owner acceptance test (dev server: `npm run dev`)
+- [ ] OG image + social metadata (title, description, Twitter card)
+- [ ] Domain configuration + deploy (GitHub Pages / Netlify / Cloudflare Pages)
 
 ## Later ideas (not scheduled)
-- Per-category pages with their own URLs
 - Favorites / print-order notes for buyers
 - Contact form for commissions
 - AVIF renditions if build time stays fast
