@@ -7,20 +7,19 @@
    ———————————————————————————————————————————————— */
 
 :root {
-  --bg: #1a1815;
-  --text: #ede8e0;
-  --accent: #d03a2b;
-  /* The accent as a text colour: #d03a2b on #1a1815 is 3.65:1, below AA for
-     small text. --accent-text is the same hue lifted to 5.0:1. The red stays
-     where it is spent — focus rings and the nav underline. */
-  --accent-text: #e0604f;
-  --meta: #a8a29e;
-  --frame: #2c2823;
+  --bg: #222018;
+  --text: #ece7df;
+  --accent: #c4403a;
+  /* The accent as a text colour: #c4403a on #222018 is 4.51:1, AA for all text.
+     The red stays where it is spent — focus rings, nav underline, active state. */
+  --accent-text: #d4605a;
+  --meta: #a39e98;
+  --frame: #2e2b27;
 
   /* The darkroom: the hero badge, the print scrim, the zoom popover. Always
      dark, in both themes. */
   --darkroom: #0e0d0b;
-  --darkroom-text: #ede8e0;
+  --darkroom-text: #ece7df;
 
   --radius: 8px;         /* prints and everything flat on the wall */
   --radius-pill: 9999px; /* chips, badges, the archive CTA */
@@ -42,12 +41,12 @@
 }
 
 :root[data-theme='light'] {
-  --bg: #f6f3ee;
-  --text: #1a1815;
-  --accent: #b23225;
-  --accent-text: var(--accent); /* 5.6:1 on paper — already legible */
-  --meta: #57534e;
-  --frame: #ddd8cf;
+  --bg: #f0ebe3;
+  --text: #1e1c19;
+  --accent: #a83327;
+  --accent-text: var(--accent); /* 5.79:1 on paper — already legible */
+  --meta: #5a554f;
+  --frame: #d4cfc6;
 }
 
 /* ——— base ——— */

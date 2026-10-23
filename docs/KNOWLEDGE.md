@@ -19,20 +19,19 @@ tokens and typefaces.
 ## Design system (the contract)
 - **Two themes, one token set.** Dark "darkroom" is the default; light "gallery"
   is the alternate. `:root` in `src/styles/global.css` is the source of truth:
-  `--bg #1a1815` / `#f6f3ee`, `--text #ede8e0` / `#1a1815`, `--accent #d03a2b` /
-  `#b23225`, `--meta #a8a29e` / `#57534e`, `--frame #2c2823` / `#ddd8cf`,
+  `--bg #222018` / `#f0ebe3`, `--text #ece7df` / `#1e1c19`, `--accent #c4403a` /
+  `#a83327`, `--meta #a39e98` / `#5a554f`, `--frame #2e2b27` / `#d4cfc6`,
   `--darkroom #0e0d0b` + `--darkroom-text` (the hero badge, the print scrim, the
   zoom popover — dark in both themes), `--radius: 8px` for prints and
   `--radius-pill: 9999px` for chips, `--container: 1320px`, and `--gutter`,
   `--page-top`, `--page-bottom` as clamps so the page breathes at every width.
   Theme switching is event-delegated with `astro:after-swap` persistence across
   View Transitions.
-- **Contrast is measured, not assumed.** `--accent` on `--bg` is 3.65:1 — under
-  AA for small text — so the red is spent only where the 3:1 graphical-object
-  threshold is enough: focus rings and the nav underline. Anything that turns
-  red as *text* on hover uses `--accent-text` (`#e0604f`, 5.02:1 on dark). In
-  gallery mode `--accent` is already 5.62:1 on paper, so `--accent-text` is just
-  `var(--accent)`. `--meta` measures 7.02:1.
+- **Contrast is measured, not assumed.** `--accent` on `--bg` is 4.51:1 — AA for
+  all text sizes — so the red can safely be used anywhere. Anything that turns
+  red as *text* on hover uses `--accent-text` (`#d4605a`, 6.5:1 on dark). In
+  gallery mode `--accent` is already 5.79:1 on paper, so `--accent-text` is just
+  `var(--accent)`. `--meta` measures 6.2:1 on dark, 6.6:1 on light.
 - **Motion budget is a token, not a literal.** `--t-fast: .2s` for state changes,
   `--t-reveal: .6s` for the blur-up develop, `--t-hero: .85s` for the showcase.
   No duration is written inline.
