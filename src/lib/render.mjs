@@ -18,19 +18,15 @@ export function withUrls(p) {
 export const exifLine = (ex) =>
   ex ? [ex.lens, ex.focal, ex.aperture, ex.shutter, ex.iso].filter(Boolean) : [];
 
-// The hero showcase is decided by the library, not by the code: a `Hero: 1`
-// line in a photo.txt sidecar puts that print in the showcase, in that order.
-// With no sidecars, the showcase is each collection's cover, in collection
-// order — the same covers the archive portal shows. Capped so the home page
-// stays short.
+// The hero showcase is decided by the library, not by the code: a photo with
+// "hero" in the filename lands in the showcase, capped at 6. With no hero
+// photos, the showcase is each collection's cover, in collection order.
 export function heroSlidesFor(photos, categories) {
-  const curated = photos
-    .filter((p) => Number.isFinite(p.heroRank))
-    .sort((a, b) => a.heroRank - b.heroRank);
+  const curated = photos.filter((p) => p.isHero);
 
   const candidates = curated.length
     ? curated
-    : [...categories.map((c) => c.cover), ...photos.filter((p) => p.isMain)].filter(Boolean);
+    : [...categories.map((c) => c.cover), ...photos.filter((p) => p.isFeatured)].filter(Boolean);
 
   const seen = new Set();
   const picked = [];
@@ -59,8 +55,9 @@ export function heroSlidesFor(photos, categories) {
 }
 
 // Home-page featured: one cover per category, then balanced picks from each
-// category (two per category, cycling) until the wall is full. Hero prints are
-// excluded so the wall never repeats what the showcase is already showing.
+// category (two per category, cycling) until the wall is full. Hero prints and
+// cover photos are excluded so the wall never repeats what the showcase is
+// already showing.
 export function featuredFor(photos, categories, cap = 9, excludeIds = []) {
   const exclude = new Set(excludeIds);
   const seen = new Set(exclude);
@@ -71,7 +68,7 @@ export function featuredFor(photos, categories, cap = 9, excludeIds = []) {
     picks.push(p);
   };
 
-  // 1. One cover per category (the first photo or a "main" photo)
+  // 1. One cover per category (the first photo or a "featured" photo)
   for (const c of categories) add(c.cover);
 
   // 2. Balanced picks from each category — cycling through categories.

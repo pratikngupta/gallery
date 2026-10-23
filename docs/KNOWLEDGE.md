@@ -97,7 +97,7 @@ tokens and typefaces.
 
 ## Content conventions (teach these to anyone adding photos)
 1. Put photos in `src/photos/<category>/` — any folder works, no config.
-2. A photo with `main` in the name (e.g. `toronto-skyline-main.jpeg`) becomes
+2. A photo with `featured` in the name (e.g. `toronto-skyline-featured.jpeg`) becomes
    its category's cover in the index and lands on the home featured wall.
 3. Subfolders become subcategories (e.g. `aircraft/F-16 Falcon/`).
 4. Files at the `src/photos/` root land in Field Notes.
@@ -107,9 +107,9 @@ tokens and typefaces.
 6. A `description.txt` in a category folder: first line shown under the title.
 7. Camera settings display automatically in a structured spec table (Camera, Lens, Focal Length, Aperture,
    Shutter, ISO, Captured). To override a caption or add a blurb to the detail page, add a `photo.txt` sidecar
-   with `Title: ...`, `Note: ...`, `Location: ...`, and/or `Hero: 1` lines. `Location:` is what puts a
-   place on the hero badge — without it, the badge names the series instead. `Hero: N` puts that print
-   in the home showcase at rank N; with no sidecars anywhere the showcase is each collection's cover,
+   with `Title: ...`, `Note: ...`, `Location: ...`. `Location:` is what puts a
+   place on the hero badge — without it, the badge names the series instead. A photo with
+   `hero` in the filename goes into the home showcase; with no hero photos the showcase is each collection's cover,
    capped at 6. Nobody edits code to change the hero.
 8. After adding files: `npm run build` (renditions regenerate only for what's new) and deploy. Nothing else.
 

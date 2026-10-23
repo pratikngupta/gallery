@@ -2,7 +2,7 @@
 //
 //   folder          → category
 //   subfolder       → subcategory
-//   "main" in name  → category cover
+//   "featured" in name → category cover
 //   filename        → title
 //   the JPEG itself → EXIF (via exifr)
 //
@@ -43,7 +43,7 @@ function titleFromName(name) {
   let s = name
     .replace(/\bcoverart\b/gi, ' ')
     .replace(/\bcover\b/gi, ' ')
-    .replace(/\bmain\b/gi, ' ')
+    .replace(/\bfeatured\b/gi, ' ')
     .trim();
 
   // Replace underscores and hyphens with spaces
@@ -136,10 +136,10 @@ function inferLocation(id, title, category, subcategory) {
 async function readMeta(file, title) {
   const meta = {
     title,
-    isMain: /\bmain\b/i.test(path.basename(file)),
+    isFeatured: /\bfeatured\b/i.test(path.basename(file)),
+    isHero: /\bhero\b/i.test(path.basename(file)),
     exif: null,
     location: null,
-    heroRank: null,
   };
 
   try {
@@ -150,10 +150,6 @@ async function readMeta(file, title) {
     if (n) meta.note = n[1].trim();
     const l = sidecar.match(/location:\s*(.+)/i);
     if (l) meta.location = l[1].trim();
-    // `Hero: 1` in a sidecar puts that print in the home showcase, in that
-    // order. The folders decide the hero; the code does not name photos.
-    const h = sidecar.match(/hero:\s*(\d+)/i);
-    if (h) meta.heroRank = Number(h[1]);
   } catch {
     // no sidecar — fine
   }
@@ -251,8 +247,8 @@ async function scanLibrary(files) {
       category,
       subcategory,
       atRoot,
-      isMain: meta.isMain,
-      heroRank: meta.heroRank,
+      isFeatured: meta.isFeatured,
+      isHero: meta.isHero,
       year,
       exif: meta.exif,
       width: dims?.width ?? null,
@@ -289,10 +285,10 @@ async function scanLibrary(files) {
   for (const c of categories) {
     c.subcategories = [...c.subs.values()].sort((a, b) => a.name.localeCompare(b.name));
     c.subs = undefined;
-    // Cover: a root "main" first, then any "main", then the first photo.
+    // Cover: a root "featured" first, then any "featured", then the first photo.
     c.cover =
-      c.photos.find((p) => !p.subcategory && p.isMain) ??
-      c.photos.find((p) => p.isMain) ??
+      c.photos.find((p) => !p.subcategory && p.isFeatured) ??
+      c.photos.find((p) => p.isFeatured) ??
       c.photos[0];
     c.count = c.photos.length;
   }

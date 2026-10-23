@@ -16,12 +16,12 @@ src/photos/
 │   └── F-18 Hornet/
 ├── buildings/           ← category: "Buildings"
 │   └── modern/
-│       └── cn-tower-main.jpg   ← main = category cover
+│       └── cn-tower-featured.jpg   ← featured = category cover
 ├── landscape/           ← category: "Landscape"
 │   ├── coastal/
-│   │   └── toronto-skyline-main.jpeg
+│   │   └── toronto-skyline-featured.jpeg
 │   └── mountains/
-│       └── yosemite-main.jpeg
+│       └── yosemite-featured.jpeg
 ├── wildlife/            ← category: "Wildlife"
 │   ├── seagulls/
 │   │   └── seagulls-flying-1.jpg
@@ -41,30 +41,34 @@ src/photos/
 
 ---
 
-## "Main" Photo — Category Cover
+## "Featured" Photo — Category Cover
 
-A photo with **`main` in the filename** becomes its category's cover. The scanner picks the cover for each category by this priority:
+A photo with **`featured` in the filename** becomes its category's cover. The scanner picks the cover for each category by this priority:
 
-1. Root-level photo in the category folder with `main` in the name (e.g. `f_16_falcon.jpg` in `aircraft/`)
-2. Any photo with `main` in the name (from subfolders)
+1. Root-level photo in the category folder with `featured` in the name
+2. Any photo with `featured` in the name (from subfolders)
 3. **First photo** in scan order (alphabetical path order)
 
-### Naming patterns that match `main`:
+### Naming patterns that match `featured`:
 
 ```
-cn-tower-main.jpg         ✅
-toronto-skyline-main.jpg  ✅
-main-tower.jpg            ✅
-tower-main-view.jpg       ✅
+cn-tower-featured.jpg         ✅
+toronto-skyline-featured.jpg  ✅
+featured-tower.jpg            ✅
+tower-featured-view.jpg       ✅
 ```
 
 ### Naming patterns that do NOT match:
 
 ```
-cn-tower-captain.jpg      ❌ ("main" is a substring of "captain", not a standalone word)
+cn-tower-african.jpg      ❌ ("featured" is a substring of "african", not a standalone word)
 ```
 
-> **Note:** The check is `\bmain\b` — a standalone word "main" bounded by word characters. `my-main-character.jpg` DOES match because `main` is surrounded by hyphens (which are word-boundary characters).
+> **Note:** The check is `\bfeatured\b` — a standalone word "featured" bounded by word characters.
+
+## "Hero" Photo — Homepage Showcase
+
+A photo with **`hero` in the filename** lands in the homepage hero carousel (top showcase). Capped at 6 slides, sorted by filename.
 
 ---
 
@@ -74,12 +78,12 @@ The homepage has three photo-driven sections. Here's exactly how photos are chos
 
 ### 1. Hero Carousel (top showcase)
 
-**Priority 1: Sidecar ranking**
-If any photo has `hero: N` in its `.txt` sidecar, those photos fill the hero in that order. Capped at 6 slides.
+**Priority 1: Hero photos**
+Photos with `hero` in the filename fill the hero showcase in that order. Capped at 6 slides.
 
-**Priority 2: Default (no `hero:` sidecars)**
-- One cover photo per category (see "Main Photo" section above)
-- Then any additional photos with `main` in the filename (in scan order)
+**Priority 2: Default (no `hero` photos)**
+- One cover photo per category (see "Featured" section above)
+- Then any additional photos with `featured` in the filename (in scan order)
 - Capped at 6 total
 
 ### 2. Featured Works Wall (9 tiles below the hero)
@@ -96,13 +100,13 @@ If any photo has `hero: N` in its `.txt` sidecar, those photos fill the hero in 
 
 ### 3. Gallery Portal Cards ("Explore the full gallery")
 
-One cover per category card, chosen by the same priority as the category cover (see "Main Photo" above):
+One cover per category card, chosen by the same priority as the category cover (see "Featured" above):
 
-1. Root-level `*-main.jpg` in the category folder
-2. Any `*-main.jpg` from subfolders
+1. Root-level `*-featured.jpg` in the category folder
+2. Any `*-featured.jpg` from subfolders
 3. First photo in scan order
 
-> These are **always** chosen by the file system — never affected by `hero:` ranks.
+> These are **always** chosen by the file system — never affected by `hero` filename matches.
 
 ---
 
@@ -111,11 +115,11 @@ One cover per category card, chosen by the same priority as the category cover (
 The filename (without extension) is automatically converted into a display title. This happens in `src/lib/photos.mjs`:
 
 ### Step 1: Strip cover tags
-The words `coverart`, `cover`, `main` are removed from the filename.
+The words `coverart`, `cover`, `featured` are removed from the filename.
 
 ```
 cover-bird.jpg → "bird"
-cn-tower-main.jpg → "cn-tower"
+cn-tower-featured.jpg → "cn-tower"
 ```
 
 ### Step 2: Normalize separators
@@ -151,11 +155,11 @@ f_16_falcon_1 → "f 16 falcon 1"
 | `f_16_falcon_1.jpg` | `F-16 Falcon #01` |
 | `f_16_falcon_2.jpg` | `F-16 Falcon #02` |
 | `f_16_falcon.jpg` | `F-16 Falcon` |
-| `cn-tower-main.jpg` | `CN Tower` |
-| `yosemite-main.jpeg` | `Yosemite` |
+| `cn-tower-featured.jpg` | `CN Tower` |
+| `yosemite-featured.jpeg` | `Yosemite` |
 | `seagulls-flying-1.jpg` | `Seagulls Flying #01` |
 | `cover-bird.jpg` | `Bird` |
-| `toronto-skyline-main.jpeg` | `Toronto Skyline` |
+| `toronto-skyline-featured.jpeg` | `Toronto Skyline` |
 | `f_22_raptor_7.jpg` | `F-22 Raptor #07` |
 | `chicago-John-Hancock-Center.jpeg` | `Chicago John Hancock Center` |
 
@@ -175,7 +179,7 @@ hero: 1
 | `title:` | Overrides the auto-generated title |
 | `location:` | Sets the place shown on the hero badge |
 | `note:` | Added to the photo detail page as a blurb |
-| `hero: N` | Ranks the photo in the homepage hero carousel. `1` = first slide, `2` = second, etc. Capped at 6 slides total. Only active when sidecars exist — without any `hero:` sidecars, the hero falls back to category covers. |
+| `hero: N` | Deprecated. Use `hero` in the filename instead. |
 
 ---
 
@@ -248,7 +252,7 @@ Each rendition is WebP at quality 80, resized to the target width (maintaining a
 
 2. For each photo file:
    ├─ Parse EXIF (camera, lens, focal, aperture, shutter, ISO, date)
-   ├─ Read sidecar (title, location, note, hero rank) — if exists
+   ├─ Read sidecar (title, location, note) — if exists
    ├─ Generate title from filename
    ├─ Compute photo ID from path
    └─ Store dimensions from manifest.json (if available)
@@ -256,10 +260,10 @@ Each rendition is WebP at quality 80, resized to the target width (maintaining a
 3. build-renditions.mjs generates 7 WebP renditions per photo
 
 4. Pages assemble:
-   ├─ Hero carousel: `hero: N` sidecars (ranked, capped at 6), else one cover per category + any `main` photos
+   ├─ Hero carousel: `hero` in filename (sorted, capped at 6), else one cover per category + any `featured` photos
    ├─ Featured wall: one cover per category, then balanced picks (2 per category, cycling), excludes hero photos (capped at 9)
    ├─ Masonry wall: all photos in the collection
-   └─ Gallery portal: one cover per category card (by cover priority, unaffected by `hero:` ranks)
+   └─ Gallery portal: one cover per category card (by cover priority, unaffected by `hero` filenames)
 ```
 
 ---
@@ -285,25 +289,24 @@ npm run build
 
 ### To set a category cover:
 
-Name any photo with `main` in the filename:
+Name any photo with `featured` in the filename:
 
 ```
-cn-tower-main.jpg    ← covers the "Buildings" category
+cn-tower-featured.jpg    ← covers the "Buildings" category
 ```
 
 ### To set the hero showcase:
 
-Add `hero: N` to a sidecar on any photo:
+Add `hero` to the filename of any photo:
 
 ```
-hero: 1    ← first slide in the hero showcase
-hero: 2    ← second slide
-hero: 3    ← third slide
+f-16-hero.jpg            ← goes in the hero showcase
+hero-yosemite.jpg        ← also in the showcase
 ```
 
-Up to 6 slides. Photos are sorted by rank number.
+Up to 6 slides, sorted by filename.
 
-**Fallback:** If no `hero:` sidecars exist anywhere, the hero carousel defaults to one cover photo per category (the same photos shown in the gallery portal cards). If no sidecars exist at all, the feature wall fills from scan order after excluding hero photos.
+**Fallback:** If no `hero` photos exist, the hero carousel defaults to one cover photo per category.
 
 ---
 
