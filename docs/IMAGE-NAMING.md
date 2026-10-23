@@ -43,13 +43,11 @@ src/photos/
 
 ## "Main" Photo — Category Cover
 
-A photo with **`main` in the filename** becomes its category's cover. It appears:
+A photo with **`main` in the filename** becomes its category's cover. The scanner picks the cover for each category by this priority:
 
-- As the hero slide on the homepage (when no `Hero:` sidecar ranks are set)
-- In the "Explore the full gallery" cards on the homepage
-- At the top of the category page wall
-
-The scanner prefers a root-level "main" photo over a subfolder "main" photo.
+1. Root-level photo in the category folder with `main` in the name (e.g. `f_16_falcon.jpg` in `aircraft/`)
+2. Any photo with `main` in the name (from subfolders)
+3. **First photo** in scan order (alphabetical path order)
 
 ### Naming patterns that match `main`:
 
@@ -60,14 +58,52 @@ main-tower.jpg            ✅
 tower-main-view.jpg       ✅
 ```
 
-### Patterns that do NOT match:
+### Naming patterns that do NOT match:
 
 ```
-cn-tower-captain.jpg      ❌ (contains "main" as substring of another word — this IS matched, see note)
-my-main-character.jpg     ✅ (matched)
+cn-tower-captain.jpg      ❌ ("main" is a substring of "captain", not a standalone word)
 ```
 
-> **Note:** The check is `\bmain\b` — a standalone word "main" bounded by word characters. So `captain` does NOT match (no word boundary before/after "main"), but `main-capture` DOES match.
+> **Note:** The check is `\bmain\b` — a standalone word "main" bounded by word characters. `my-main-character.jpg` DOES match because `main` is surrounded by hyphens (which are word-boundary characters).
+
+---
+
+## Homepage Selection Logic
+
+The homepage has three photo-driven sections. Here's exactly how photos are chosen for each.
+
+### 1. Hero Carousel (top showcase)
+
+**Priority 1: Sidecar ranking**
+If any photo has `hero: N` in its `.txt` sidecar, those photos fill the hero in that order. Capped at 6 slides.
+
+**Priority 2: Default (no `hero:` sidecars)**
+- One cover photo per category (see "Main Photo" section above)
+- Then any additional photos with `main` in the filename (in scan order)
+- Capped at 6 total
+
+### 2. Featured Works Wall (9 tiles below the hero)
+
+**Selection order:**
+1. Every photo with `main` in the filename — one per category (these are the "main" covers)
+2. Category covers (the same photos if no other "main" exists)
+3. Remaining photos in scan order (alphabetical folder/file order)
+
+**Excludes:** Any photo already shown in the hero carousel.
+
+**Capped at 9.**
+
+> **Tip:** If a category has only `*-main.jpg` in a subfolder (not at the category root), that photo may appear in the featured wall as a "main" photo AND again as a category cover. The deduplication only removes exact duplicates, so a subfolder "main" and a root cover can both appear.
+
+### 3. Gallery Portal Cards ("Explore the full gallery")
+
+One cover per category card, chosen by the same priority as the category cover (see "Main Photo" above):
+
+1. Root-level `*-main.jpg` in the category folder
+2. Any `*-main.jpg` from subfolders
+3. First photo in scan order
+
+> These are **always** chosen by the file system — never affected by `hero:` ranks.
 
 ---
 
@@ -140,7 +176,7 @@ hero: 1
 | `title:` | Overrides the auto-generated title |
 | `location:` | Sets the place shown on the hero badge |
 | `note:` | Added to the photo detail page as a blurb |
-| `hero: N` | Ranks the photo in the homepage hero showcase (1 = first) |
+| `hero: N` | Ranks the photo in the homepage hero carousel. `1` = first slide, `2` = second, etc. Capped at 6 slides total. Only active when sidecars exist — without any `hero:` sidecars, the hero falls back to category covers. |
 
 ---
 
@@ -221,10 +257,10 @@ Each rendition is WebP at quality 80, resized to the target width (maintaining a
 3. build-renditions.mjs generates 7 WebP renditions per photo
 
 4. Pages assemble:
-   ├─ Hero slides: ranked by `hero: N` in sidecars, else covers
-   ├─ Featured wall: main photos, then covers, then rest (capped at 9)
+   ├─ Hero carousel: `hero: N` sidecars (ranked, capped at 6), else one cover per category + any `main` photos
+   ├─ Featured wall: `main` photos, then category covers, then scan order (excludes hero photos, capped at 9)
    ├─ Masonry wall: all photos in the collection
-   └─ Gallery portal: category cards with cover thumbnails
+   └─ Gallery portal: one cover per category card (by cover priority, unaffected by `hero:` ranks)
 ```
 
 ---
@@ -258,7 +294,7 @@ cn-tower-main.jpg    ← covers the "Buildings" category
 
 ### To set the hero showcase:
 
-Add `hero: N` to a sidecar:
+Add `hero: N` to a sidecar on any photo:
 
 ```
 hero: 1    ← first slide in the hero showcase
@@ -266,7 +302,9 @@ hero: 2    ← second slide
 hero: 3    ← third slide
 ```
 
-With no sidecars, the showcase defaults to each category's cover.
+Up to 6 slides. Photos are sorted by rank number.
+
+**Fallback:** If no `hero:` sidecars exist anywhere, the hero carousel defaults to one cover photo per category (the same photos shown in the gallery portal cards). If no sidecars exist at all, the feature wall fills from scan order after excluding hero photos.
 
 ---
 
