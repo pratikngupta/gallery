@@ -57,7 +57,7 @@ const collections = categories.map((c) => ({
               <a
                 href={`/collections/${cat.key}/`}
                 class="gallery-cat-card"
-                aria-label={`View ${cat.name} collection`}
+                aria-label={`${cat.name} · ${cat.count} ${cat.count === 1 ? 'photograph' : 'photographs'}`}
               >
                 <div class="gallery-cat-thumb">
                   {
@@ -65,7 +65,7 @@ const collections = categories.map((c) => ({
                       <img
                         src={cat.coverUrl.thumb}
                         data-srcset={cat.coverUrl.gridSrcset}
-                        sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 31vw"
+                        sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 380px"
                         width={cat.coverUrl.width}
                         height={cat.coverUrl.height}
                         alt={cat.name}
@@ -77,6 +77,7 @@ const collections = categories.map((c) => ({
                 </div>
                 <div class="gallery-cat-info">
                   <span class="gallery-cat-name">{cat.name}</span>
+                  <span aria-hidden="true"> · </span>
                   <span class="gallery-cat-count mono">
                     {cat.count} {cat.count === 1 ? 'photograph' : 'photographs'}
                   </span>

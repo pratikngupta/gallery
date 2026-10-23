@@ -5,10 +5,12 @@
 //
 // Renditions per photo:
 //   40    blur-up thumbnail in the grid
+//   750   gallery-card srcset (desktop 31vw ≈ 310–580px → pick 750)
 //   900   grid srcset (mobile/tablet)
+//   1280  hero src (displayed width ≈ 1080–1200px) + card srcset fallback
 //   1600  grid srcset (desktop) + category-index cover
 //   2400  zoom popover
-//   2560  hero (retina)
+//   2560  hero srcset (retina)
 
 import sharp from 'sharp';
 import fs from 'node:fs/promises';
@@ -16,7 +18,7 @@ import path from 'node:path';
 import { scanPhotos } from '../src/lib/photos.mjs';
 
 const OUT = path.resolve(process.cwd(), 'public/renditions');
-const WIDTHS = [40, 900, 1600, 2400, 2560];
+const WIDTHS = [40, 750, 900, 1280, 1600, 2400, 2560];
 const fileBase = (id) => id.replace(/\//g, '-');
 
 const { photos } = await scanPhotos();

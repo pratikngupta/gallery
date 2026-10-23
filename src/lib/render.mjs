@@ -9,8 +9,8 @@ export function withUrls(p) {
   return {
     ...p,
     thumb: R(p, 40),
-    gridSrc: R(p, 1600),
-    gridSrcset: `${R(p, 900)} 900w, ${R(p, 1600)} 1600w`,
+    gridSrc: R(p, 750),
+    gridSrcset: `${R(p, 750)} 750w, ${R(p, 1280)} 1280w`,
     full: R(p, 2400),
   };
 }
@@ -49,8 +49,8 @@ export function heroSlidesFor(photos, categories) {
     // A place only when the library states one; the folder is always known.
     location: p.location,
     series: prettyKey(p.subcategory || p.category.replace(/-/g, ' ')),
-    src: R(p, 1600),
-    srcset: `${R(p, 900)} 900w, ${R(p, 1600)} 1600w, ${R(p, 2560)} 2560w`,
+    src: R(p, 1280),
+    srcset: `${R(p, 750)} 750w, ${R(p, 1280)} 1280w, ${R(p, 2560)} 2560w`,
     href: `/photo/${p.id}`,
     alt: p.title,
     width: p.width,
