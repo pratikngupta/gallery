@@ -22,11 +22,18 @@ const fileBase = (id) => id.replace(/\//g, '-');
 const { photos } = await scanPhotos();
 await fs.mkdir(OUT, { recursive: true });
 
+// Dimensions of every photo, written next to the renditions so the markup can
+// put width/height on each <img>. Without them the masonry re-balances as
+// prints load, which is the visible jump in the wall.
+const manifest = [];
+
 let written = 0;
 let skipped = 0;
 for (const p of photos) {
   const file = path.resolve(process.cwd(), p.src);
   const stat = await fs.stat(file);
+  const meta = await sharp(file).metadata();
+  manifest.push({ id: p.id, width: meta.width, height: meta.height });
   for (const w of WIDTHS) {
     const out = path.join(OUT, `${fileBase(p.id)}-${w}.webp`);
     try {
@@ -54,4 +61,8 @@ for (const f of await fs.readdir(OUT)) {
   }
 }
 
-console.log(`renditions: ${written} written, ${skipped} up to date (${photos.length} photos)`);
+await fs.writeFile(path.join(OUT, 'manifest.json'), JSON.stringify(manifest));
+
+console.log(
+  `renditions: ${written} written, ${skipped} up to date (${photos.length} photos, dimensions recorded)`
+);

@@ -6,8 +6,7 @@ import { withUrls } from '../../lib/render.mjs';
 
 // /collections/ — every photograph, switchable by the pill bar.
 const { categories, photos } = await scanPhotos();
-const urls = photos.map(withUrls);
-const groups = urls.length ? [{ label: null, photos: urls }] : [];
+const wall = photos.map(withUrls);
 ---
 
 <Layout title="Collections — Pratik Gupta">
@@ -16,6 +15,6 @@ const groups = urls.length ? [{ label: null, photos: urls }] : [];
     description="Explore every photograph across the collections"
     active="all"
     categories={categories}
-    groups={groups}
+    photos={wall}
   />
 </Layout>

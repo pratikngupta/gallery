@@ -1,6 +1,6 @@
 ---
 // Shared shell for /collections/ and /collections/<category>:
-// lightweight breadcrumb, title, optional description, single-tier pill switcher, masonry.
+// breadcrumb, title, description, the switcher, then the wall.
 import PillNav, { type Subcategory } from './PillNav.astro';
 import PhotoMasonry from './PhotoMasonry.astro';
 
@@ -10,10 +10,10 @@ export interface Props {
   active: string;
   categories: Array<{ key: string; name: string }>;
   subcategories?: Subcategory[];
-  groups: Array<{ label: string | null; photos: Record<string, unknown>[] }>;
+  photos: Record<string, unknown>[];
   emptyMessage?: string;
 }
-const { title, description, active, categories, subcategories = [], groups, emptyMessage } = Astro.props;
+const { title, description, active, categories, subcategories = [], photos, emptyMessage } = Astro.props;
 const isAll = active === 'all';
 ---
 
@@ -24,10 +24,10 @@ const isAll = active === 'all';
         <nav class="breadcrumb" aria-label="Breadcrumb">
           <a href="/collections/" class="breadcrumb-link">Gallery</a>
           <span class="breadcrumb-sep" aria-hidden="true">/</span>
-          <a href={`/collections/${active}/`} class="breadcrumb-link breadcrumb-current" data-breadcrumb-cat>{title}</a>
-          <span data-breadcrumb-sub-wrap style="display: none;">
+          <span class="breadcrumb-current" data-breadcrumb-cat>{title}</span>
+          <span class="breadcrumb-sub" data-breadcrumb-sub-wrap hidden>
             <span class="breadcrumb-sep" aria-hidden="true">/</span>
-            <span class="breadcrumb-current" data-breadcrumb-sub></span>
+              <span class="breadcrumb-current" data-breadcrumb-sub></span>
           </span>
         </nav>
       )
@@ -40,74 +40,62 @@ const isAll = active === 'all';
     }
   </header>
 
-  <PillNav categories={categories} active={active} subcategories={subcategories} />
+  <PillNav
+    categories={categories}
+    active={active}
+    subcategories={subcategories}
+    back={isAll ? undefined : '/collections/'}
+  />
 
   {
-    groups.length === 0 ? (
+    photos.length === 0 ? (
       <p class="collection-empty">
         {emptyMessage ?? 'No photographs yet — drop images into src/photos/ and rebuild.'}
       </p>
     ) : (
-      <PhotoMasonry groups={groups} />
+      <PhotoMasonry photos={photos} />
     )
   }
 </section>
 
 <script>
-  function setupSubcatFilter() {
+  function setupSeriesFilter() {
     const nav = document.querySelector('[data-subcat-nav]');
-    if (!nav) return;
+    if (!nav || nav.dataset.ready) return;
+    nav.dataset.ready = '1';
 
-    const pills = Array.from(nav.querySelectorAll<HTMLButtonElement>('[data-subcat-filter]'));
-    const frames = Array.from(document.querySelectorAll<HTMLElement>('.ph-frame[data-subcat]'));
-    const blocks = Array.from(document.querySelectorAll<HTMLElement>('[data-subcat-block]'));
+    const pills = Array.from(nav.querySelectorAll('[data-subcat-filter]'));
+    const frames = Array.from(document.querySelectorAll('.ph-frame[data-subcat]'));
+    const subWrap = document.querySelector('[data-breadcrumb-sub-wrap]');
+    const subText = document.querySelector('[data-breadcrumb-sub]');
 
     pills.forEach((pill) => {
       pill.addEventListener('click', () => {
         const target = pill.dataset.subcatFilter;
         if (!target) return;
 
-        pills.forEach((p) => p.classList.toggle('is-active', p === pill));
+        pills.forEach((p) => {
+          const activeNow = p === pill;
+          p.classList.toggle('is-active', activeNow);
+          p.setAttribute('aria-pressed', activeNow ? 'true' : 'false');
+        });
 
-        const subWrap = document.querySelector<HTMLElement>('[data-breadcrumb-sub-wrap]');
-        const subText = document.querySelector<HTMLElement>('[data-breadcrumb-sub]');
-        const catLink = document.querySelector<HTMLElement>('[data-breadcrumb-cat]');
         if (subWrap && subText) {
           if (target === 'all') {
-            subWrap.style.display = 'none';
-            catLink?.classList.add('breadcrumb-current');
+            subWrap.hidden = true;
           } else {
-            subWrap.style.display = 'inline';
             subText.textContent = pill.textContent?.trim() || '';
-            catLink?.classList.remove('breadcrumb-current');
+            subWrap.hidden = false;
           }
         }
 
-        if (frames.length > 0) {
-          frames.forEach((frame) => {
-            const sub = frame.dataset.subcat;
-            if (target === 'all' || sub === target) {
-              frame.style.display = '';
-            } else {
-              frame.style.display = 'none';
-            }
-          });
-        }
-
-        if (blocks.length > 0) {
-          blocks.forEach((block) => {
-            const blockSlug = block.dataset.subcatBlock;
-            if (!blockSlug || target === 'all' || blockSlug === target) {
-              block.style.display = '';
-            } else {
-              block.style.display = 'none';
-            }
-          });
-        }
+        frames.forEach((frame) => {
+          frame.hidden = target !== 'all' && frame.dataset.subcat !== target;
+        });
       });
     });
   }
 
-  setupSubcatFilter();
-  document.addEventListener('astro:page-load', setupSubcatFilter);
+  setupSeriesFilter();
+  document.addEventListener('astro:page-load', setupSeriesFilter);
 </script>

@@ -1,0 +1,22 @@
+---
+// A missing page is one sentence and the two ways back. It borrows the about
+// page's measure and type rather than adding rules, because it is a page and not
+// a component — the design system stays byte-identical.
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Not found — Pratik Gupta" description="That page is not in the gallery.">
+  <article class="about-page">
+    <div class="about-container">
+      <h1 class="about-title">Not in the gallery</h1>
+      <p class="about-lead">
+        That page does not exist. Every photograph lives under the collections,
+        and the wall on the home page carries the featured prints.
+      </p>
+      <div class="about-actions">
+        <a href="/collections/" class="about-link">Browse the gallery</a>
+        <a href="/" class="about-link">Home</a>
+      </div>
+    </div>
+  </article>
+</Layout>

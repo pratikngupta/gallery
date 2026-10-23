@@ -9,38 +9,74 @@ Photography's own vernacular is the darkroom: deep warm darkness, images
 "developing" out of black. The site treats photographs as prints hanging on a
 dark wall. Darkness is tonal separation, not mood. One accent — safelight red —
 is spent only on state (active, hover, focus). Light mode exists as "gallery
-mode": warm paper, same tokens, same layo## Design tokens (canonical copy in `src/styles/global.css`)
+mode": warm paper, same tokens, inverted ink.
+
+## Design tokens (canonical copy in `src/styles/global.css`)
 | Token            | Dark (default) | Light          | Role                                  |
 |------------------|----------------|----------------|---------------------------------------|
 | `--bg`           | `#1a1815`      | `#f6f3ee`      | page background                        |
 | `--text`         | `#ede8e0`      | `#1a1815`      | primary text                           |
-| `--accent`       | `#d03a2b`      | `#b23225`      | safelight: active/hover/focus only     |
-| `--meta`         | `#a8a29e`      | `#57534e`      | counts, years, secondary text (WCAG AA)|
+| `--accent`       | `#d03a2b`      | `#b23225`      | safelight: focus rings, nav underline  |
+| `--accent-text`  | `#e0604f`      | `var(--accent)`| the accent when it is *text* (AA)      |
+| `--meta`         | `#a8a29e`      | `#57534e`      | counts, years, secondary text          |
 | `--frame`        | `#2c2823`      | `#ddd8cf`      | hairlines, dividers                    |
-| `--radius`       | `8px`          | `8px`          | unified corner radius for tiles/cards  |
+| `--darkroom`     | `#0e0d0b`      | `#0e0d0b`      | badge, scrim, popover — always dark    |
+| `--radius`       | `8px`          | `8px`          | prints, flat on the wall               |
+| `--radius-pill`  | `9999px`       | `9999px`       | chips, badges, the archive CTA         |
+| `--container`    | `1320px`       | `1320px`       | content grid                           |
+| `--t-fast` / `--t-reveal` / `--t-hero` | `.2s` / `.6s` / `.85s` | same | state change · blur-up develop · hero crossfade |
 
 Type: **Archivo** (unified heading and body family: wordmark, headlines, section titles,
-captions) · **JetBrains Mono** (EXIF, numbering, counts).
+captions; requested as one variable range `400..700` because display lines set 700) ·
+**JetBrains Mono** (EXIF, numbering, counts).
 
 ## Layout (information architecture)
 1. **Header (`.site-header`)**:
    - Mobile ($\le 640\text{px}$): Single compact bar (`h-14` / 56px) with `PRATIK GUPTA` on the left and `HOME GALLERY ABOUT` + theme toggle in one line with 44×44px touch hitboxes.
    - Desktop: Sticky glass header (`backdrop-blur-md`) constrained to the 1320px content grid container.
 2. **Home (`/`)**:
-   - **Hero**: 3:2 photography showcase with auto-switching slideshow, location pill, and editorial statement.
-   - **Featured**: 9-item balanced 3-column masonry wall, automatically deduplicated to exclude the active hero image.
-   - **Full Gallery Portal (`#full-gallery`)**: An editorial archive section with category preview cards (Aircraft, Buildings, Landscape, Wildlife with photograph counts) and a high-contrast pill CTA linking to `/collections/`.
+   - **Hero**: sentence-case role line, headline, editorial statement; 3:2 photography
+     showcase whose prints come from the library (`Hero: N` sidecar ranks, otherwise the
+     collection covers, capped at 6), an auto-switching slideshow with a Pause control in
+     the hero bar, and a single badge that states a place when the library knows one,
+     otherwise the series. No pin icon, no guessed geography.
+   - **Featured**: 9-item balanced 3-column masonry wall, deduplicated so it never repeats
+     a print the showcase is already showing.
+   - **Full Gallery Portal (`#full-gallery`)**: An editorial archive section with one
+     cover card per collection plus its count, the row length set from the scanned
+     collection count (`--portal-cols`) rather than a hardcoded four, and a solid
+     ink/paper pill CTA named after the destination's own word — "Browse the gallery".
+     Hover develops the chip (it inverts); nothing lifts on a shadow.
 3. **Collections (`/collections/` and `/collections/<category>`)**:
    - Top-level `/collections/`: shows all categories via primary pill bar.
-   - Dedicated category `/collections/<category>`: lightweight breadcrumb (`Gallery / Category` dynamically updating to `Gallery / Category / Subcategory`), single-tier subcategory pill switcher, high-contrast solid active pills.
+   - Dedicated category `/collections/<category>`: lightweight breadcrumb (`Gallery / Category`,
+     gaining `/ Subcategory` only when a filter is active), single-tier subcategory pill switcher,
+     high-contrast solid active pills, and a "Back to gallery" capsule at the head of the pill
+     row, left of "All <Category>" — the breadcrumb crumb alone was too quiet to find as a way
+     back. Capsule radius marks it as navigation, the 8px print radius stays on the series
+     filters, and the accent is spent on hover only. The crumb floats in the page-top padding
+     band rather than in flow, so every collection page opens at the same level as the gallery
+     index — recording the filter costs no vertical space.
 4. **Photo detail (`/photo/<id>`)**:
-   - Responsive breadcrumb: clean single back affordance (`← [Subcategory]`) on mobile ($<640\text{px}$), full hierarchy on desktop.
+   - Back affordance: a chip pointing at wherever the click came from (`← Home`, `← Gallery`,
+     `← Aircraft`, `← Previous print`), read from `window.__fromUrl` (set by `Layout.astro` on
+     `astro:before-swap`); on desktop it heads the breadcrumb line (always visible, styled as a
+     capsule, elevated with `z-index: 10` above Astro's view-transition overlay layers), on mobile
+     the single `← [Series]` link carries the dynamic label. Falls back to the print's own series
+     page when there is no recorded origin.
    - Framing: image expands up to `85vh` with `object-contain`.
    - Metadata: 340px sticky right sidebar with a clean, structured spec table (Camera, Lens, Focal Length, Aperture, Shutter, ISO, Captured).
    - Zoom: native popover darkroom zoom to 2400px.
+   - Series walk: one quiet line under the spec table — `Previous · …` and `Next · …`, in
+     wall order, sentence case, no arrows. It does not render for a series of one.
    - Related wall: "More from {series}" ranked by subseries and category.
 5. **View Transitions & Theming**:
-   - Client-side navigation via Astro `ClientRouter` with shared-element image morphs.
+   - Client-side navigation via Astro `ClientRouter`. Footer carries a `transition:name` with
+     `transition:animate="none"` so it holds still; the header carries only `data-header` (no
+     `transition:name`) to prevent the flash/fade that occurred when Astro morphed the header
+     between pages. The detail image uses `transition:name` from the masonry tile for the
+     shared-element morph; the hero slides intentionally omit `transition:name` to avoid a
+     jarring zoom-out when navigating back from a detail page.
    - Theme toggle uses document-level event delegation and `<head>` `astro:after-swap` listener to guarantee persistence and reactivity across all page transitions.
 
 ## Alignment & type rules
@@ -53,9 +89,11 @@ captions) · **JetBrains Mono** (EXIF, numbering, counts).
 - Numbering exists only where content is a sequence (index rows, EXIF counts).
 
 ## Motion budget
-- Hero slow-zoom: the one ambient moment.
-- Blur-up image load: filter/transform 0.6s.
-- Everything else instant. `prefers-reduced-motion` disables all of it.
+- Hero showcase crossfade (`--t-hero`) and the badge fade: the one ambient moment, and it
+  stops when a viewer hovers, focuses, or presses Pause.
+- Blur-up develop: filter/transform `--t-reveal`.
+- Everything else is `--t-fast`. `prefers-reduced-motion` disables all of it, including
+  the auto-advance.
 
 ## Content model (the drop-in folder system)
 ```
@@ -76,13 +114,17 @@ src/photos/                        ← as of Oct 2026:
 - `description.txt` first line = section subtitle.
 - EXIF read from the JPEG at build time (camera, lens, focal, ƒ, shutter, ISO, date).
 - Year for captions: EXIF date → file mtime.
-- Sidecar `photo.txt` with a `Title: ...` line overrides the title (only override needed).
+- Sidecar `<photo>.jpg.txt` may carry `Title:`, `Note:`, and `location:` lines. `location:`
+  is the only honest source of a place — folders and filenames only ever name a place that is
+  literally written in them.
 
 ## Avoid list (checked on every design change)
 - cream background + terracotta accent, near-black + acid accent, broadsheet
   hairline rules, identical rounded SaaS cards, all-caps eyebrows,
   `A · B · C` template chrome, `→` appended to link text, monospace used as
-  generic label decoration, fade-up-on-scroll for every section.
+  generic label decoration, fade-up-on-scroll for every section, and responsive overrides
+  written before the rules they override (media queries add no specificity — the later
+  base rule wins).
 
 ## Phases
 1. **Skeleton** — Astro scaffold, tokens (both themes), layout, header/footer, theme toggle ✅
@@ -90,7 +132,7 @@ src/photos/                        ← as of Oct 2026:
 3. **Rendition pipeline** — sharp script (40/900/1600/2400/2560 WebP), incremental ✅
 4. **Home** — hero with centered CTA, featured wall ✅
 5. **Collections** — per-category pages + All page, pill switcher, masonry,
-   blur-up loading, subcategory blocks ✅
+   blur-up loading, subcategory pills ✅
 6. **Real photos** — library copied in (56 photos, 4 categories) ✅
 7. **Photo detail pages** (frame-shift IA) — `/photo/<id>`, related wall,
    popover zoom, view transitions ✅

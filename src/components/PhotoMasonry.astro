@@ -1,60 +1,39 @@
 ---
-// Masonry blocks: distinct subcategory section header, then a CSS-columns masonry of prints.
-// Each print links to its detail page (/photo/<id>) and carries a
-// transition:name so Astro View Transitions can morph the tile into the
-// detail page's image.
+// The wall: prints that link to their detail page. Each tile carries a
+// transition:name so Astro View Transitions morph it into the detail page's
+// image, and data-subcat so the series filter can hide it.
+import { slug } from '../lib/photos.mjs';
+
 export interface Props {
-  groups: Array<{ label: string | null; photos: Record<string, unknown>[] }>;
+  photos: Record<string, unknown>[];
 }
-const { groups } = Astro.props;
-const slug = (str: string | null) => (str ? str.toLowerCase().replace(/[^a-z0-9]/g, '-') : '');
+const { photos } = Astro.props;
 ---
 
-{
-  groups.map((g) => {
-    const blockSlug = slug(g.label);
-    return (
-      <section
-        class="masonry-block"
-        data-subcat-block={blockSlug || undefined}
-        id={blockSlug ? blockSlug : undefined}
+<div class="masonry">
+  {
+    photos.map((p) => (
+      <a
+        class="ph-frame"
+        href={`/photo/${p.id}/`}
+        transition:name={`image-${p.id}`}
+        aria-label={`View ${p.title}`}
+        data-subcat={slug(p.subcategory)}
       >
-        {g.label && (
-          <header class="subcat-section-head">
-            <div class="subcat-section-meta">
-              <h2 class="subcat-title">{g.label}</h2>
-              <span class="subcat-count mono">
-                {g.photos.length} {g.photos.length === 1 ? 'photograph' : 'photographs'}
-              </span>
-            </div>
-            <div class="subcat-divider" aria-hidden="true" />
-          </header>
-        )}
-        <div class="masonry">
-          {
-            g.photos.map((p: any) => (
-              <a
-                class="ph-frame"
-                href={`/photo/${p.id}`}
-                transition:name={`image-${p.id}`}
-                aria-label={`View ${p.title}`}
-                data-subcat={slug(p.subcategory)}
-              >
-                <img
-                  class="ph-img"
-                  src={p.thumb}
-                  loading="lazy"
-                  alt={p.title}
-                  data-full={p.gridSrc}
-                />
-                <span class="ph-scrim" aria-hidden="true">
-                  <span>{p.title}</span>
-                </span>
-              </a>
-            ))
-          }
-        </div>
-      </section>
-    );
-  })
-}
+        <img
+          class="ph-img"
+          src={p.thumb}
+          data-srcset={p.gridSrcset}
+          sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 31vw"
+          width={p.width}
+          height={p.height}
+          loading="lazy"
+          alt={p.title}
+        />
+        <span class="ph-scrim" aria-hidden="true">
+          <span>{p.title}</span>
+        </span>
+      </a>
+    ))
+  }
+</div>

@@ -79,7 +79,12 @@ function titleFromName(name) {
   return words.join(' ');
 }
 
-function prettyKey(key) {
+export function slug(str) {
+  // One shape for ids, data attributes, and filter keys.
+  return String(str || '').toLowerCase().replace(/[^a-z0-9]/g, '-');
+}
+
+export function prettyKey(key) {
   // Folder names are often already nicely cased ("F-18 Hornet") — keep that.
   // Only tidy names that are fully lowercase ("northern cardinal").
   if (/[A-Z]/.test(key)) return key;
@@ -87,6 +92,21 @@ function prettyKey(key) {
     .split(/[\s\-_]+/)
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ');
+}
+
+// Rendition dimensions, written by scripts/build-renditions.mjs, so every
+// <img> can carry width/height and the wall reserves its space before a print
+// arrives. No manifest (e.g. `astro build` without the prebuild) just means no
+// dimensions — the page still renders.
+async function readDimensions() {
+  try {
+    const manifest = JSON.parse(
+      await fs.readFile(path.resolve(process.cwd(), 'public/renditions/manifest.json'), 'utf8')
+    );
+    return new Map(manifest.map((d) => [d.id, d]));
+  } catch {
+    return new Map();
+  }
 }
 
 // A category (or subcategory) folder may carry a one-line description.txt.
@@ -106,14 +126,21 @@ function inferLocation(id, title, category, subcategory) {
   if (text.includes('yosemite')) return 'Yosemite National Park, USA';
   if (text.includes('port-stanley') || text.includes('port stanley')) return 'Port Stanley, Canada';
   if (text.includes('big-surf') || text.includes('big sur')) return 'Big Sur, USA';
-  if (text.includes('raptor') || text.includes('falcon') || text.includes('hornet') || text.includes('osprey') || text.includes('t33') || text.includes('aircraft')) return 'Toronto Air Show';
-  if (text.includes('seagull') || text.includes('goat') || text.includes('chipmunk') || text.includes('squirrel') || text.includes('wildlife')) return 'Ontario, Canada';
-  return 'Toronto, Canada';
+  // Only names that are literally in a folder or a filename count. A jet is
+  // not evidence of an air show, so this returns nothing rather than a
+  // plausible guess — the badge would otherwise state a place as fact.
+  return null;
 }
 
 // EXIF + optional sidecar override. A bad file must never kill the build.
 async function readMeta(file, title) {
-  const meta = { title, isMain: /\bmain\b/i.test(path.basename(file)), exif: null, location: null };
+  const meta = {
+    title,
+    isMain: /\bmain\b/i.test(path.basename(file)),
+    exif: null,
+    location: null,
+    heroRank: null,
+  };
 
   try {
     const sidecar = await fs.readFile(file + '.txt', 'utf8');
@@ -123,6 +150,10 @@ async function readMeta(file, title) {
     if (n) meta.note = n[1].trim();
     const l = sidecar.match(/location:\s*(.+)/i);
     if (l) meta.location = l[1].trim();
+    // `Hero: 1` in a sidecar puts that print in the home showcase, in that
+    // order. The folders decide the hero; the code does not name photos.
+    const h = sidecar.match(/hero:\s*(\d+)/i);
+    if (h) meta.heroRank = Number(h[1]);
   } catch {
     // no sidecar — fine
   }
@@ -155,8 +186,45 @@ async function readMeta(file, title) {
   return meta;
 }
 
+// getStaticPaths and every page render call this, so without a cache a build
+// parses the EXIF of every photograph 57 times. The cache is keyed on the
+// library's actual signature — every image path plus its mtime, plus any
+// sidecar — so dropping a new photo in dev is picked up on the next page load.
+let cache = null;
+let cacheSignature = null;
+let building = null;
+
+async function librarySignature(files) {
+  const parts = [];
+  for (const file of files) {
+    const st = await fs.stat(file);
+    parts.push(`${file}:${st.mtimeMs}`);
+    try {
+      parts.push(`${file}.txt:${(await fs.stat(file + '.txt')).mtimeMs}`);
+    } catch {
+      // no sidecar
+    }
+  }
+  return parts.join('|');
+}
+
 export async function scanPhotos() {
   const files = await imageFiles(PHOTOS_DIR);
+  const signature = await librarySignature(files);
+
+  // Callers arrive together — getStaticPaths, then every page render — so the
+  // scan in flight is awaited rather than started again for each of them.
+  if (signature === cacheSignature) return cache ?? await building;
+
+  cacheSignature = signature;
+  building = scanLibrary(files);
+  cache = await building;
+  building = null;
+  return cache;
+}
+
+async function scanLibrary(files) {
+  const dimensions = await readDimensions();
   const photos = [];
 
   for (const file of files) {
@@ -172,8 +240,10 @@ export async function scanPhotos() {
     const year = meta.exif?.date ? meta.exif.date.getFullYear() : st.mtime.getFullYear();
     const location = meta.location || inferLocation(rel, meta.title, category, subcategory);
 
+    const id = rel.toLowerCase().replace(/\.[^.]+$/, '').replace(/[^a-z0-9/_-]/g, '-');
+    const dims = dimensions.get(id);
     photos.push({
-      id: rel.toLowerCase().replace(/\.[^.]+$/, '').replace(/[^a-z0-9/_-]/g, '-'),
+      id,
       src: path.relative(process.cwd(), file).split(path.sep).join('/'), // for the rendition script
       title: meta.title,
       note: meta.note,
@@ -182,8 +252,11 @@ export async function scanPhotos() {
       subcategory,
       atRoot,
       isMain: meta.isMain,
+      heroRank: meta.heroRank,
       year,
       exif: meta.exif,
+      width: dims?.width ?? null,
+      height: dims?.height ?? null,
     });
   }
 
@@ -227,20 +300,13 @@ export async function scanPhotos() {
   // One-line descriptions, if the folders carry them (root files have no dir).
   await Promise.all(
     categories.map(async (c) => {
-      c.description = c.key === CATCH_ALL && !byCat.has(c.key)
-        ? null
-        : await readDescription(path.join(PHOTOS_DIR, c.key));
+      // Root-level photographs have no folder, so there is nothing to read.
+      c.description = c.key === CATCH_ALL ? null : await readDescription(path.join(PHOTOS_DIR, c.key));
       for (const s of c.subcategories) {
         s.description = await readDescription(path.join(PHOTOS_DIR, c.key, s.key));
       }
     })
   );
 
-  // Hero: a root-level "main" wins, else the first category cover that is a "main".
-  const hero =
-    photos.find((p) => p.atRoot && p.isMain) ??
-    categories.find((c) => c.cover?.isMain)?.cover ??
-    photos[0];
-
-  return { categories, photos, hero, empty: photos.length === 0 };
+  return { categories, photos, empty: photos.length === 0 };
 }

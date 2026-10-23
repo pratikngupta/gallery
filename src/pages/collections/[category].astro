@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import CollectionView from '../../components/CollectionView.astro';
 import { scanPhotos } from '../../lib/photos.mjs';
-import { withUrls, groupsFor } from '../../lib/render.mjs';
+import { withUrls } from '../../lib/render.mjs';
 
 // /collections/<category> — one series at a time, so no page is ever longer
 // than one body of work.
@@ -17,9 +17,9 @@ export const getStaticPaths = async () => {
 const { categoryKey } = Astro.props;
 const { categories, photos } = await scanPhotos();
 const cat = categories.find((c) => c.key === categoryKey) ?? categories[0];
-const urls = cat.photos.map(withUrls);
-const byId = new Map(urls.map((p) => [p.id, p]));
-const groups = urls.length ? [{ label: null, photos: urls }] : [];
+// One wall per collection: the chips filter what is on the page rather than
+// the page being cut into sections.
+const wall = cat.photos.map(withUrls);
 ---
 
 <Layout title={`${cat.name} — Pratik Gupta`} description={cat.description ?? undefined}>
@@ -29,7 +29,7 @@ const groups = urls.length ? [{ label: null, photos: urls }] : [];
     active={cat.key}
     categories={categories}
     subcategories={cat.subcategories}
-    groups={groups}
+    photos={wall}
     emptyMessage={`Nothing in ${cat.name} yet — add a folder under src/photos/ and rebuild.`}
   />
 </Layout>

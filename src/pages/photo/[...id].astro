@@ -1,17 +1,18 @@
 ---
 // /photo/<id> — one photograph, full attention: large image, sticky
-// metadata, a related wall, and a native-popover zoom to the 2400px
-// rendition. Structure adapted from astro-frame-shift; styling stays in the
-// darkroom design system.
+// metadata, prev/next through the series it belongs to, a related wall, and a
+// native-popover zoom to the 2400px rendition. Structure adapted from
+// astro-frame-shift; styling stays in the darkroom design system.
 import Layout from '../../layouts/Layout.astro';
 import PhotoMasonry from '../../components/PhotoMasonry.astro';
-import { scanPhotos } from '../../lib/photos.mjs';
-import { withUrls, exifLine } from '../../lib/render.mjs';
+import { scanPhotos, prettyKey } from '../../lib/photos.mjs';
+import { withUrls, seriesNeighbours } from '../../lib/render.mjs';
 
 // Note: getStaticPaths is hoisted by Astro and can only see imports —
 // keep its body free of frontmatter-local consts.
 export const getStaticPaths = async () => {
   const { photos } = await scanPhotos();
+  const stamp = (p) => (p ? { id: p.id, title: p.title } : null);
   return photos.map((photo) => {
     // Same subseries first, then the rest of the series.
     const related = photos
@@ -26,37 +27,48 @@ export const getStaticPaths = async () => {
       .slice(0, 8)
       .map(({ p }) => p.id);
 
-    return { params: { id: photo.id }, props: { photoId: photo.id, related } };
+    // Prev/next walk the series in wall order, so the line names the print the
+    // viewer just scrolled past.
+    const nb = seriesNeighbours(photo, photos);
+    return {
+      params: { id: photo.id },
+      props: { photoId: photo.id, related, prev: stamp(nb.prev), next: stamp(nb.next) },
+    };
   });
 };
 
-const { photoId, related } = Astro.props;
+const { photoId, related, prev, next } = Astro.props;
 const { photos, categories } = await scanPhotos();
-const photo = photos.find((p) => p.id === photoId);
-if (!photo) return null;
-
+const byId = new Map(photos.map((p) => [p.id, p]));
+const photo = withUrls(byId.get(photoId));
 const cat = categories.find((c) => c.key === photo.category);
-const seriesLabel = [cat?.name, photo.subcategory].filter(Boolean).join(' / ');
+const seriesName = photo.subcategory ? prettyKey(photo.subcategory) : null;
+const seriesLabel = [cat?.name, seriesName].filter(Boolean).join(' / ');
 const dateLabel = photo.exif?.date
   ? new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(
       photo.exif.date
     )
   : String(photo.year);
-const settings = exifLine(photo.exif);
-const fullLine = photo.exif ? [photo.exif.camera, ...settings].filter(Boolean) : [];
-
-const display = `/renditions/${photo.id.replace(/\//g, '-')}-1600.webp`;
-const zoom = `/renditions/${photo.id.replace(/\//g, '-')}-2400.webp`;
-const relatedUrls = related.map((id) => withUrls(photos.find((p) => p.id === id)));
-const byId = new Map(relatedUrls.map((p) => [p.id, p]));
+const wall = related.map((id) => withUrls(byId.get(id)));
 ---
 
 <Layout title={`${photo.title} — Pratik Gupta`}>
-  <div class="photo-page">
-    <!-- Mobile single back-affordance -->
-    <a class="breadcrumb-mobile" href={`/collections/${photo.category}/`}>
+  <!-- Disable view transitions on the photo page so the back chip stays
+       visible during SPA swaps (it was hidden inside Astro's transition
+       overlay layers). The masonry tiles provide their own per-tile morphs. -->
+  <div class="photo-page" transition:animate="none">
+    <!-- The way back to wherever the print was clicked from. The static href
+         is the series; the script repoints it to the page the viewer came from. -->
+    <a class="breadcrumb-mobile" href={`/collections/${photo.category}/`} data-back-to
+       aria-label={`Back to ${cat?.name ?? 'Gallery'}`}>
       <span aria-hidden="true">←</span>
-      <span>{photo.subcategory ? photo.subcategory : (cat?.name ?? 'Collection')}</span>
+      <span data-back-label>{seriesName ?? cat?.name ?? 'Gallery'}</span>
+    </a>
+
+    <a class="photo-back" href={`/collections/${photo.category}/`} data-back-to
+       aria-label={`Back to ${cat?.name ?? 'Gallery'}`}>
+      <span aria-hidden="true">←</span>
+      <span data-back-label>{cat?.name ?? 'Gallery'}</span>
     </a>
 
     <!-- Desktop full breadcrumb hierarchy -->
@@ -68,7 +80,7 @@ const byId = new Map(relatedUrls.map((p) => [p.id, p]));
         photo.subcategory && (
           <>
             <span class="breadcrumb-sep" aria-hidden="true">/</span>
-            <span class="breadcrumb-link">{photo.subcategory}</span>
+            <span class="breadcrumb-link">{seriesName}</span>
           </>
         )
       }
@@ -84,7 +96,17 @@ const byId = new Map(relatedUrls.map((p) => [p.id, p]));
           popovertarget="photo-zoom"
           aria-label={`View larger: ${photo.title}`}
         >
-          <img src={display} alt={photo.title} loading="eager" decoding="async" />
+          <img
+            src={photo.gridSrc}
+            srcset={photo.gridSrcset}
+            sizes="(min-width: 1024px) 800px, calc(100vw - 5rem)"
+            width={photo.width}
+            height={photo.height}
+            alt={photo.title}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
         </button>
       </div>
 
@@ -154,14 +176,35 @@ const byId = new Map(relatedUrls.map((p) => [p.id, p]));
             )
           }
         </dl>
+
+        {
+          (prev || next) && (
+            <nav class="series-nav" aria-label="Browse this series">
+              {
+                prev && (
+                  <a href={`/photo/${prev.id}/`} data-series-nav-side="prev">
+                    Previous · {prev.title}
+                  </a>
+                )
+              }
+              {
+                next && (
+                  <a href={`/photo/${next.id}/`} data-series-nav-side="next">
+                    Next · {next.title}
+                  </a>
+                )
+              }
+            </nav>
+          )
+        }
       </aside>
     </div>
 
     {
-      relatedUrls.length > 0 && (
+      wall.length > 0 && (
         <section class="photo-related">
           <h2 class="related-title">More from {cat?.name ?? 'the gallery'}</h2>
-          <PhotoMasonry groups={[{ label: null, photos: relatedUrls.map((p) => byId.get(p.id)) }]} />
+          <PhotoMasonry photos={wall} />
         </section>
       )
     }
@@ -173,9 +216,48 @@ const byId = new Map(relatedUrls.map((p) => [p.id, p]));
       class="zoom-backdrop"
       popovertarget="photo-zoom"
       popovertargetaction="hide"
-      aria-label="Close larger image"
+      aria-label={`Close larger view of ${photo.title}`}
     >
-      <img src={zoom} alt={photo.title} />
+      <img
+        src={photo.full}
+        width={photo.width}
+        height={photo.height}
+        alt={photo.title}
+        decoding="async"
+      />
     </button>
   </div>
+
+  <script>
+    // Repoint the back chips at the page the viewer actually came from.
+    function repointBack() {
+      const origin = window.__fromUrl;
+      if (!origin) return;
+      const url = new URL(origin);
+      if (url.origin !== location.origin) return;
+      const path = url.pathname;
+      let label = null;
+      if (path === '/') label = 'Home';
+      else if (path.startsWith('/photo/')) label = 'Previous print';
+      else if (path === '/about/') label = 'About';
+      else if (path === '/collections' || path === '/collections/') label = 'Gallery';
+      else if (path.startsWith('/collections/')) {
+        label = (path.split('/')[2] || '').replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase());
+      }
+      if (!label) return;
+      document.querySelectorAll('[data-back-to]').forEach((chip) => {
+        chip.href = origin;
+        chip.setAttribute('aria-label', `Back to ${label}`);
+        const text = chip.querySelector('[data-back-label]');
+        if (text) text.textContent = label;
+      });
+    }
+
+    repointBack();
+    // This script re-runs on every swap, so register the handler once.
+    if (!window.__backListener) {
+      window.__backListener = true;
+      document.addEventListener('astro:page-load', repointBack);
+    }
+  </script>
 </Layout>

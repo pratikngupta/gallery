@@ -11,7 +11,7 @@
 
 ## Phase 3 — Image pipeline ✅
 - [x] Incremental sharp rendition script (40/900/1600/2400/2560 WebP)
-- [x] Blur-up loading (40px → 900/1600 srcset), noscript fallback
+- [x] Blur-up loading (40px `src` → 900/1600 srcset), placeholder gated on `[data-js]` so it never applies without JS
 
 ## Phase 4 — Pages ✅
 - [x] Home: hero (slow zoom + scroll cue), featured wall, hover-develop index
@@ -40,6 +40,10 @@
 - [x] Detail view: responsive breadcrumb (`← Back` on mobile, full path on desktop)
 - [x] Main page: "Explore the full gallery" archive portal (`#full-gallery`) with collection covers and CTA
 - [x] Theme toggle: event delegation on document + `astro:after-swap` persistence across View Transitions
+- [x] Design polish pass: pills and the archive CTA rebuilt on the token set (zinc scale dropped), sentence-case role line and breadcrumb, no arrows appended to links, hero print separated by tone instead of a shadow, portal row length from the collection count, Archivo requested as `400..700` with the unused Fraunces dropped, hero badge states a place only when the library states one
+- [x] Accent hover text on dark: measured 3.65:1 for `#d03a2b` on `#1a1815` (below AA for 13–15px text) — resolved with a derived `--accent-text` (`#e0604f`, 5.02:1) for text hovers; `--accent` stays on focus rings and the nav underline, where the 3:1 graphical-object threshold applies. Light theme `#b23225` on `#f6f3ee` is 5.62:1, so `--accent-text` there is just `var(--accent)`
+- [x] Polish pass: dead CSS and unused tokens deleted, every literal folded into the token set, responsive block moved to the end of `global.css` with breakpoints unified to 640/1024, hero showcase made folder-driven (`Hero: N` sidecar) and its prints excluded from the featured wall, grid given srcset + intrinsic dimensions, prev/next within a series, header and footer held still across navigations, carousel pause control, skip link, "Back to gallery" capsule at the head of the series pill row, 404 page, docs resynced
+- [x] Navigation polish: detail pages get an origin-aware back chip (`← Home` / `← Gallery` / `← Aircraft` / `← Previous print`) from `window.__fromUrl`, set by `Layout.astro` on `astro:before-swap` because referrer and history are empty under ClientRouter; chip is always visible on desktop (elevated with `z-index: 10` above Astro's view-transition overlay layers) and relabels the mobile `← [Series]` link; category-page breadcrumbs moved out of flow into the page-top padding band (`.collection .breadcrumb`, `top: calc(var(--page-top) - 2.4rem)`) so every collection page opens at the same level as `/collections/`; header flicker fixed by removing `transition:name` so only `data-header` keeps it persistent across navigations; hero zoom-out fixed by removing `transition:name` from slides (masonry tiles provide the forward morph); gallery origin no longer hides the desktop back chip.
 
 ## Phase 8 — Launch & Deployment
 - [ ] Final owner acceptance test (dev server: `npm run dev`)

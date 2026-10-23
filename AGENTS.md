@@ -4,8 +4,8 @@
 A static photography portfolio for Pratik Gupta. Home (hero → featured wall)
 plus per-collection pages (`/collections/`,
 `/collections/<category>` with a pill switcher) and per-photo detail pages
-(`/photo/<id>`: metadata, related wall, native-popover zoom). SPA-style
-navigation via Astro View Transitions with shared-element morphs.
+(`/photo/<id>`: metadata, related wall, native-popover zoom, origin-aware back chip). SPA-style
+navigation via Astro View Transitions with shared-element morphs (masonry tile → detail image).
 No framework JS, no CMS, no server. Pages are kept short on purpose — the
 owner rejected the single endless-scroll version.
 
@@ -26,7 +26,7 @@ npm run preview  # serve the production build
 
 ## Conventions
 - Astro single-file components (`.astro`); vanilla JS in `<script>` tags. No React, no client frameworks.
-- Image renditions are generated at build time via `astro:assets` (`getImage`). Never commit generated renditions; they live in `dist/`.
+- Image renditions are generated at build time via `scripts/build-renditions.mjs` using `sharp`, written to `public/renditions/`.
 - Commit per phase or logical unit. Messages: imperative, one line, with the Co-Authored-By footer.
 - Before changing layout/spacing/type: read the design plan in `docs/PLAN.md` and check the change against the "avoid" list there.
 - Keep the site working with an empty `src/photos/` directory (graceful empty states).

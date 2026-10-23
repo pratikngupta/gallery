@@ -1,15 +1,18 @@
 ---
-// Editorial Hero layout inspired by clean magazine design:
-// Eyebrow, bold statement headline, subtitle, and an auto-switching
-// featured photo showcase with location pill badge.
+// Editorial hero: a role line, a statement, and an auto-switching showcase of
+// prints from the library. One badge, two kinds of truth — a place when the
+// folders state one, otherwise the series they name. Nothing here is guessed.
 export interface Slide {
   id: string;
   title: string;
-  location: string;
+  location: string | null;
+  series: string | null;
   src: string;
   srcset?: string;
   href: string;
   alt?: string;
+  width?: number | null;
+  height?: number | null;
 }
 
 export interface Props {
@@ -23,98 +26,142 @@ const firstSlide = slides[0];
 
 <section class="hero-editorial" id="top">
   <div class="hero-editorial-head">
-    <p class="hero-eyebrow">ENGINEER / PHOTOGRAPHER</p>
+    <p class="hero-eyebrow">Engineer and photographer, based in Toronto</p>
     <h1 class="hero-headline">A different perspective.</h1>
-    <p class="hero-subhead">Architecture, landscapes, and wildlife through my lens.</p>
+    <p class="hero-subhead">Architecture, landscapes, wildlife, and aircraft.</p>
   </div>
 
   {
     hasSlides && (
-      <div class="hero-showcase" data-hero-showcase aria-roledescription="carousel" aria-label="Featured Photography Showcase">
+      <div
+        class="hero-showcase"
+        data-hero-showcase
+        role="group"
+        aria-roledescription="carousel"
+        aria-label="Featured photographs"
+      >
         <div class="hero-slides">
-          {slides.map((slide, index) => (
-            <div
-              class={`hero-slide ${index === 0 ? 'is-active' : ''}`}
-              data-hero-slide
-              data-index={index}
-              data-location={slide.location}
-              data-title={slide.title}
-              aria-hidden={index === 0 ? 'false' : 'true'}
-            >
-              <a href={slide.href} class="hero-slide-link" title={`View ${slide.title}`}>
-                <img
-                  src={slide.src}
-                  {...(slide.srcset ? { srcset: slide.srcset, sizes: '(max-width: 768px) 100vw, (max-width: 1440px) 94vw, 1360px' } : {})}
-                  alt={slide.alt || slide.title}
-                  class="hero-slide-img"
-                  loading={index === 0 ? 'eager' : 'lazy'}
-                  fetchpriority={index === 0 ? 'high' : 'auto'}
-                />
-              </a>
-            </div>
-          ))}
+          {
+            slides.map((slide, index) => (
+              <div
+                class={`hero-slide ${index === 0 ? 'is-active' : ''}`}
+                data-hero-slide
+                data-index={index}
+                data-place={slide.location || slide.series}
+                aria-hidden={index === 0 ? 'false' : 'true'}
+                inert={index === 0 ? undefined : true}
+              >
+                <a href={slide.href} class="hero-slide-link" title={`View ${slide.title}`}>
+                  <img
+                    src={slide.src}
+                    {...(slide.srcset
+                      ? {
+                          srcset: slide.srcset,
+                          sizes: '(max-width: 640px) 92vw, (max-width: 1024px) 90vw, 1280px',
+                        }
+                      : {})}
+                    width={slide.width}
+                    height={slide.height}
+                    alt={slide.alt || slide.title}
+                    class="hero-slide-img"
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    fetchpriority={index === 0 ? 'high' : 'auto'}
+                  />
+                </a>
+              </div>
+            ))
+          }
         </div>
 
-        <div class="hero-location-pill" data-hero-location>
-          <span class="hero-location-pin" aria-hidden="true">📍</span>
-          <span class="hero-location-text" data-hero-location-text>{firstSlide?.location || 'Toronto, Canada'}</span>
-        </div>
+        {
+          slides.some((s) => s.location || s.series) && (
+            <div class="hero-location-pill" data-hero-location aria-live="polite">
+              <span class="hero-location-text">{firstSlide?.location || firstSlide?.series || ''}</span>
+            </div>
+          )
+        }
       </div>
     )
   }
 
-  <div class="hero-bottom">
-    <div class="hero-bar">
-      <span class="hero-bar-label">Selected work</span>
-      <a href="#featured" class="hero-bar-link">
-        Explore Gallery <span class="hero-bar-arrow" aria-hidden="true">↓</span>
-      </a>
-    </div>
-    <hr class="hero-divider" aria-hidden="true" />
-  </div>
+  {
+    hasSlides && (
+      <div class="hero-bottom">
+        <div class="hero-bar">
+          <a href="#featured" class="hero-bar-link">See featured works</a>
+          {
+            slides.length > 1 && (
+              <button type="button" class="hero-bar-link hero-pause" data-hero-pause aria-pressed="false">
+                Pause slideshow
+              </button>
+            )
+          }
+        </div>
+        <hr class="hero-divider" aria-hidden="true" />
+      </div>
+    )
+  }
 </section>
 
 <script>
   function setupHeroShowcase() {
     const showcase = document.querySelector('[data-hero-showcase]');
-    if (!showcase) return;
+    if (!showcase || showcase.dataset.heroReady) return;
+    showcase.dataset.heroReady = '1';
 
-    const slides = Array.from(showcase.querySelectorAll<HTMLElement>('[data-hero-slide]'));
-    const locationText = showcase.querySelector<HTMLElement>('[data-hero-location-text]');
+    const slides = Array.from(showcase.querySelectorAll('[data-hero-slide]'));
+    const pill = showcase.querySelector('[data-hero-location]');
+    const badge = pill && pill.querySelector('.hero-location-text');
+    const pauseBtn = showcase.parentElement.querySelector('[data-hero-pause]');
     if (slides.length <= 1) return;
 
     let currentIndex = 0;
-    let timer: number | null = null;
+    let paused = false;
+    let timer = null;
     const INTERVAL = 5000;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    function goToSlide(nextIndex: number) {
+    // A slide that is not showing must not be tabbable: an invisible link
+    // with a focus ring is worse than no link at all.
+    function setVisibility(index, visible) {
+      const slide = slides[index];
+      slide.classList.toggle('is-active', visible);
+      slide.setAttribute('aria-hidden', visible ? 'false' : 'true');
+      if ('inert' in slide) {
+        slide.inert = !visible;
+      } else {
+        slide.querySelectorAll('a').forEach((a) => (a.tabIndex = visible ? 0 : -1));
+      }
+    }
+
+    function goToSlide(nextIndex) {
       if (nextIndex === currentIndex) return;
-      slides[currentIndex].classList.remove('is-active');
-      slides[currentIndex].setAttribute('aria-hidden', 'true');
-
+      setVisibility(currentIndex, false);
       currentIndex = (nextIndex + slides.length) % slides.length;
+      setVisibility(currentIndex, true);
 
-      const activeSlide = slides[currentIndex];
-      activeSlide.classList.add('is-active');
-      activeSlide.setAttribute('aria-hidden', 'false');
-
-      const nextLocation = activeSlide.dataset.location;
-      if (locationText && nextLocation && locationText.textContent !== nextLocation) {
-        locationText.style.opacity = '0';
-        setTimeout(() => {
-          locationText.textContent = nextLocation;
-          locationText.style.opacity = '1';
-        }, 220);
+      // The badge changes as a whole chip. With reduced motion it simply
+      // changes, without the fade.
+      const nextPlace = slides[currentIndex].dataset.place || '';
+      if (badge && badge.textContent !== nextPlace) {
+        if (reducedMotion.matches) {
+          badge.textContent = nextPlace;
+          pill.hidden = !nextPlace;
+        } else {
+          pill.classList.add('is-fading');
+          setTimeout(() => {
+            badge.textContent = nextPlace;
+            pill.hidden = !nextPlace;
+            pill.classList.remove('is-fading');
+          }, 220);
+        }
       }
     }
 
     function startTimer() {
-      if (timer) clearInterval(timer);
-      // Respect prefers-reduced-motion
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      timer = window.setInterval(() => {
-        goToSlide(currentIndex + 1);
-      }, INTERVAL);
+      stopTimer();
+      if (paused || reducedMotion.matches) return;
+      timer = setInterval(() => goToSlide(currentIndex + 1), INTERVAL);
     }
 
     function stopTimer() {
@@ -124,18 +171,27 @@ const firstSlide = slides[0];
       }
     }
 
+    pauseBtn.addEventListener('click', () => {
+      paused = !paused;
+      pauseBtn.setAttribute('aria-pressed', String(paused));
+      pauseBtn.textContent = paused ? 'Resume slideshow' : 'Pause slideshow';
+      if (paused) stopTimer();
+      else startTimer();
+    });
+
+    // Hover and focus pause the switch while someone is looking at a print;
+    // the pause button is the explicit control that works without a mouse.
     showcase.addEventListener('mouseenter', stopTimer);
     showcase.addEventListener('mouseleave', startTimer);
     showcase.addEventListener('focusin', stopTimer);
     showcase.addEventListener('focusout', startTimer);
 
-    startTimer();
+    reducedMotion.addEventListener('change', () => (paused ? stopTimer() : startTimer()));
 
-    // Clean up timer on page transitions with Astro ClientRouter
-    document.addEventListener('astro:before-swap', stopTimer, { once: true });
+    startTimer();
+    document.addEventListener('astro:before-swap', stopTimer);
   }
 
-  // Run on initial load and on Astro view transition navigations
   setupHeroShowcase();
   document.addEventListener('astro:page-load', setupHeroShowcase);
 </script>

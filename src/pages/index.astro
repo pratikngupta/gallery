@@ -1,20 +1,17 @@
 ---
+// Home: editorial hero with an auto-switching showcase, the featured wall,
+// then the archive portal — every section built from the folders.
 import Layout from '../layouts/Layout.astro';
 import { scanPhotos } from '../lib/photos.mjs';
 import { withUrls, featuredFor, heroSlidesFor } from '../lib/render.mjs';
 import Hero from '../components/Hero.astro';
 import PhotoMasonry from '../components/PhotoMasonry.astro';
 
-// Home: Editorial hero with switching photo showcase, followed by the featured wall.
 const { categories, photos, empty } = await scanPhotos();
 
-const heroSlides = heroSlidesFor(photos);
-const activeHeroId = heroSlides[0]?.id;
-const featured = featuredFor(photos, categories, 9, activeHeroId);
-const featuredUrls = featured.map(withUrls);
-const byId = new Map(featuredUrls.map((p) => [p.id, p]));
-
-const categoriesWithUrls = categories.map((c) => ({
+const heroSlides = heroSlidesFor(photos, categories);
+const featured = featuredFor(photos, categories, 9, heroSlides.map((s) => s.id)).map(withUrls);
+const collections = categories.map((c) => ({
   ...c,
   coverUrl: c.cover ? withUrls(c.cover) : null,
 }));
@@ -35,9 +32,9 @@ const categoriesWithUrls = categories.map((c) => ({
         <>
           <div class="featured-head">
             <h2 class="featured-title">Featured works</h2>
-            <p class="featured-sub">A selection of my best photographs from the collections</p>
+            <p class="featured-sub">Selected from every collection.</p>
           </div>
-          <PhotoMasonry groups={[{ label: null, photos: featuredUrls.map((p) => byId.get(p.id)) }]} />
+          <PhotoMasonry photos={featured} />
         </>
       )
     }
@@ -47,42 +44,50 @@ const categoriesWithUrls = categories.map((c) => ({
     !empty && (
       <section class="gallery-portal" id="full-gallery">
         <header class="gallery-portal-head">
-          <p class="hero-eyebrow">THE ARCHIVE</p>
           <h2 class="gallery-portal-title">Explore the full gallery</h2>
           <p class="gallery-portal-sub">
-            {photos.length} photographs across {categories.length} curated collections
+            {photos.length} {photos.length === 1 ? 'photograph' : 'photographs'} in
+            {categories.length} {categories.length === 1 ? 'collection' : 'collections'}
           </p>
         </header>
 
-        <div class="gallery-portal-grid">
-          {categoriesWithUrls.map((cat) => (
-            <a href={`/collections/${cat.key}/`} class="gallery-cat-card" aria-label={`View ${cat.name} collection`}>
-              <div class="gallery-cat-thumb">
-                {cat.coverUrl && (
-                  <img
-                    src={cat.coverUrl.thumb}
-                    data-full={cat.coverUrl.gridSrc}
-                    alt={cat.name}
-                    class="ph-img"
-                    loading="lazy"
-                  />
-                )}
-              </div>
-              <div class="gallery-cat-info">
-                <span class="gallery-cat-name">{cat.name}</span>
-                <span class="gallery-cat-count mono">
-                  {cat.count} {cat.count === 1 ? 'photograph' : 'photographs'}
-                </span>
-              </div>
-            </a>
-          ))}
+        <div class="gallery-portal-grid" style={`--portal-cols: ${Math.min(categories.length, 4)}`}>
+          {
+            collections.map((cat) => (
+              <a
+                href={`/collections/${cat.key}/`}
+                class="gallery-cat-card"
+                aria-label={`View ${cat.name} collection`}
+              >
+                <div class="gallery-cat-thumb">
+                  {
+                    cat.coverUrl && (
+                      <img
+                        src={cat.coverUrl.thumb}
+                        data-srcset={cat.coverUrl.gridSrcset}
+                        sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 31vw"
+                        width={cat.coverUrl.width}
+                        height={cat.coverUrl.height}
+                        alt={cat.name}
+                        class="ph-img"
+                        loading="lazy"
+                      />
+                    )
+                  }
+                </div>
+                <div class="gallery-cat-info">
+                  <span class="gallery-cat-name">{cat.name}</span>
+                  <span class="gallery-cat-count mono">
+                    {cat.count} {cat.count === 1 ? 'photograph' : 'photographs'}
+                  </span>
+                </div>
+              </a>
+            ))
+          }
         </div>
 
         <div class="gallery-portal-action">
-          <a href="/collections/" class="gallery-cta-pill">
-            <span>Browse Complete Archive</span>
-            <span class="gallery-cta-arrow" aria-hidden="true">→</span>
-          </a>
+          <a href="/collections/" class="gallery-cta-pill">Browse the gallery</a>
         </div>
       </section>
     )
