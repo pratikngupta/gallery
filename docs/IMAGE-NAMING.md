@@ -85,15 +85,14 @@ If any photo has `hero: N` in its `.txt` sidecar, those photos fill the hero in 
 ### 2. Featured Works Wall (9 tiles below the hero)
 
 **Selection order:**
-1. Every photo with `main` in the filename — one per category (these are the "main" covers)
-2. Category covers (the same photos if no other "main" exists)
-3. Remaining photos in scan order (alphabetical folder/file order)
+1. One cover per category (see "Main Photo" section above)
+2. Balanced picks from each category — two per category, cycling through categories until the wall is full
 
 **Excludes:** Any photo already shown in the hero carousel.
 
 **Capped at 9.**
 
-> **Tip:** If a category has only `*-main.jpg` in a subfolder (not at the category root), that photo may appear in the featured wall as a "main" photo AND again as a category cover. The deduplication only removes exact duplicates, so a subfolder "main" and a root cover can both appear.
+> **Example:** With 4 categories, the wall gets 4 covers (one per category), then fills the remaining 5 slots by cycling through the categories: one from Aircraft, one from Buildings, one from Landscape, one from Wildlife, then one more from Aircraft. Result: ~2–3 photos per category, balanced across the library.
 
 ### 3. Gallery Portal Cards ("Explore the full gallery")
 
@@ -258,7 +257,7 @@ Each rendition is WebP at quality 80, resized to the target width (maintaining a
 
 4. Pages assemble:
    ├─ Hero carousel: `hero: N` sidecars (ranked, capped at 6), else one cover per category + any `main` photos
-   ├─ Featured wall: `main` photos, then category covers, then scan order (excludes hero photos, capped at 9)
+   ├─ Featured wall: one cover per category, then balanced picks (2 per category, cycling), excludes hero photos (capped at 9)
    ├─ Masonry wall: all photos in the collection
    └─ Gallery portal: one cover per category card (by cover priority, unaffected by `hero:` ranks)
 ```

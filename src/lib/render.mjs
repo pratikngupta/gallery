@@ -58,9 +58,9 @@ export function heroSlidesFor(photos, categories) {
   }));
 }
 
-// Home-page featured: every "main" photo first, then the collection covers,
-// then the rest of the library in scan order. Hero prints are left out so the
-// wall never repeats what the showcase is already showing.
+// Home-page featured: one cover per category, then balanced picks from each
+// category (two per category, cycling) until the wall is full. Hero prints are
+// excluded so the wall never repeats what the showcase is already showing.
 export function featuredFor(photos, categories, cap = 9, excludeIds = []) {
   const exclude = new Set(excludeIds);
   const seen = new Set(exclude);
@@ -70,9 +70,29 @@ export function featuredFor(photos, categories, cap = 9, excludeIds = []) {
     seen.add(p.id);
     picks.push(p);
   };
-  for (const p of photos) if (p.isMain) add(p);
+
+  // 1. One cover per category (the first photo or a "main" photo)
   for (const c of categories) add(c.cover);
-  for (const p of photos) add(p);
+
+  // 2. Balanced picks from each category — two per category, cycling.
+  //    Photos grouped by category, scan order within each, skip already-picked.
+  const byCat = new Map();
+  for (const c of categories) byCat.set(c.key, []);
+  for (const p of photos) {
+    const group = byCat.get(p.category);
+    if (group) group.push(p);
+  }
+  const cats = [...byCat.values()].filter((g) => g.length > 0);
+  let i = 0;
+  while (picks.length < cap && cats.length > 0) {
+    const cat = cats[i % cats.length];
+    for (const p of cat) {
+      add(p);
+      if (picks.length >= cap) break;
+    }
+    i++;
+  }
+
   return picks;
 }
 
