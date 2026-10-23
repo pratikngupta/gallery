@@ -74,8 +74,8 @@ export function featuredFor(photos, categories, cap = 9, excludeIds = []) {
   // 1. One cover per category (the first photo or a "main" photo)
   for (const c of categories) add(c.cover);
 
-  // 2. Balanced picks from each category — two per category, cycling.
-  //    Photos grouped by category, scan order within each, skip already-picked.
+  // 2. Balanced picks from each category — cycling through categories.
+  //    One pick per category per round, round-robin until the wall is full.
   const byCat = new Map();
   for (const c of categories) byCat.set(c.key, []);
   for (const p of photos) {
@@ -83,14 +83,21 @@ export function featuredFor(photos, categories, cap = 9, excludeIds = []) {
     if (group) group.push(p);
   }
   const cats = [...byCat.values()].filter((g) => g.length > 0);
-  let i = 0;
-  while (picks.length < cap && cats.length > 0) {
-    const cat = cats[i % cats.length];
-    for (const p of cat) {
-      add(p);
-      if (picks.length >= cap) break;
+
+  // Track the next index to pick within each category group.
+  const idx = new Array(cats.length).fill(0);
+  let round = 0;
+  let safety = 0;
+  while (picks.length < cap && safety < cap * cats.length * 2) {
+    safety++;
+    const catIdx = round % cats.length;
+    const cat = cats[catIdx];
+    const i = idx[catIdx];
+    if (i < cat.length) {
+      add(cat[i]);
+      idx[catIdx] = i + 1;
     }
-    i++;
+    round++;
   }
 
   return picks;
