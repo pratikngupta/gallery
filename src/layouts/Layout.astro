@@ -172,6 +172,8 @@ const {
       // ——— scroll-reveal: sections fade in as they enter the viewport ———
       // One intersection observer per page-load. Re-create it on each Astro
       // navigation so it only observes elements that actually exist in the DOM.
+      // Also do a synchronous check in case elements are already in view when
+      // this script runs (the observer callback is async and may miss them).
       function setupReveal() {
         const observer = new IntersectionObserver(
           (entries) => {
@@ -184,7 +186,19 @@ const {
           },
           { threshold: 0.15 }
         );
-        document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+        document.querySelectorAll('.reveal').forEach((el) => {
+          observer.observe(el);
+          // If the element is already intersecting when we add the observer,
+          // the callback may not fire synchronously — check immediately.
+          if (observer.takeRecords().length > 0 || el.classList.contains('is-visible')) return;
+          // Fallback: if the element's bounding client rect is mostly visible,
+          // reveal it immediately.
+          const rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight && rect.bottom > 0 && rect.width > 0) {
+            el.classList.add('is-visible');
+            observer.unobserve(el);
+          }
+        });
       }
       setupReveal();
       document.addEventListener('astro:page-load', setupReveal);
