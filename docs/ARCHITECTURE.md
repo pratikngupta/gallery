@@ -14,8 +14,9 @@ server, no database, and no client framework.
 │   • "main" in filename → category cover                        │
 │   • description.txt → section subtitle                         │
 │   • exifr → EXIF (camera, lens, ƒ, shutter, ISO, date)         │
-│   • filename → title; photo.txt sidecar → title, note,         │
-│     location, `Hero: N` (the showcase order)                   │
+│   • filename → title (camera-default names like IMG_9092 fall   │
+│     back to the folder the photo sits in); photo.txt sidecar → │
+│     title, note, location, `Hero: N` (the showcase order)      │
 │   • memoized on a path:ctime signature; concurrent callers     │
 │     share the scan in flight, so EXIF is parsed once per build │
 │        │                                                       │

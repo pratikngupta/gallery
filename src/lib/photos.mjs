@@ -18,6 +18,9 @@ import exifr from 'exifr';
 export const PHOTOS_DIR = path.resolve(process.cwd(), 'src/photos');
 const IMAGE_EXT = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif']);
 const CATCH_ALL = 'field-notes';
+// Camera-default filenames carry no meaning ("IMG_9092"); for those the
+// folder a print lives in becomes the title ("Squirrel").
+const GENERIC_NAME = /^(?:img|dsc|pxl|pict|photo|image)[-_]?\d+$/i;
 
 async function imageFiles(dir) {
   let entries = [];
@@ -39,7 +42,9 @@ async function imageFiles(dir) {
   return out;
 }
 
-function titleFromName(name) {
+// `numberTrailing` is off for folder names: a trailing digit there ("Edge 540")
+// is part of the model name, not a sequence number.
+function titleFromName(name, numberTrailing = true) {
   let s = name
     .replace(/\bcoverart\b/gi, ' ')
     .replace(/\bcover\b/gi, ' ')
@@ -68,7 +73,7 @@ function titleFromName(name) {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
   });
 
-  if (words.length > 1) {
+  if (numberTrailing && words.length > 1) {
     const last = words[words.length - 1];
     if (/^\d+$/.test(last)) {
       const num = last.length < 2 ? last.padStart(2, '0') : last;
@@ -222,6 +227,9 @@ export async function scanPhotos() {
 async function scanLibrary(files) {
   const dimensions = await readDimensions();
   const photos = [];
+  // Track titles within each directory so generic-folder fallbacks can be
+  // numbered ("Squirrel" vs "Squirrel #01") rather than colliding.
+  const titlesInFolder = new Map();
 
   for (const file of files) {
     const rel = path.relative(PHOTOS_DIR, file);
@@ -231,7 +239,33 @@ async function scanLibrary(files) {
     const category = atRoot ? CATCH_ALL : segments[0];
     const subcategory = segments.length > 2 ? segments[1] : null;
 
-    const meta = await readMeta(file, titleFromName(base));
+    // A generic camera name ("IMG_9092") titles the photo after its folder.
+    // If that title is already taken in the folder, number the duplicate
+    // ("RCAF T-33 #01") so the wall can tell the prints apart.
+    const folderName = segments.length > 1 ? segments[segments.length - 2] : null;
+    const folderKey = path.dirname(file);
+    let title = titleFromName(base);
+    if (GENERIC_NAME.test(base) && folderName) {
+      title = titleFromName(folderName, false);
+    }
+
+    // Track titles per directory to detect collisions and assign numbers.
+    let used = titlesInFolder.get(folderKey) ?? new Set();
+    const baseTitle = title;
+    if (used.has(title)) {
+      // Already seen this title in this folder — number the duplicate.
+      let n = 1;
+      let numbered;
+      do {
+        numbered = `${baseTitle} #${String(n).padStart(2, '0')}`;
+        n++;
+      } while (used.has(numbered));
+      title = numbered;
+    }
+    used.add(title);
+    titlesInFolder.set(folderKey, used);
+
+    const meta = await readMeta(file, title);
     const st = await fs.stat(file);
     const year = meta.exif?.date ? meta.exif.date.getFullYear() : st.mtime.getFullYear();
     const location = meta.location || inferLocation(rel, meta.title, category, subcategory);

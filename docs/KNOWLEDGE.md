@@ -104,6 +104,8 @@ tokens and typefaces.
 5. The filename is dynamically normalized into a polished title: underscores/hyphens become spaces,
    model acronyms are standardized (`F-16`, `F-18`, `F-22`, `CMV-22`, `RCAF T-33`, `CN Tower`, `Big Sur`),
    trailing numbers become `#07`, and cover tags are stripped (`f_22_raptor_7.jpg` → "F-22 Raptor #07").
+   Camera-default filenames (`IMG_9092`) take the folder name as the title instead
+   (`wildlife/squirrel/IMG_9092.JPG` → "Squirrel"); duplicates in one folder are numbered.
 6. A `description.txt` in a category folder: first line shown under the title.
 7. Camera settings display automatically in a structured spec table (Camera, Lens, Focal Length, Aperture,
    Shutter, ISO, Captured). To override a caption or add a blurb to the detail page, add a `photo.txt` sidecar

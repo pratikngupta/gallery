@@ -114,6 +114,17 @@ One cover per category card, chosen by the same priority as the category cover (
 
 The filename (without extension) is automatically converted into a display title. This happens in `src/lib/photos.mjs`:
 
+### Generic camera names use the folder
+
+If the filename is a camera default (`IMG_9092`, `DSC_0001`, `PXL_2024…`, `photo_1`, or pure digits), the photo is titled after the folder it lives in instead:
+
+```
+wildlife/squirrel/IMG_9092.JPG     → "Squirrel"
+birds/American white pelicans/IMG_9617.jpg → "American White Pelicans"
+```
+
+The folder name runs through the same normalization (Step 3 below) but its trailing digits are kept as-is — `aircraft/Edge 540/IMG_0950.jpg` → "Edge 540", not "Edge #540". If several generic files in one folder would share a title, the later ones are numbered in scan order: the second `IMG_1401` → "Diamond Generations #01". A `title:` sidecar still overrides everything.
+
 ### Step 1: Strip cover tags
 The words `coverart`, `cover`, `featured` are removed from the filename.
 
@@ -162,6 +173,8 @@ f_16_falcon_1 → "f 16 falcon 1"
 | `toronto-skyline-featured.jpeg` | `Toronto Skyline` |
 | `f_22_raptor_7.jpg` | `F-22 Raptor #07` |
 | `chicago-John-Hancock-Center.jpeg` | `Chicago John Hancock Center` |
+| `IMG_9092.jpg` (in `wildlife/squirrel/`) | `Squirrel` |
+| `IMG_1401.jpg` (in `aircraft/Diamond Generations/`, 2nd generic file) | `Diamond Generations #01` |
 
 ### Override with sidecar
 

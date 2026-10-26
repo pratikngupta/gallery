@@ -13,7 +13,9 @@ owner rejected the single endless-scroll version.
 1. **The photographs are the interface.** No UI element may compete with the images. Grid tiles are clean prints — no cards, borders, or shadows; the only permitted chrome is an 8px tile radius (`--radius: 8px`) and a title-only hover scrim (owner-approved).
 2. **Design system is fixed** (see `docs/KNOWLEDGE.md`). Tokens live in `src/styles/global.css`. `--font-heading` and `--font-body` are unified as Archivo; do not introduce new colors, fonts, or type treatments without updating the knowledge doc.
 3. **Folder structure IS the content model.** Categories come from folders under `src/photos/`, subcategories from subfolders, covers from `main` in the filename. Nothing in the site hardcodes a category name. Adding photos = adding files. Never edit a config to add content.
-4. **Zero required metadata.** EXIF is parsed from the file at build time (`exifr`). Titles fall back to the filename. A `photo.txt` sidecar is the only optional override.
+4. **Zero required metadata.** EXIF is parsed from the file at build time (`exifr`). Titles fall back to
+   the filename — or the containing folder when the filename is a camera default (`IMG_9092` → "Squirrel").
+   A `photo.txt` sidecar is the only optional override.
 5. **The accent (safelight red) is spent on state only**: active pill, hover, focus rings. Never as decoration.
 6. **The zoom popover is always dark**, in both themes — it is the darkroom.
 
