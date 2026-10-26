@@ -1,0 +1,38 @@
+---
+// The wall: prints that link to their detail page. No transition:name —
+// navigation swaps instantly (see the wildcard rules in global.css);
+// data-subcat feeds the series filter.
+import { slug } from '../lib/photos.mjs';
+
+export interface Props {
+  photos: Record<string, unknown>[];
+}
+const { photos } = Astro.props;
+---
+
+<div class="masonry">
+  {
+    photos.map((p) => (
+      <a
+        class="ph-frame"
+        href={`/photo/${p.id}/`}
+        aria-label={`View ${p.title}`}
+        data-subcat={slug(p.subcategory)}
+      >
+        <img
+          class="ph-img"
+          src={p.thumb}
+          data-srcset={p.gridSrcset}
+          sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 31vw"
+          width={p.width}
+          height={p.height}
+          loading="lazy"
+          alt={p.title}
+        />
+        <span class="ph-scrim" aria-hidden="true">
+          <span>{p.title}</span>
+        </span>
+      </a>
+    ))
+  }
+</div>

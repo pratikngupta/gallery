@@ -1,0 +1,101 @@
+---
+// Shared shell for /collections/ and /collections/<category>:
+// breadcrumb, title, description, the switcher, then the wall.
+import PillNav, { type Subcategory } from './PillNav.astro';
+import PhotoMasonry from './PhotoMasonry.astro';
+
+export interface Props {
+  title: string;
+  description?: string | null;
+  active: string;
+  categories: Array<{ key: string; name: string }>;
+  subcategories?: Subcategory[];
+  photos: Record<string, unknown>[];
+  emptyMessage?: string;
+}
+const { title, description, active, categories, subcategories = [], photos, emptyMessage } = Astro.props;
+const isAll = active === 'all';
+---
+
+<section class="collection reveal" data-collection-view>
+  <header class="collection-head">
+    {
+      !isAll && (
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/collections/" class="breadcrumb-link">Gallery</a>
+          <span class="breadcrumb-sep" aria-hidden="true">/</span>
+          <span class="breadcrumb-current" data-breadcrumb-cat>{title}</span>
+          <span class="breadcrumb-sub" data-breadcrumb-sub-wrap hidden>
+            <span class="breadcrumb-sep" aria-hidden="true">/</span>
+              <span class="breadcrumb-current" data-breadcrumb-sub></span>
+          </span>
+        </nav>
+      )
+    }
+    <h1 class="collection-title">{title}</h1>
+    {
+      description && (
+        <p class="collection-desc">{description}</p>
+      )
+    }
+  </header>
+
+  <PillNav
+    categories={categories}
+    active={active}
+    subcategories={subcategories}
+    back={isAll ? undefined : '/collections/'}
+  />
+
+  {
+    photos.length === 0 ? (
+      <p class="collection-empty">
+        {emptyMessage ?? 'No photographs yet — drop images into src/photos/ and rebuild.'}
+      </p>
+    ) : (
+      <PhotoMasonry photos={photos} />
+    )
+  }
+</section>
+
+<script>
+  function setupSeriesFilter() {
+    const nav = document.querySelector('[data-subcat-nav]');
+    if (!nav || nav.dataset.ready) return;
+    nav.dataset.ready = '1';
+
+    const pills = Array.from(nav.querySelectorAll('[data-subcat-filter]'));
+    const frames = Array.from(document.querySelectorAll('.ph-frame[data-subcat]'));
+    const subWrap = document.querySelector('[data-breadcrumb-sub-wrap]');
+    const subText = document.querySelector('[data-breadcrumb-sub]');
+
+    pills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        const target = pill.dataset.subcatFilter;
+        if (!target) return;
+
+        pills.forEach((p) => {
+          const activeNow = p === pill;
+          p.classList.toggle('is-active', activeNow);
+          p.setAttribute('aria-pressed', activeNow ? 'true' : 'false');
+        });
+
+        if (subWrap && subText) {
+          if (target === 'all') {
+            subWrap.hidden = true;
+          } else {
+            subText.textContent = pill.textContent?.trim() || '';
+            subWrap.hidden = false;
+          }
+        }
+
+        frames.forEach((frame) => {
+          frame.hidden = target !== 'all' && frame.dataset.subcat !== target;
+        });
+      });
+    });
+  }
+
+  setupSeriesFilter();
+  document.addEventListener('astro:page-load', setupSeriesFilter);
+</script>

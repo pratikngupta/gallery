@@ -1,0 +1,322 @@
+---
+// Editorial hero: a role line, a statement, and an auto-switching showcase of
+// prints from the library. One badge, two kinds of truth — a place when the
+// folders state one, otherwise the series they name. Nothing here is guessed.
+export interface Slide {
+  id: string;
+  title: string;
+  location: string | null;
+  series: string | null;
+  src: string;
+  srcset?: string;
+  href: string;
+  alt?: string;
+  width?: number | null;
+  height?: number | null;
+}
+
+export interface Props {
+  slides?: Slide[];
+}
+
+const { slides = [] } = Astro.props;
+const hasSlides = slides.length > 0;
+const firstSlide = slides[0];
+---
+
+<section class="hero-editorial" id="top">
+  <div class="hero-editorial-head">
+    <p class="hero-eyebrow">Engineer and photographer, based in Toronto</p>
+    <h1 class="hero-headline">A different perspective.</h1>
+    <p class="hero-subhead">Architecture, landscapes, wildlife, and aircraft.</p>
+  </div>
+
+  {
+    hasSlides && (
+      <div
+        class="hero-showcase"
+        data-hero-showcase
+        role="group"
+        aria-roledescription="carousel"
+        aria-label="Featured photographs"
+      >
+        {
+          slides.length > 1 && (
+            <>
+              <button
+                type="button"
+                class="hero-arrow hero-arrow--prev"
+                data-hero-arrow
+                data-dir="-1"
+                aria-label="Previous slide"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+              </button>
+              <button
+                type="button"
+                class="hero-arrow hero-arrow--next"
+                data-hero-arrow
+                data-dir="1"
+                aria-label="Next slide"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            </>
+          )
+        }
+        <div class="hero-slides">
+          {
+            slides.map((slide, index) => (
+              <div
+                class={`hero-slide ${index === 0 ? 'is-active' : ''}`}
+                data-hero-slide
+                data-index={index}
+                data-place={slide.location || slide.series}
+                aria-hidden={index === 0 ? 'false' : 'true'}
+                inert={index === 0 ? undefined : true}
+              >
+                <a href={slide.href} class="hero-slide-link" title={`View ${slide.title}`}>
+                  <img
+                    src={slide.src}
+                    {...(slide.srcset
+                      ? {
+                          srcset: slide.srcset,
+                          sizes: '(max-width: 640px) 92vw, (max-width: 1024px) 90vw, 1080px',
+                        }
+                      : {})}
+                    width={slide.width}
+                    height={slide.height}
+                    alt={slide.alt || slide.title}
+                    class="hero-slide-img"
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    fetchpriority={index === 0 ? 'high' : 'auto'}
+                  />
+                </a>
+              </div>
+            ))
+          }
+        </div>
+
+        {
+          slides.some((s) => s.location || s.series) && (
+            <div class="hero-location-pill" data-hero-location aria-live="polite">
+              <span class="hero-location-text">{firstSlide?.location || firstSlide?.series || ''}</span>
+            </div>
+          )
+        }
+      </div>
+    )
+  }
+
+  {
+    hasSlides && (
+      <div class="hero-bottom">
+        <div class="hero-bar">
+          <a href="#featured" class="hero-bar-link">See featured works</a>
+          {
+            slides.length > 1 && (
+              <button type="button" class="hero-bar-link hero-pause" data-hero-pause aria-pressed="false">
+                Pause slideshow
+              </button>
+            )
+          }
+        </div>
+        {
+          slides.length > 1 && (
+            <div class="hero-dots" data-hero-dots aria-label="Slide navigation">
+              {
+                slides.map((_, index) => (
+                  <button
+                    type="button"
+                    class={`hero-dot ${index === 0 ? 'is-active' : ''}`}
+                    data-hero-dot
+                    data-index={index}
+                    aria-label={`Go to slide ${index + 1}`}
+                    aria-pressed={index === 0 ? 'true' : 'false'}
+                  />
+                ))
+              }
+            </div>
+          )
+        }
+        <hr class="hero-divider" aria-hidden="true" />
+      </div>
+    )
+  }
+</section>
+
+<script>
+  function setupHeroShowcase() {
+    const showcase = document.querySelector('[data-hero-showcase]');
+    if (!showcase || showcase.dataset.heroReady) return;
+    showcase.dataset.heroReady = '1';
+
+    const slides = Array.from(showcase.querySelectorAll('[data-hero-slide]'));
+    const pill = showcase.querySelector('[data-hero-location]');
+    const badge = pill && pill.querySelector('.hero-location-text');
+    const pauseBtn = showcase.parentElement.querySelector('[data-hero-pause]');
+    const dotsWrap = showcase.parentElement.querySelector('[data-hero-dots]');
+    const dots = dotsWrap ? Array.from(dotsWrap.querySelectorAll('[data-hero-dot]')) : [];
+    const arrows = showcase.querySelectorAll('[data-hero-arrow]');
+    if (slides.length <= 1) return;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    // Client-side randomization: rotate the DOM so a random slide appears first.
+    // This gives variety on every page reload without build-time randomness.
+    const randomStart = Math.floor(Math.random() * slides.length);
+    if (randomStart > 0) {
+      // Move the random slide to the front of the DOM order
+      const randomSlide = slides[randomStart];
+      slides[0].before(randomSlide);
+      // Update dot order: move the random dot to front
+      const dotsContainer = showcase.parentElement.querySelector('[data-hero-dots]');
+      const randomDot = dotsContainer ? dotsContainer.querySelector(`[data-hero-dot][data-index="${randomStart}"]`) : null;
+      if (randomDot) dotsContainer.insertBefore(randomDot, dotsContainer.firstChild);
+
+      // Update aria for the new first slide
+      randomSlide.setAttribute('aria-hidden', 'false');
+      randomSlide.inert = false;
+      randomSlide.classList.add('is-active');
+      slides[0].setAttribute('aria-hidden', 'true');
+      slides[0].inert = true;
+      slides[0].classList.remove('is-active');
+
+      // Update location pill
+      const pill = showcase.querySelector('[data-hero-location]');
+      const badge = pill && pill.querySelector('.hero-location-text');
+      if (badge) {
+        badge.textContent = randomSlide.dataset.place || '';
+        pill.hidden = !randomSlide.dataset.place;
+      }
+
+      // Update dots
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('is-active', i === 0);
+        dot.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+      });
+
+      // Update arrow attributes to reference the new DOM order
+      const newArrows = showcase.querySelectorAll('[data-hero-arrow]');
+      newArrows.forEach((arrow) => {
+        arrow.style.opacity = '1';
+        arrow.style.pointerEvents = 'auto';
+      });
+    }
+
+    // Performance: skip the slideshow entirely on slow connections or reduced-motion.
+    // Show only the first slide and let users navigate manually.
+    const slowConnection = navigator.connection && (navigator.connection.effectiveType === 'slow-2g' || navigator.connection.effectiveType === '2g' || navigator.connection.saveData);
+    const skipSlideshow = reducedMotion.matches || slowConnection;
+
+    let currentIndex = 0;
+    let paused = false;
+    let timer = null;
+    const INTERVAL = 5000;
+
+    function setVisibility(index, visible) {
+      const slide = slides[index];
+      slide.classList.toggle('is-active', visible);
+      slide.setAttribute('aria-hidden', visible ? 'false' : 'true');
+      if ('inert' in slide) {
+        slide.inert = !visible;
+      } else {
+        slide.querySelectorAll('a').forEach((a) => (a.tabIndex = visible ? 0 : -1));
+      }
+    }
+
+    function goToSlide(nextIndex) {
+      if (nextIndex === currentIndex) return;
+      setVisibility(currentIndex, false);
+      currentIndex = (nextIndex + slides.length) % slides.length;
+      setVisibility(currentIndex, true);
+
+      dots.forEach((dot, i) => {
+        const isActive = i === currentIndex;
+        dot.classList.toggle('is-active', isActive);
+        dot.setAttribute('aria-pressed', String(isActive));
+      });
+
+      const nextPlace = slides[currentIndex].dataset.place || '';
+      if (badge && badge.textContent !== nextPlace) {
+        if (reducedMotion.matches) {
+          badge.textContent = nextPlace;
+          pill.hidden = !nextPlace;
+        } else {
+          pill.classList.add('is-fading');
+          setTimeout(() => {
+            badge.textContent = nextPlace;
+            pill.hidden = !nextPlace;
+            pill.classList.remove('is-fading');
+          }, 220);
+        }
+      }
+    }
+
+    function startTimer() {
+      stopTimer();
+      if (paused || reducedMotion.matches) return;
+      timer = setInterval(() => goToSlide(currentIndex + 1), INTERVAL);
+    }
+
+    function stopTimer() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    if (!skipSlideshow) {
+      pauseBtn.addEventListener('click', () => {
+        paused = !paused;
+        pauseBtn.setAttribute('aria-pressed', String(paused));
+        pauseBtn.textContent = paused ? 'Resume slideshow' : 'Pause slideshow';
+        if (paused) stopTimer();
+        else startTimer();
+      });
+
+      dots.forEach((dot) => {
+        dot.addEventListener('click', () => {
+          const target = parseInt(dot.dataset.index, 10);
+          if (isNaN(target) || target === currentIndex) return;
+          stopTimer();
+          goToSlide(target);
+          if (!paused && !reducedMotion.matches) startTimer();
+        });
+      });
+
+      arrows.forEach((arrow) => {
+        arrow.addEventListener('click', () => {
+          const dir = parseInt(arrow.dataset.dir, 10);
+          stopTimer();
+          goToSlide(currentIndex + dir);
+          if (!paused && !reducedMotion.matches) startTimer();
+        });
+      });
+
+      showcase.addEventListener('mouseenter', stopTimer);
+      showcase.addEventListener('mouseleave', startTimer);
+      showcase.addEventListener('focusin', stopTimer);
+      showcase.addEventListener('focusout', startTimer);
+      reducedMotion.addEventListener('change', () => (paused ? stopTimer() : startTimer()));
+
+      startTimer();
+    } else {
+      // Hide controls that don't work in skip mode
+      if (pauseBtn) pauseBtn.style.display = 'none';
+      dots.forEach((dot) => dot.style.display = 'none');
+      arrows.forEach((arrow) => {
+        arrow.style.display = 'flex'; // arrows still work
+        arrow.addEventListener('click', () => {
+          const dir = parseInt(arrow.dataset.dir, 10);
+          goToSlide(currentIndex + dir);
+        });
+      });
+    }
+
+    document.addEventListener('astro:before-swap', stopTimer);
+  }
+
+  setupHeroShowcase();
+  document.addEventListener('astro:page-load', setupHeroShowcase);
+</script>

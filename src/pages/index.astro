@@ -1,0 +1,96 @@
+---
+// Home: editorial hero with an auto-switching showcase, the featured wall,
+// then the archive portal — every section built from the folders.
+import Layout from '../layouts/Layout.astro';
+import { scanPhotos } from '../lib/photos.mjs';
+import { withUrls, featuredFor, heroSlidesFor } from '../lib/render.mjs';
+import Hero from '../components/Hero.astro';
+import PhotoMasonry from '../components/PhotoMasonry.astro';
+
+const { categories, photos, empty } = await scanPhotos();
+
+const heroSlides = heroSlidesFor(photos, categories);
+const featured = featuredFor(photos, categories, 9, heroSlides.map((s) => s.id)).map(withUrls);
+const collections = categories.map((c) => ({
+  ...c,
+  coverUrl: c.cover ? withUrls(c.cover) : null,
+}));
+---
+
+<Layout title="Pratik Gupta — Photographs">
+  <Hero slides={heroSlides} />
+
+  <section class="featured reveal" id="featured">
+    {
+      empty ? (
+        <p class="featured-empty">
+          No photographs yet. Drop images into
+          <code class="mono">src/photos/&#123;category&#125;/</code> and rebuild — the featured
+          wall and every collection page build themselves from the folders.
+        </p>
+      ) : (
+        <>
+          <div class="featured-head">
+            <h2 class="featured-title">Featured works</h2>
+            <p class="featured-sub">Selected from every collection.</p>
+          </div>
+          <PhotoMasonry photos={featured} />
+        </>
+      )
+    }
+  </section>
+
+  {
+    !empty && (
+      <section class="gallery-portal reveal" id="full-gallery">
+        <header class="gallery-portal-head">
+          <h2 class="gallery-portal-title">Explore the full gallery</h2>
+          <p class="gallery-portal-sub">
+            {photos.length} {photos.length === 1 ? 'photograph' : 'photographs'} in
+            {categories.length} {categories.length === 1 ? 'collection' : 'collections'}
+          </p>
+        </header>
+
+        <div class="gallery-portal-grid" style={`--portal-cols: ${Math.min(categories.length, 4)}`}>
+          {
+            collections.map((cat) => (
+              <a
+                href={`/collections/${cat.key}/`}
+                class="gallery-cat-card"
+                aria-label={`${cat.name} · ${cat.count} ${cat.count === 1 ? 'photograph' : 'photographs'}`}
+              >
+                <div class="gallery-cat-thumb">
+                  {
+                    cat.coverUrl && (
+                      <img
+                        src={cat.coverUrl.thumb}
+                        data-srcset={cat.coverUrl.gridSrcset}
+                        sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 380px"
+                        width={cat.coverUrl.width}
+                        height={cat.coverUrl.height}
+                        alt={cat.name}
+                        class="ph-img"
+                        loading="lazy"
+                      />
+                    )
+                  }
+                </div>
+                <div class="gallery-cat-info">
+                  <span class="gallery-cat-name">{cat.name}</span>
+                  <span aria-hidden="true"> · </span>
+                  <span class="gallery-cat-count mono">
+                    {cat.count} {cat.count === 1 ? 'photograph' : 'photographs'}
+                  </span>
+                </div>
+              </a>
+            ))
+          }
+        </div>
+
+        <div class="gallery-portal-action">
+          <a href="/collections/" class="gallery-cta-pill">Browse the gallery</a>
+        </div>
+      </section>
+    )
+  }
+</Layout>

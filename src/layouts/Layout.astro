@@ -1,0 +1,211 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+}
+const {
+  title,
+  description = 'Photographs by Pratik Gupta — aircraft, birds, animals, nature, buildings and field notes.',
+  canonical,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <!-- Resolve the theme before first paint to avoid a flash, and reapply it on
+         Astro view transition swaps. `data-js` is the switch the stylesheet reads
+         to blur the placeholder print: with JS off the grid keeps its real
+         rendition and nothing to unblur, so the placeholder must not apply. -->
+    <script is:inline>
+      function applyStoredTheme() {
+        document.documentElement.dataset.js = '1';
+        try {
+          var t = localStorage.getItem('darkroom-theme');
+          if (t !== 'light' && t !== 'dark') {
+            t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+          }
+          document.documentElement.dataset.theme = t;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      }
+      applyStoredTheme();
+      document.addEventListener('astro:after-swap', applyStoredTheme);
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Archivo carries every heading and every line of prose, so it is
+         requested as one variable range up to 700 — the display lines ask
+         for 700, and a subset that stops at 600 makes the browser fake the
+         bold. Fraunces was loaded and never used; it is dropped. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..700&family=JetBrains+Mono:wght@400..500&display=swap"
+      rel="stylesheet"
+    />
+    <!-- View Transitions are on by default in Astro 7; ClientRouter gives
+         SPA-style navigation. Header and footer are pinned with
+         transition:name + animate="none", and the wildcard rules in
+         global.css make every other swap instant. -->
+    <ClientRouter />
+  </head>
+  <body transition:animate="initial">
+    <a class="skip-link" href="#main">Skip to photographs</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      // ——— theme toggle ———
+      function getTheme() {
+        return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+      }
+
+      function setTheme(next) {
+        document.documentElement.dataset.theme = next;
+        try {
+          localStorage.setItem('darkroom-theme', next);
+        } catch (e) {}
+        updateThemeButtons(next);
+      }
+
+      function updateThemeButtons(theme) {
+        const label = theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
+        document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
+          btn.setAttribute('aria-label', label);
+          btn.setAttribute('title', label);
+        });
+      }
+
+      // Delegate on document so it works reliably across all Astro View Transitions
+      document.addEventListener('click', (e) => {
+        const target = e.target;
+        if (!(target instanceof Element)) return;
+        const toggle = target.closest('[data-theme-toggle]');
+        if (!toggle) return;
+        e.preventDefault();
+        const current = getTheme();
+        const next = current === 'dark' ? 'light' : 'dark';
+        setTheme(next);
+      });
+
+      document.addEventListener('astro:page-load', () => {
+        updateThemeButtons(getTheme());
+      });
+
+      // ——— header background after the hero ———
+      // `data-header` keeps the header persistent across view-transition swaps,
+      // so it is resolved inside the handler — capturing it here would pin a dead
+      // node. Guarded because this script re-runs on every swap.
+      if (!window.__scrollListener) {
+        window.__scrollListener = true;
+        addEventListener(
+          'scroll',
+          () => {
+            const header = document.querySelector('[data-header]');
+            if (header) header.classList.toggle('is-scrolled', scrollY > 24);
+          },
+          { passive: true }
+        );
+      }
+
+      // ——— where the viewer came from ———
+      // ClientRouter swaps content inside one document, so referrer and history
+      // never record an in-site hop. `astro:before-swap` carries the page being
+      // left; the detail page's back chip reads it. Guarded because this script
+      // re-runs on every swap.
+      if (!window.__fromListener) {
+        window.__fromListener = true;
+        document.addEventListener('astro:before-swap', (e) => {
+          if (e.from) window.__fromUrl = e.from.href;
+        });
+      }
+
+      // ——— blur-up: swap the 40px thumbnail for the grid rendition ———
+      // Tiles ship with a 40px `src` plus a `data-srcset` and `sizes`; the real
+      // `srcset` is applied here, and the blur is dropped only when the larger
+      // print settles. Setting `src` as well as `srcset` is what guarantees the
+      // second load event that ends the blur. Listened on `document` (capture)
+      // so it survives view-transition navigations, plus a sweep for images
+      // that settled before this script ran (cached thumbs on a fast server).
+      const upgrade = (img) => {
+        if (img.dataset.upgraded) {
+          img.classList.add('is-loaded');
+          return;
+        }
+        const srcset = img.dataset.srcset;
+        if (!srcset) {
+          img.classList.add('is-loaded');
+          return;
+        }
+        img.dataset.upgraded = '1';
+        img.setAttribute('srcset', srcset);
+        img.src = srcset.split(',')[0].trim().split(/\s+/)[0];
+      };
+      document.addEventListener(
+        'load',
+        (e) => {
+          const t = e.target;
+          if (t instanceof HTMLImageElement && t.classList.contains('ph-img')) upgrade(t);
+        },
+        true
+      );
+      const sweep = () =>
+        document
+          .querySelectorAll('.ph-img')
+          .forEach((img) => {
+            if (img.dataset.upgraded) img.classList.add('is-loaded');
+            else if (img.complete && img.naturalWidth > 0) upgrade(img);
+          });
+      sweep();
+
+      // ——— scroll-reveal: sections fade in as they enter the viewport ———
+      // One intersection observer per page-load. Re-create it on each Astro
+      // navigation so it only observes elements that actually exist in the DOM.
+      // Also do a synchronous check in case elements are already in view when
+      // this script runs (the observer callback is async and may miss them).
+      function setupReveal() {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.15 }
+        );
+        document.querySelectorAll('.reveal').forEach((el) => {
+          observer.observe(el);
+          // If the element is already intersecting when we add the observer,
+          // the callback may not fire synchronously — check immediately.
+          if (observer.takeRecords().length > 0 || el.classList.contains('is-visible')) return;
+          // Fallback: if the element's bounding client rect is mostly visible,
+          // reveal it immediately.
+          const rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight && rect.bottom > 0 && rect.width > 0) {
+            el.classList.add('is-visible');
+            observer.unobserve(el);
+          }
+        });
+      }
+      setupReveal();
+      document.addEventListener('astro:page-load', setupReveal);
+    </script>
+  </body>
+</html>

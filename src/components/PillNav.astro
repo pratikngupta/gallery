@@ -1,0 +1,65 @@
+---
+// Collection switcher:
+// - On '/collections/' (active === 'all'): category pills, the current one marked.
+// - On a category page: that category's series filters, as buttons, since
+//   they change what is on the page rather than where the page is.
+import { slug } from '../lib/photos.mjs';
+
+export interface Subcategory {
+  key: string;
+  name: string;
+  count?: number;
+}
+
+export interface Props {
+  categories: Array<{ key: string; name: string }>;
+  active: string; // 'all' or a category key
+  subcategories?: Subcategory[];
+  back?: string; // href of the way back, on a category page
+}
+
+const { categories, active, subcategories = [], back } = Astro.props;
+const isAll = active === 'all';
+const activeCategoryName = categories.find((c) => c.key === active)?.name || 'Works';
+---
+
+{
+  isAll ? (
+    <nav class="pill-nav" aria-label="Collections">
+      <a class="pill is-active" href="/collections/" aria-current="page">All</a>
+      {
+        categories.map((c) => (
+          <a class="pill" href={`/collections/${c.key}/`}>
+            {c.name}
+          </a>
+        ))
+      }
+    </nav>
+  ) : (
+    (subcategories.length > 0 || back) && (
+      <nav class="subcat-nav" data-subcat-nav aria-label={`${activeCategoryName} series`}>
+        { back && (<a class="collection-back" href={back}>Back to gallery</a>) }
+        <button
+          class="subcat-pill is-active"
+          data-subcat-filter="all"
+          aria-pressed="true"
+          type="button"
+        >
+          All {activeCategoryName}
+        </button>
+        {
+          subcategories.map((s) => (
+            <button
+              class="subcat-pill"
+              data-subcat-filter={slug(s.key)}
+              aria-pressed="false"
+              type="button"
+            >
+              {s.name}
+            </button>
+          ))
+        }
+      </nav>
+    )
+  )
+}
