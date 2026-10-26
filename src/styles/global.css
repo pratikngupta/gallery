@@ -109,6 +109,32 @@ button {
   color: var(--bg);
 }
 
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--frame);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--meta);
+}
+
+html {
+  scrollbar-color: var(--frame) var(--bg);
+  scrollbar-width: thin;
+}
+
+body {
+  caret-color: var(--accent);
+}
+
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
@@ -124,6 +150,31 @@ button {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ——— scroll-reveal ——— */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(1.5rem);
+  transition: opacity var(--t-reveal) cubic-bezier(0.4, 0, 0.2, 1),
+              transform var(--t-reveal) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -167,6 +218,8 @@ button {
 .site-header.is-scrolled {
   border-bottom-color: var(--frame);
   background: color-mix(in srgb, var(--bg) 94%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .site-header-inner {
@@ -422,6 +475,73 @@ button {
   margin: 1rem 0 0;
   border: 0;
   border-top: 1px solid var(--frame);
+}
+
+/* ——— hero slide dots ——— */
+
+.hero-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+.hero-dot {
+  position: relative;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--meta);
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: border-color var(--t-fast) ease;
+  overflow: hidden;
+}
+
+.hero-dot:hover {
+  border-color: var(--text);
+}
+
+.hero-dot.is-active {
+  border-color: var(--text);
+}
+
+/* Progress fill that runs across the dot while the slide is active */
+.hero-dot-progress {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.01ms linear;
+}
+
+@media (hover: hover) {
+  .hero-dot.is-active .hero-dot-progress {
+    animation: hero-dot-progress linear forwards;
+  }
+}
+
+@keyframes hero-dot-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Reduce motion: skip the progress animation */
+@media (prefers-reduced-motion: reduce) {
+  .hero-dot-progress {
+    animation: none !important;
+  }
+  .hero-dot.is-active .hero-dot-progress {
+    background: var(--accent);
+  }
 }
 
 /* ——— about page ——— */
@@ -757,6 +877,7 @@ button {
 .subcat-pill:hover {
   color: var(--text);
   border-color: var(--meta);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--meta) 20%, transparent);
 }
 
 .pill.is-active,
@@ -765,6 +886,7 @@ button {
   background: var(--text);
   border-color: var(--text);
   font-weight: 600;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--text) 30%, transparent);
 }
 
 .masonry {
@@ -845,6 +967,18 @@ button {
 }
 
 /* ——— photo detail page ——— */
+
+/* The darkroom: a slightly darker surface that signals full attention on one print. */
+
+.darkroom {
+  background: color-mix(in srgb, var(--darkroom) 8%, var(--bg));
+}
+
+@media (min-width: 1024px) {
+  .darkroom {
+    background: color-mix(in srgb, var(--darkroom) 10%, var(--bg));
+  }
+}
 
 .photo-page {
   max-width: var(--container);
@@ -1151,6 +1285,10 @@ html:has(.zoom-popover:popover-open) body {
   .gallery-portal-grid {
     grid-template-columns: 1fr;
     gap: 1.25rem;
+  }
+
+  .masonry {
+    columns: 1;
   }
 }
 

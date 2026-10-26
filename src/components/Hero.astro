@@ -97,6 +97,26 @@ const firstSlide = slides[0];
             )
           }
         </div>
+        {
+          slides.length > 1 && (
+            <div class="hero-dots" data-hero-dots aria-label="Slide navigation">
+              {
+                slides.map((_, index) => (
+                  <button
+                    type="button"
+                    class={`hero-dot ${index === 0 ? 'is-active' : ''}`}
+                    data-hero-dot
+                    data-index={index}
+                    aria-label={`Go to slide ${index + 1}`}
+                    aria-pressed={index === 0 ? 'true' : 'false'}
+                  >
+                    <span class="hero-dot-progress" />
+                  </button>
+                ))
+              }
+            </div>
+          )
+        }
         <hr class="hero-divider" aria-hidden="true" />
       </div>
     )
@@ -113,11 +133,14 @@ const firstSlide = slides[0];
     const pill = showcase.querySelector('[data-hero-location]');
     const badge = pill && pill.querySelector('.hero-location-text');
     const pauseBtn = showcase.parentElement.querySelector('[data-hero-pause]');
+    const dotsWrap = showcase.parentElement.querySelector('[data-hero-dots]');
+    const dots = dotsWrap ? Array.from(dotsWrap.querySelectorAll('[data-hero-dot]')) : [];
     if (slides.length <= 1) return;
 
     let currentIndex = 0;
     let paused = false;
     let timer = null;
+    let progressTimer = null;
     const INTERVAL = 5000;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -140,6 +163,16 @@ const firstSlide = slides[0];
       currentIndex = (nextIndex + slides.length) % slides.length;
       setVisibility(currentIndex, true);
 
+      // Update dot states and reset progress bar
+      dots.forEach((dot, i) => {
+        const isActive = i === currentIndex;
+        dot.classList.toggle('is-active', isActive);
+        dot.setAttribute('aria-pressed', String(isActive));
+        if (isActive && progressTimer) {
+          dot.querySelector('.hero-dot-progress')?.setAttribute('style', `animation-duration:${INTERVAL}ms`);
+        }
+      });
+
       // The badge changes as a whole chip. With reduced motion it simply
       // changes, without the fade.
       const nextPlace = slides[currentIndex].dataset.place || '';
@@ -156,6 +189,15 @@ const firstSlide = slides[0];
           }, 220);
         }
       }
+    }
+
+    function startProgressAnimation() {
+      if (reducedMotion.matches || paused) return;
+      const activeDot = dots[currentIndex];
+      if (!activeDot) return;
+      const progress = activeDot.querySelector('.hero-dot-progress');
+      if (!progress) return;
+      progress.setAttribute('style', `animation-duration:${INTERVAL}ms`);
     }
 
     function startTimer() {
@@ -179,6 +221,17 @@ const firstSlide = slides[0];
       else startTimer();
     });
 
+    // Dot click handlers — jump to any slide and restart the interval
+    dots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        const target = parseInt(dot.dataset.index, 10);
+        if (isNaN(target) || target === currentIndex) return;
+        stopTimer();
+        goToSlide(target);
+        if (!paused && !reducedMotion.matches) startTimer();
+      });
+    });
+
     // Hover and focus pause the switch while someone is looking at a print;
     // the pause button is the explicit control that works without a mouse.
     showcase.addEventListener('mouseenter', stopTimer);
@@ -189,6 +242,7 @@ const firstSlide = slides[0];
     reducedMotion.addEventListener('change', () => (paused ? stopTimer() : startTimer()));
 
     startTimer();
+    startProgressAnimation();
     document.addEventListener('astro:before-swap', stopTimer);
   }
 

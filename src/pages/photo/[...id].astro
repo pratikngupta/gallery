@@ -56,7 +56,7 @@ const wall = related.map((id) => withUrls(byId.get(id)));
   <!-- Disable view transitions on the photo page so the back chip stays
        visible during SPA swaps (it was hidden inside Astro's transition
        overlay layers). The masonry tiles provide their own per-tile morphs. -->
-  <div class="photo-page" transition:animate="none">
+  <div class="photo-page darkroom" transition:animate="none">
     <!-- The way back to wherever the print was clicked from. The static href
          is the series; the script repoints it to the page the viewer came from. -->
     <a class="breadcrumb-mobile" href={`/collections/${photo.category}/`} data-back-to

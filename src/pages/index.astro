@@ -20,7 +20,7 @@ const collections = categories.map((c) => ({
 <Layout title="Pratik Gupta — Photographs">
   <Hero slides={heroSlides} />
 
-  <section class="featured" id="featured">
+  <section class="featured reveal" id="featured">
     {
       empty ? (
         <p class="featured-empty">
@@ -42,7 +42,7 @@ const collections = categories.map((c) => ({
 
   {
     !empty && (
-      <section class="gallery-portal" id="full-gallery">
+      <section class="gallery-portal reveal" id="full-gallery">
         <header class="gallery-portal-head">
           <h2 class="gallery-portal-title">Explore the full gallery</h2>
           <p class="gallery-portal-sub">
