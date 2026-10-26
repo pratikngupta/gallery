@@ -109,15 +109,18 @@ const {
       // ——— header background after the hero ———
       // `data-header` keeps the header persistent across view-transition swaps,
       // so it is resolved inside the handler — capturing it here would pin a dead
-      // node.
-      addEventListener(
-        'scroll',
-        () => {
-          const header = document.querySelector('[data-header]');
-          if (header) header.classList.toggle('is-scrolled', scrollY > 24);
-        },
-        { passive: true }
-      );
+      // node. Guarded because this script re-runs on every swap.
+      if (!window.__scrollListener) {
+        window.__scrollListener = true;
+        addEventListener(
+          'scroll',
+          () => {
+            const header = document.querySelector('[data-header]');
+            if (header) header.classList.toggle('is-scrolled', scrollY > 24);
+          },
+          { passive: true }
+        );
+      }
 
       // ——— where the viewer came from ———
       // ClientRouter swaps content inside one document, so referrer and history
