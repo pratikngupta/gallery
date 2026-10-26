@@ -21,9 +21,7 @@ export interface Props {
 
 const { slides = [] } = Astro.props;
 const hasSlides = slides.length > 0;
-// Randomize the hero's opening slide on each visit for variety.
-const startIdx = slides.length > 1 ? Math.floor(Math.random() * slides.length) : 0;
-const firstSlide = slides[startIdx];
+const firstSlide = slides[0];
 ---
 
 <section class="hero-editorial" id="top">
@@ -70,12 +68,12 @@ const firstSlide = slides[startIdx];
           {
             slides.map((slide, index) => (
               <div
-                class={`hero-slide ${index === startIdx ? 'is-active' : ''}`}
+                class={`hero-slide ${index === 0 ? 'is-active' : ''}`}
                 data-hero-slide
                 data-index={index}
                 data-place={slide.location || slide.series}
-                aria-hidden={index === startIdx ? 'false' : 'true'}
-                inert={index === startIdx ? undefined : true}
+                aria-hidden={index === 0 ? 'false' : 'true'}
+                inert={index === 0 ? undefined : true}
               >
                 <a href={slide.href} class="hero-slide-link" title={`View ${slide.title}`}>
                   <img
@@ -130,11 +128,11 @@ const firstSlide = slides[startIdx];
                 slides.map((_, index) => (
                   <button
                     type="button"
-                    class={`hero-dot ${index === startIdx ? 'is-active' : ''}`}
+                    class={`hero-dot ${index === 0 ? 'is-active' : ''}`}
                     data-hero-dot
                     data-index={index}
                     aria-label={`Go to slide ${index + 1}`}
-                    aria-pressed={index === startIdx ? 'true' : 'false'}
+                    aria-pressed={index === 0 ? 'true' : 'false'}
                   />
                 ))
               }
@@ -163,6 +161,48 @@ const firstSlide = slides[startIdx];
     if (slides.length <= 1) return;
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    // Client-side randomization: rotate the DOM so a random slide appears first.
+    // This gives variety on every page reload without build-time randomness.
+    const randomStart = Math.floor(Math.random() * slides.length);
+    if (randomStart > 0) {
+      // Move the random slide to the front of the DOM order
+      const randomSlide = slides[randomStart];
+      slides[0].before(randomSlide);
+      // Update dot order: move the random dot to front
+      const dotsContainer = showcase.parentElement.querySelector('[data-hero-dots]');
+      const randomDot = dotsContainer ? dotsContainer.querySelector(`[data-hero-dot][data-index="${randomStart}"]`) : null;
+      if (randomDot) dotsContainer.insertBefore(randomDot, dotsContainer.firstChild);
+
+      // Update aria for the new first slide
+      randomSlide.setAttribute('aria-hidden', 'false');
+      randomSlide.inert = false;
+      randomSlide.classList.add('is-active');
+      slides[0].setAttribute('aria-hidden', 'true');
+      slides[0].inert = true;
+      slides[0].classList.remove('is-active');
+
+      // Update location pill
+      const pill = showcase.querySelector('[data-hero-location]');
+      const badge = pill && pill.querySelector('.hero-location-text');
+      if (badge) {
+        badge.textContent = randomSlide.dataset.place || '';
+        pill.hidden = !randomSlide.dataset.place;
+      }
+
+      // Update dots
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('is-active', i === 0);
+        dot.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+      });
+
+      // Update arrow attributes to reference the new DOM order
+      const newArrows = showcase.querySelectorAll('[data-hero-arrow]');
+      newArrows.forEach((arrow) => {
+        arrow.style.opacity = '1';
+        arrow.style.pointerEvents = 'auto';
+      });
+    }
 
     // Performance: skip the slideshow entirely on slow connections or reduced-motion.
     // Show only the first slide and let users navigate manually.
