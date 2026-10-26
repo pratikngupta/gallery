@@ -544,6 +544,72 @@ body {
   }
 }
 
+/* ——— hero navigation arrows ——— */
+
+.hero-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--darkroom-text) 30%, transparent);
+  background: color-mix(in srgb, var(--darkroom) 50%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--darkroom-text);
+  padding: 0;
+  cursor: pointer;
+  transition:
+    border-color var(--t-fast) ease,
+    background var(--t-fast) ease,
+    transform var(--t-fast) ease;
+}
+
+.hero-arrow:hover {
+  border-color: color-mix(in srgb, var(--darkroom-text) 60%, transparent);
+  background: color-mix(in srgb, var(--darkroom) 70%, transparent);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.hero-arrow:active {
+  transform: translateY(-50%) scale(0.98);
+}
+
+.hero-arrow--prev {
+  left: clamp(0.5rem, 2vw, 1rem);
+}
+
+.hero-arrow--next {
+  right: clamp(0.5rem, 2vw, 1rem);
+}
+
+@media (hover: hover) {
+  .hero-arrow {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .hero-showcase:hover .hero-arrow {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-arrow {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+  .hero-arrow svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
 /* ——— about page ——— */
 
 .about-page {

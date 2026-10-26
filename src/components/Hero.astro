@@ -40,6 +40,30 @@ const firstSlide = slides[0];
         aria-roledescription="carousel"
         aria-label="Featured photographs"
       >
+        {
+          slides.length > 1 && (
+            <>
+              <button
+                type="button"
+                class="hero-arrow hero-arrow--prev"
+                data-hero-arrow
+                data-dir="-1"
+                aria-label="Previous slide"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+              </button>
+              <button
+                type="button"
+                class="hero-arrow hero-arrow--next"
+                data-hero-arrow
+                data-dir="1"
+                aria-label="Next slide"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            </>
+          )
+        }
         <div class="hero-slides">
           {
             slides.map((slide, index) => (
@@ -135,6 +159,7 @@ const firstSlide = slides[0];
     const pauseBtn = showcase.parentElement.querySelector('[data-hero-pause]');
     const dotsWrap = showcase.parentElement.querySelector('[data-hero-dots]');
     const dots = dotsWrap ? Array.from(dotsWrap.querySelectorAll('[data-hero-dot]')) : [];
+    const arrows = showcase.querySelectorAll('[data-hero-arrow]');
     if (slides.length <= 1) return;
 
     let currentIndex = 0;
@@ -228,6 +253,16 @@ const firstSlide = slides[0];
         if (isNaN(target) || target === currentIndex) return;
         stopTimer();
         goToSlide(target);
+        if (!paused && !reducedMotion.matches) startTimer();
+      });
+    });
+
+    // Arrow click handlers — step one slide at a time
+    arrows.forEach((arrow) => {
+      arrow.addEventListener('click', () => {
+        const dir = parseInt(arrow.dataset.dir, 10);
+        stopTimer();
+        goToSlide(currentIndex + dir);
         if (!paused && !reducedMotion.matches) startTimer();
       });
     });
