@@ -1,35 +1,75 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { scanPhotos } from '../lib/photos.mjs';
+
+// The kit is read from the prints themselves: scan the library, keep the
+// Canon bodies, and collect the lenses they were shot on. Dropping new
+// photos updates the kit automatically — nothing hardcoded here.
+const { photos } = await scanPhotos();
+const lenses = [...new Set(
+  photos
+    .filter((p) => String(p.exif?.camera || '').toLowerCase().startsWith('canon'))
+    .map((p) => p.exif?.lens)
+    .filter(Boolean)
+    .map((l) => l.replace(/^(EF|RF)-(S)?(\d)/, '$1-$2 $3'))
+)]
+  .sort((a, b) => parseInt(a.match(/\d+/)?.[0] ?? 0) - parseInt(b.match(/\d+/)?.[0] ?? 0));
 ---
 
-<Layout title="About — Pratik Gupta" description="Pratik Gupta — Engineer and photographer based in Toronto, Ontario. Architecture, landscapes, wildlife, and aviation.">
+<Layout title="About — Pratik Gupta" description="Pratik Gupta — software engineering graduate researcher and photographer at Western University. Landscapes, wildlife, urban architecture, and astrophotography.">
   <article class="about-page reveal">
     <div class="about-container">
-      <p class="about-eyebrow">Engineer and photographer, based in Toronto</p>
+      <p class="about-eyebrow">Software engineering graduate student &amp; photographer — Western University</p>
       <h1 class="about-title">Pratik Gupta</h1>
       <p class="about-lead">
-        A different perspective on architecture, landscapes, wildlife, and aircraft.
+        I debug compositions the way I debug code. The camera is where I
+        learn to let go.
       </p>
 
       <div class="about-grid">
         <div class="about-content">
           <p>
-            Based in Toronto, Ontario, I work across software engineering and still photography.
-            Photography for me is an exercise in patience and observation — catching high-speed aircraft
-            banking against clouds, the crisp geometry of modern city towers, or quiet moments of wildlife
-            in natural habitats.
+            Most of my week goes into software: research on multi-agent
+            visual-language reasoning at Western University, the mission
+            architecture for the autonomous VTOLs at Western Aero Design, and
+            the cloud infrastructure underneath all of it. Perception
+            pipelines that have to stay up. Telemetry loops for aircraft that
+            fly themselves. Problems that go deep, which is the kind I like.
           </p>
           <p>
-            This portfolio is built as a digital darkroom: minimal chrome, no distracting borders,
-            and pure focus on the tone and detail of each print.
+            The habit carries over into photography. I debug a composition,
+            adjust the framing, optimize for the moment. But a camera asks
+            something code never does: give up control. The frames I keep are
+            the ones where the plan fell apart and the light went somewhere I
+            hadn't accounted for.
           </p>
 
-          <h2 class="about-section-heading">Disciplines</h2>
+          <h2 class="about-section-heading">Two worlds</h2>
+          <div class="about-world">
+            <h3>The engineer</h3>
+            <p>
+              I build and scale distributed systems. For Western Aero Design,
+              that means the mission architecture for autonomous VTOLs. In the
+              lab it means research: how multiple agents reason together about
+              what they see. I think in types, interfaces, and data flows.
+            </p>
+          </div>
+          <div class="about-world">
+            <h3>The photographer</h3>
+            <p>
+              Behind the camera, the engineer steps back. Instinct takes over.
+              I follow light across open landscapes, photograph the geometry of
+              buildings, and sometimes wait hours for wildlife to do something
+              worth framing.
+            </p>
+          </div>
+
+          <h2 class="about-section-heading">Subjects</h2>
           <ul class="about-list">
-            <li><strong>Aviation:</strong> High-speed military jets, aerobatics, and air shows.</li>
-            <li><strong>Architecture:</strong> Skylines, structural symmetry, and urban geometry in Toronto, Chicago, and beyond.</li>
-            <li><strong>Landscapes:</strong> Coastal shores, lake atmospheres, and mountain ranges.</li>
-            <li><strong>Wildlife:</strong> Birds in flight, native mammals, and candid moments in nature.</li>
+            <li><strong>Landscapes:</strong> coasts, lakes, mountains.</li>
+            <li><strong>Wildlife:</strong> birds in flight, native mammals, long waits.</li>
+            <li><strong>Urban architecture:</strong> skylines, symmetry, tower geometry.</li>
+            <li><strong>Astrophotography:</strong> the long exposure after dark.</li>
           </ul>
 
           <div class="about-actions">
@@ -40,12 +80,31 @@ import Layout from '../layouts/Layout.astro';
         <aside class="about-sidebar">
           <div class="about-sidebar-card">
             <h3 class="about-sidebar-title">Location</h3>
-            <p class="about-sidebar-val">Toronto, Ontario, Canada</p>
+            <p class="about-sidebar-val">Toronto, Ontario — Western University</p>
           </div>
           <div class="about-sidebar-card">
-            <h3 class="about-sidebar-title">Inquiries & Contact</h3>
+            <h3 class="about-sidebar-title">Camera</h3>
+            <p class="about-sidebar-val">Canon EOS R50</p>
+            {lenses.length > 0 && (
+              <>
+                <h3 class="about-sidebar-title">Lenses</h3>
+                {lenses.map((lens) => (
+                  <p class="about-sidebar-val">{lens}</p>
+                ))}
+              </>
+            )}
+          </div>
+          <div class="about-sidebar-card">
+            <h3 class="about-sidebar-title">Stack</h3>
+            <p class="about-sidebar-val">Python, C++, TypeScript, Docker</p>
+          </div>
+          <div class="about-sidebar-card">
+            <h3 class="about-sidebar-title">Contact</h3>
             <p class="about-sidebar-val">
-              <a href="mailto:hello@pratikgupta.com" class="about-link">hello@pratikgupta.com</a>
+              <a href="mailto:pratikngupta@outlook.com" class="about-link">pratikngupta@outlook.com</a>
+            </p>
+            <p class="about-sidebar-val">
+              <a href="https://www.instagram.com/pratik_ngupta" class="about-link">@pratik_ngupta</a>
             </p>
           </div>
         </aside>

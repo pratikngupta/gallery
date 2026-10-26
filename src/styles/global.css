@@ -711,6 +711,18 @@ body {
   color: var(--text);
 }
 
+/* Two Worlds reads as prose with quiet labels, not as two cards. */
+.about-world h3 {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 0.4rem;
+}
+
+.about-sidebar-card p + p {
+  margin-top: 0.45rem;
+}
+
 .about-actions {
   margin-top: 2rem;
 }
@@ -734,6 +746,12 @@ body {
   letter-spacing: 0.01em;
   color: var(--meta);
   margin-bottom: 0.5rem;
+}
+
+/* A second label inside the same card (Camera → Lenses) gets its own
+   separation instead of crowding the first block. */
+.about-sidebar-card .about-sidebar-title:not(:first-child) {
+  margin-top: 1rem;
 }
 
 .about-sidebar-val {
