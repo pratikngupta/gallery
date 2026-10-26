@@ -33,8 +33,7 @@ tokens and typefaces.
   gallery mode `--accent` is already 5.79:1 on paper, so `--accent-text` is just
   `var(--accent)`. `--meta` measures 6.2:1 on dark, 6.6:1 on light.
 - **Motion budget is a token, not a literal.** `--t-fast: .2s` for state changes,
-  `--t-reveal: .6s` for the blur-up develop, `--t-hero: .85s` for the showcase,
-  `--t-morph: .3s` for the print traveling from wall to detail page.
+  `--t-reveal: .6s` for the blur-up develop, `--t-hero: .85s` for the showcase.
   No duration is written inline.
 - **Typefaces:** Archivo is standardized as `--font-sans`, which `--font-heading`
   and `--font-body` both point at — one definition, so the two can never drift — across all
@@ -170,22 +169,21 @@ tokens and typefaces.
   `.hero-location-pill`, `.breadcrumb-sub`, the desktop `.photo-back` chip — needs
   its own `[hidden] { display: none }` rule. Setting the attribute and expecting it
   to work is the trap.
-- **The print-travel wildcard catches every shared name.** The morph rules target
-  `::view-transition-old/new/group(*)`, so root, header, and footer must be opted out
-  explicitly (with `!important` — the direction-qualified wildcard rules outrank plain
-  name rules), or the navbar and footer re-animate on every navigation. The header
-  holds still via `transition:name="header"` + `transition:animate="none"`, the same
-  pinning pattern as the footer.
+- **Navigation animates nothing.** Wildcard `::view-transition-group/old/new(*)`
+  rules in `global.css` (unlayered, so they outrank Astro's generated
+  `@layer astro` fades) make every page swap instant — root, tiles, detail
+  image, and the pinned header and footer alike. To reintroduce shared-element
+  motion later, those wildcard rules are the gate to beat.
 - **Under ClientRouter there is no "previous page".** `document.referrer` and
   `window.history` never record an in-site hop (the router keeps one document), so
   the back chip on a detail page can only learn where the click came from from
   `astro:before-swap`'s `from` URL, which `Layout.astro` stashes on
   `window.__fromUrl`. Anything that needs an origin trail has to use that hook.
-- **Shared-element transition names on the hero cause a jarring zoom-out** when
-  navigating from a detail page back to the home page — the detail image and the
-  hero slide share the same `view-transition-name`, so Astro morphs them (detail
-  image → hero thumbnail). The hero must NOT have `transition:name`; the masonry
-  tiles already provide the forward morph.
+- **The hero must never carry `transition:name`.** Detail image and hero slide
+  would otherwise share a name and Astro would morph between them (detail print
+  → thumbnail zoom-out). All navigation animation is currently switched off, so
+  this hazard is latent rather than active — but it returns the moment any
+  shared-element transition is reintroduced.
 - **Elements inside a transitioning wrapper need `z-index: 10; position: relative`**
   to render above Astro's `::view-transition-old/new` overlay layers that hide
   the original DOM during SPA swaps. `.photo-back` uses this pattern.

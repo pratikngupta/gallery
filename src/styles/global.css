@@ -29,12 +29,11 @@
   --font-body: var(--font-sans);
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, monospace;
 
-  /* Motion budget: state changes, the blur-up develop, the hero crossfade,
-     the print traveling from the wall to its detail page. */
+  /* Motion budget: state changes, the blur-up develop, the hero crossfade.
+     Navigation itself has no motion. */
   --t-fast: 0.2s;
   --t-reveal: 0.6s;
   --t-hero: 0.85s;
-  --t-morph: 0.3s;
 
   --container: 1320px;
   --gutter: clamp(1.25rem, 5vw, 4rem);
@@ -153,72 +152,22 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  /* The view-transition pseudo elements live outside the element tree, so the
-     override above cannot reach them; kill the print travel explicitly. */
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation: none !important;
-  }
-  ::view-transition-old(*) {
-    opacity: 0 !important;
-  }
 }
 
-/* ——— print travel: the only navigation motion ——— */
+/* ——— page transition ——— */
 
-/* Clicking a tile morphs it into its detail print: the view-transition group
-   between tile and print slides and scales, the tile lifts off the wall and
-   fades as the print settles into place. The rules use the pseudo wildcard so
-   every per-photo `transition:name` is choreographed without hardcoding a
-   single id. The root swap is instant so nothing else moves. */
-::view-transition-group(*) {
-  animation-duration: var(--t-morph);
-  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+/* Navigation swaps instantly. These unlayered wildcard rules outrank Astro's
+   per-element fades (generated inside `@layer astro`), so every view
+   transition — root, tiles, detail image, pinned header and footer — has no
+   animation. The only motion on the site is the blur-up develop on the wall
+   and the hero showcase. */
+::view-transition-group(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation: none;
 }
 ::view-transition-old(*) {
-  animation: print-lift-out var(--t-morph) cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-}
-::view-transition-new(*) {
-  animation: print-settle-in var(--t-morph) cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-}
-
-/* Backwards (detail → wall): the print folds up and the tile takes its place. */
-[data-astro-transition="back"]::view-transition-old(*) {
-  animation: print-fold-out var(--t-morph) cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-}
-[data-astro-transition="back"]::view-transition-new(*) {
-  animation: print-grow-in var(--t-morph) cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-}
-
-@keyframes print-lift-out {
-  from { opacity: 1; transform: none; }
-  to   { opacity: 0; transform: translateY(-5px) scale(1.05); }
-}
-@keyframes print-settle-in {
-  from { opacity: 0; transform: scale(0.92); }
-  to   { opacity: 1; transform: none; }
-}
-@keyframes print-fold-out {
-  from { opacity: 1; transform: none; }
-  to   { opacity: 0; transform: scale(0.9); }
-}
-@keyframes print-grow-in {
-  from { opacity: 0; transform: scale(1.08); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* The wildcard covers *all* shared names, so the root and the pinned header
-   and footer have to be opted out of the choreography explicitly — otherwise
-   the navbar and footer would re-animate on every navigation. `!important`
-   keeps these exclusions above the direction-qualified wildcard rules above. */
-::view-transition-group(root), ::view-transition-old(root), ::view-transition-new(root),
-::view-transition-group(header), ::view-transition-old(header), ::view-transition-new(header),
-::view-transition-group(footer), ::view-transition-old(footer), ::view-transition-new(footer) {
-  animation: none !important;
-}
-::view-transition-old(root), ::view-transition-old(header), ::view-transition-old(footer) {
-  opacity: 0 !important;
+  opacity: 0;
 }
 
 /* ——— scroll-reveal ——— */

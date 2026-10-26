@@ -56,9 +56,9 @@ const {
       rel="stylesheet"
     />
     <!-- View Transitions are on by default in Astro 7; ClientRouter gives
-         SPA-style navigation, and transition:name attributes (tiles, detail
-         image, header, footer) mark the shared elements — header and footer
-         are pinned with animate="none", only the print animates. -->
+         SPA-style navigation. Header and footer are pinned with
+         transition:name + animate="none", and the wildcard rules in
+         global.css make every other swap instant. -->
     <ClientRouter />
   </head>
   <body transition:animate="initial">

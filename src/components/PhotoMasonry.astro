@@ -1,7 +1,7 @@
 ---
-// The wall: prints that link to their detail page. Each tile carries a
-// transition:name so Astro View Transitions morph it into the detail page's
-// image, and data-subcat so the series filter can hide it.
+// The wall: prints that link to their detail page. No transition:name —
+// navigation swaps instantly (see the wildcard rules in global.css);
+// data-subcat feeds the series filter.
 import { slug } from '../lib/photos.mjs';
 
 export interface Props {
@@ -16,7 +16,6 @@ const { photos } = Astro.props;
       <a
         class="ph-frame"
         href={`/photo/${p.id}/`}
-        transition:name={`image-${p.id}`}
         aria-label={`View ${p.title}`}
         data-subcat={slug(p.subcategory)}
       >

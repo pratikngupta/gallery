@@ -5,7 +5,8 @@ A static photography portfolio for Pratik Gupta. Home (hero → featured wall)
 plus per-collection pages (`/collections/`,
 `/collections/<category>` with a pill switcher) and per-photo detail pages
 (`/photo/<id>`: metadata, related wall, native-popover zoom, origin-aware back chip). SPA-style
-navigation via Astro View Transitions with shared-element morphs (masonry tile → detail image).
+navigation via Astro View Transitions; page swaps are instant (navigation animation was
+rejected by the owner — the only motion is the blur-up and the hero showcase).
 No framework JS, no CMS, no server. Pages are kept short on purpose — the
 owner rejected the single endless-scroll version.
 

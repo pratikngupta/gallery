@@ -71,13 +71,11 @@ captions; requested as one variable range `400..700` because display lines set 7
      wall order, sentence case, no arrows. It does not render for a series of one.
    - Related wall: "More from {series}" ranked by subseries and category.
 5. **View Transitions & Theming**:
-   - Client-side navigation via Astro `ClientRouter`. Footer and header are pinned with
-     `transition:name` + `transition:animate="none"` so they hold still. Masonry tiles and the
-     detail image share `transition:name` for the print-travel morph (the tile lifts off the
-     wall and fades as the print settles in); the root swap is instant and `.page-fade` is
-     gone, so the print is the only thing that moves on navigation. The hero slides
-     intentionally omit `transition:name` to avoid a jarring zoom-out when navigating back
-     from a detail page.
+   - Client-side navigation via Astro `ClientRouter`. Page swaps are instant: wildcard
+     `::view-transition-*` rules in `global.css` override every fade Astro defaults to, and
+     the pinned header and footer (`transition:name` + `transition:animate="none"`) hold
+     still. The only motion on the site is the blur-up develop and the hero showcase. The
+     hero slides intentionally omit `transition:name` so a morph hazard can never return.
    - Theme toggle uses document-level event delegation and `<head>` `astro:after-swap` listener to guarantee persistence and reactivity across all page transitions.
 
 ## Alignment & type rules
