@@ -17,21 +17,28 @@ filter chips, clean tiles with hover titles — while keeping the darkroom
 tokens and typefaces.
 
 ## Design system (the contract)
-- **Two themes, one token set.** Dark "darkroom" is the default; light "gallery"
-  is the alternate. `:root` in `src/styles/global.css` is the source of truth:
-  `--bg #222018` / `#f0ebe3`, `--text #ece7df` / `#1e1c19`, `--accent #c4403a` /
-  `#a83327`, `--meta #a39e98` / `#5a554f`, `--frame #2e2b27` / `#d4cfc6`,
+- **Five palettes, two modes, one token set.** The wall can be **Graphite**
+  (the default), **Slate**, **Stone**, **Sage**, or **Plum**; dark is the default
+  mode and light is the alternate. `:root` in `src/styles/global.css` is the
+  source of truth: each palette is a block defining `--bg`, `--text`, `--accent`,
+  `--meta`, `--frame` for both modes (Graphite dark `#090909`, Slate dark
+  `#111827`, Stone dark `#1c1917`, Sage dark `#121714`, Plum dark `#18151f`).
   `--darkroom #0e0d0b` + `--darkroom-text` (the hero badge, the print scrim, the
-  zoom popover — dark in both themes), `--radius: 8px` for prints and
+  zoom popover — dark in every palette and mode), `--radius: 8px` for prints and
   `--radius-pill: 9999px` for chips, `--container: 1320px`, and `--gutter`,
   `--page-top`, `--page-bottom` as clamps so the page breathes at every width.
-  Theme switching is event-delegated with `astro:after-swap` persistence across
-  View Transitions.
-- **Contrast is measured, not assumed.** `--accent` on `--bg` is 4.51:1 — AA for
-  all text sizes — so the red can safely be used anywhere. Anything that turns
-  red as *text* on hover uses `--accent-text` (`#d4605a`, 6.5:1 on dark). In
-  gallery mode `--accent` is already 5.79:1 on paper, so `--accent-text` is just
-  `var(--accent)`. `--meta` measures 6.2:1 on dark, 6.6:1 on light.
+  The palette picker is five swatch dots in the header; like the theme toggle,
+  switching is event-delegated, persisted in `localStorage`
+  (`darkroom-theme`, `darkroom-palette`), and reapplied by the inline head
+  script on `astro:after-swap` — no flash, no first-paint drift. At ≤640px the
+  header wraps so the dots get a second line rather than squeezing past the
+  gutter.
+- **Contrast is measured, not assumed.** Every `--accent` measures at least
+  AA (4.5:1) against its own `--bg` — the weakest are Slate light (4.9:1) and
+  Sage light (5.0:1) — so `--accent-text` is simply `var(--accent)` in every
+  palette. Stone light's accent was nudged from `#997047` (4.2:1) to `#8a6441`
+  (5.2:1) to clear AA. Every `--meta` also measures at least 4.6:1 on its own
+  background.
 - **Motion budget is a token, not a literal.** `--t-fast: .2s` for state changes,
   `--t-reveal: .6s` for the blur-up develop, `--t-hero: .85s` for the showcase.
   No duration is written inline.
@@ -41,13 +48,14 @@ tokens and typefaces.
   EXIF, specs, numbering, and counts. The Google Fonts request asks Archivo as one variable
   range `wght@400..700` — display lines set 700, and a subset that stops at 600 makes the
   browser fake the bold. Nothing else may be requested and unused.
-- **Accent discipline:** `--accent` (safelight red) appears only on
-  active/hover/focus states. Never as decoration.
+- **Accent discipline:** `--accent` appears only on active/hover/focus
+  states. Never as decoration. Each palette brings its own accent (Graphite
+  grey, Slate blue, Stone ochre, Sage green, Plum violet); the swatch dots in
+  the picker are the only place hue reads as content rather than state.
 - **Palette is the palette:** every UI element is built from the token set
   (`--bg`, `--text`, `--frame`, `--meta`, `--accent`) and its own inversion.
   The pill switcher and the archive CTA are ink-on-paper in dark mode and paper-on-ink
-  in gallery mode, which is why they need no theme-specific hexes — the borrowed
-  reference's zinc scale (`#f4f4f5 / #09090b / #18181b / #d4d4d8`) is not in this system.
+  in light mode, which is why they need no palette-specific hexes.
 - **Structure encodes information, not decoration:** no tracked ALL-CAPS eyebrows,
   no `→`/`↓` appended to link or button text, no drop shadow lifting a print off the
   wall. The breadcrumb and the role line are sentence case; the header wordmark and

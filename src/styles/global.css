@@ -1,23 +1,24 @@
 /* ————————————————————————————————————————————————
    The Darkroom — design tokens
-   One palette, two modes. Dark is the default: warm
-   charcoal, prints separated from the wall by tone,
-   not by borders. Light is the gallery mode: warm
-   paper, ink text. The accent is the safelight.
+   Five palettes, two modes. Every element is built from the
+   token set (--bg, --text, --meta, --frame, --accent) and its
+   own inversions, so a palette is nothing but a token block.
+   Dark is the default; the accent is spent on state only.
+   Each accent measures at least AA (4.5:1) against its own
+   background, so --accent-text is simply the accent.
    ———————————————————————————————————————————————— */
 
 :root {
-  --bg: #222018;
-  --text: #ece7df;
-  --accent: #c4403a;
-  /* The accent as a text colour: #c4403a on #222018 is 4.51:1, AA for all text.
-     The red stays where it is spent — focus rings, nav underline, active state. */
-  --accent-text: #d4605a;
-  --meta: #a39e98;
-  --frame: #2e2b27;
+  /* Default palette: Graphite, dark mode. */
+  --bg: #090909;
+  --text: #f5f5f5;
+  --accent: #d4d4d4; /* 13.0:1 */
+  --accent-text: var(--accent);
+  --meta: #a3a3a3; /* 6.4:1 */
+  --frame: #303030;
 
   /* The darkroom: the hero badge, the print scrim, the zoom popover. Always
-     dark, in both themes. */
+     dark, in both themes and every palette. */
   --darkroom: #0e0d0b;
   --darkroom-text: #ece7df;
 
@@ -41,13 +42,82 @@
   --page-bottom: clamp(4rem, 8vw, 6rem);
 }
 
+/* Graphite, light mode. */
 :root[data-theme='light'] {
-  --bg: #f0ebe3;
-  --text: #1e1c19;
-  --accent: #a83327;
-  --accent-text: var(--accent); /* 5.79:1 on paper — already legible */
-  --meta: #5a554f;
-  --frame: #d4cfc6;
+  --bg: #ffffff;
+  --text: #171717;
+  --accent: #404040; /* 10.9:1 */
+  --meta: #666666; /* 5.7:1 */
+  --frame: #e5e5e5;
+}
+
+/* ——— Slate: cool blue-grey, the aviation wall ——— */
+:root[data-palette='slate'] {
+  --bg: #111827;
+  --text: #f8fafc;
+  --accent: #60a5fa; /* 6.3:1 */
+  --meta: #94a3b8; /* 5.3:1 */
+  --frame: #374151;
+}
+
+:root[data-palette='slate'][data-theme='light'] {
+  --bg: #f8fafc;
+  --text: #0f172a;
+  --accent: #2563eb; /* 4.9:1 */
+  --meta: #64748b; /* 4.9:1 */
+  --frame: #e2e8f0;
+}
+
+/* ——— Stone: muted warm neutral, the lightest of the warm set ——— */
+:root[data-palette='stone'] {
+  --bg: #1c1917;
+  --text: #f5f0e8;
+  --accent: #c4a484; /* 7.7:1 */
+  --meta: #a8a29e; /* 7.6:1 */
+  --frame: #44403c;
+}
+
+:root[data-palette='stone'][data-theme='light'] {
+  --bg: #faf7f2;
+  --text: #292524;
+  /* Nudged from #997047 (4.2:1) so the accent passes AA on paper. */
+  --accent: #8a6441; /* 5.2:1 */
+  --meta: #78716c; /* 4.9:1 */
+  --frame: #e7e0d7;
+}
+
+/* ——— Sage: nature wall, subtle green undertone ——— */
+:root[data-palette='sage'] {
+  --bg: #121714;
+  --text: #e8ede6;
+  --accent: #87a991; /* 7.1:1 */
+  --meta: #a6b5aa; /* 8.5:1 */
+  --frame: #344238;
+}
+
+:root[data-palette='sage'][data-theme='light'] {
+  --bg: #f5f8f4;
+  --text: #1c3024;
+  --accent: #427a54; /* 5.0:1 */
+  --meta: #607467; /* 4.6:1 */
+  --frame: #dae5da;
+}
+
+/* ——— Plum: the editorial, premium-print wall ——— */
+:root[data-palette='plum'] {
+  --bg: #18151f;
+  --text: #f4eff8;
+  --accent: #b5a0d0; /* 7.7:1 */
+  --meta: #aaa0b4; /* 7.4:1 */
+  --frame: #41374c;
+}
+
+:root[data-palette='plum'][data-theme='light'] {
+  --bg: #faf7fc;
+  --text: #2d2235;
+  --accent: #76559b; /* 5.8:1 */
+  --meta: #776b80; /* 4.9:1 */
+  --frame: #e8dff0;
 }
 
 /* ——— base ——— */
@@ -330,6 +400,63 @@ body {
 
 :root[data-theme='light'] .theme-icon--moon {
   display: block;
+}
+
+/* ——— palette picker ——— */
+/* Five quiet swatch dots: each paints the accent of its palette, so the
+   picker previews the wall before you pick it. Fixed identity dots keep the
+   picker readable the same way in every palette. */
+.header-actions {
+  gap: 0.5rem;
+}
+
+.palette-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.palette-dot {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.palette-dot span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--dot, var(--meta));
+  opacity: 0.45;
+  transition: opacity var(--t-fast) ease, transform var(--t-fast) ease;
+}
+
+.palette-dot:hover span {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+.palette-dot[aria-pressed='true'] span {
+  opacity: 1;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--dot);
+}
+
+.palette-dot[data-palette='graphite'] {
+  --dot: #d4d4d4;
+}
+.palette-dot[data-palette='slate'] {
+  --dot: #60a5fa;
+}
+.palette-dot[data-palette='stone'] {
+  --dot: #c4a484;
+}
+.palette-dot[data-palette='sage'] {
+  --dot: #87a991;
+}
+.palette-dot[data-palette='plum'] {
+  --dot: #b5a0d0;
 }
 
 /* ——— hero editorial ——— */
@@ -1468,9 +1595,12 @@ body {
    differences that a clamp cannot express. */
 
 @media (max-width: 640px) {
+  /* One row cannot hold wordmark + nav + five swatches + toggle at phone
+     widths, so the picker wraps to a second line under the nav instead of
+     squeezing the row past the gutter. */
   .site-header {
-    height: 3.5rem;
-    padding: 0 var(--gutter);
+    height: auto;
+    padding: 0.6rem var(--gutter);
     display: flex;
     align-items: center;
   }
@@ -1479,8 +1609,9 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
     width: 100%;
-    height: 100%;
     grid-template-columns: none;
     grid-template-rows: none;
   }

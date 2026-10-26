@@ -25,11 +25,14 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
-    <!-- Resolve the theme before first paint to avoid a flash, and reapply it on
-         Astro view transition swaps. `data-js` is the switch the stylesheet reads
-         to blur the placeholder print: with JS off the grid keeps its real
-         rendition and nothing to unblur, so the placeholder must not apply. -->
+    <!-- Resolve the palette and theme before first paint to avoid a flash, and
+         reapply them on Astro view transition swaps. `data-js` is the switch the
+         stylesheet reads to blur the placeholder print: with JS off the grid keeps
+         its real rendition and nothing to unblur, so the placeholder must not
+         apply. -->
     <script is:inline>
+      var PALETTES = ['graphite', 'slate', 'stone', 'sage', 'plum'];
+
       function applyStoredTheme() {
         document.documentElement.dataset.js = '1';
         try {
@@ -37,9 +40,12 @@ const {
           if (t !== 'light' && t !== 'dark') {
             t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
           }
+          var p = localStorage.getItem('darkroom-palette');
           document.documentElement.dataset.theme = t;
+          document.documentElement.dataset.palette = PALETTES.includes(p) ? p : 'graphite';
         } catch (e) {
           document.documentElement.dataset.theme = 'dark';
+          document.documentElement.dataset.palette = 'graphite';
         }
       }
       applyStoredTheme();
@@ -70,7 +76,9 @@ const {
     <Footer />
 
     <script>
-      // ——— theme toggle ———
+      // ——— theme toggle and palette picker ———
+      const PALETTES = ['graphite', 'slate', 'stone', 'sage', 'plum'];
+
       function getTheme() {
         return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
       }
@@ -83,6 +91,20 @@ const {
         updateThemeButtons(next);
       }
 
+      function getPalette() {
+        const p = document.documentElement.dataset.palette;
+        return PALETTES.includes(p) ? p : 'graphite';
+      }
+
+      function setPalette(next) {
+        if (!PALETTES.includes(next)) return;
+        document.documentElement.dataset.palette = next;
+        try {
+          localStorage.setItem('darkroom-palette', next);
+        } catch (e) {}
+        updatePaletteButtons();
+      }
+
       function updateThemeButtons(theme) {
         const label = theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
         document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
@@ -91,10 +113,28 @@ const {
         });
       }
 
+      function updatePaletteButtons() {
+        const current = getPalette();
+        document.querySelectorAll('.palette-dot[data-palette]').forEach((btn) => {
+          btn.setAttribute('aria-pressed', String(btn.dataset.palette === current));
+        });
+      }
+
       // Delegate on document so it works reliably across all Astro View Transitions
       document.addEventListener('click', (e) => {
         const target = e.target;
         if (!(target instanceof Element)) return;
+
+        // Scoped to .palette-dot: `data-palette` also lives on <html> for the
+        // CSS palette rules, and a bare [data-palette] selector would match
+        // <html> as an ancestor of every click, hijacking the theme toggle.
+        const pick = target.closest('.palette-dot[data-palette]');
+        if (pick) {
+          e.preventDefault();
+          setPalette(pick.dataset.palette);
+          return;
+        }
+
         const toggle = target.closest('[data-theme-toggle]');
         if (!toggle) return;
         e.preventDefault();
@@ -105,6 +145,7 @@ const {
 
       document.addEventListener('astro:page-load', () => {
         updateThemeButtons(getTheme());
+        updatePaletteButtons();
       });
 
       // ——— header background after the hero ———
