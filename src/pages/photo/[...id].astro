@@ -53,7 +53,7 @@ const wall = related.map((id) => withUrls(byId.get(id)));
 ---
 
 <Layout title={`${photo.title} — Pratik Gupta`}>
-  <div class="photo-page darkroom page-fade">
+  <div class="photo-page darkroom">
     <!-- The way back to wherever the print was clicked from. The static href
          is the series; the script repoints it to the page the viewer came from. -->
     <a class="breadcrumb-mobile" href={`/collections/${photo.category}/`} data-back-to

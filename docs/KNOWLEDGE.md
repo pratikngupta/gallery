@@ -33,7 +33,8 @@ tokens and typefaces.
   gallery mode `--accent` is already 5.79:1 on paper, so `--accent-text` is just
   `var(--accent)`. `--meta` measures 6.2:1 on dark, 6.6:1 on light.
 - **Motion budget is a token, not a literal.** `--t-fast: .2s` for state changes,
-  `--t-reveal: .6s` for the blur-up develop, `--t-hero: .85s` for the showcase.
+  `--t-reveal: .6s` for the blur-up develop, `--t-hero: .85s` for the showcase,
+  `--t-morph: .3s` for the print traveling from wall to detail page.
   No duration is written inline.
 - **Typefaces:** Archivo is standardized as `--font-sans`, which `--font-heading`
   and `--font-body` both point at — one definition, so the two can never drift — across all
@@ -169,10 +170,12 @@ tokens and typefaces.
   `.hero-location-pill`, `.breadcrumb-sub`, the desktop `.photo-back` chip — needs
   its own `[hidden] { display: none }` rule. Setting the attribute and expecting it
   to work is the trap.
-- **Header must not have `transition:name`.** It has `data-header` to keep it
-  persistent across navigations; adding `transition:name` gives it a
-  `view-transition-name` CSS rule that triggers a morph between old and new
-  header, causing a flash/fade on every page switch.
+- **The print-travel wildcard catches every shared name.** The morph rules target
+  `::view-transition-old/new/group(*)`, so root, header, and footer must be opted out
+  explicitly (with `!important` — the direction-qualified wildcard rules outrank plain
+  name rules), or the navbar and footer re-animate on every navigation. The header
+  holds still via `transition:name="header"` + `transition:animate="none"`, the same
+  pinning pattern as the footer.
 - **Under ClientRouter there is no "previous page".** `document.referrer` and
   `window.history` never record an in-site hop (the router keeps one document), so
   the back chip on a detail page can only learn where the click came from from
