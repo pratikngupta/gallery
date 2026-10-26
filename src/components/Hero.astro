@@ -21,7 +21,9 @@ export interface Props {
 
 const { slides = [] } = Astro.props;
 const hasSlides = slides.length > 0;
-const firstSlide = slides[0];
+// Randomize the hero's opening slide on each visit for variety.
+const startIdx = slides.length > 1 ? Math.floor(Math.random() * slides.length) : 0;
+const firstSlide = slides[startIdx];
 ---
 
 <section class="hero-editorial" id="top">
@@ -68,12 +70,12 @@ const firstSlide = slides[0];
           {
             slides.map((slide, index) => (
               <div
-                class={`hero-slide ${index === 0 ? 'is-active' : ''}`}
+                class={`hero-slide ${index === startIdx ? 'is-active' : ''}`}
                 data-hero-slide
                 data-index={index}
                 data-place={slide.location || slide.series}
-                aria-hidden={index === 0 ? 'false' : 'true'}
-                inert={index === 0 ? undefined : true}
+                aria-hidden={index === startIdx ? 'false' : 'true'}
+                inert={index === startIdx ? undefined : true}
               >
                 <a href={slide.href} class="hero-slide-link" title={`View ${slide.title}`}>
                   <img
@@ -128,14 +130,12 @@ const firstSlide = slides[0];
                 slides.map((_, index) => (
                   <button
                     type="button"
-                    class={`hero-dot ${index === 0 ? 'is-active' : ''}`}
+                    class={`hero-dot ${index === startIdx ? 'is-active' : ''}`}
                     data-hero-dot
                     data-index={index}
                     aria-label={`Go to slide ${index + 1}`}
-                    aria-pressed={index === 0 ? 'true' : 'false'}
-                  >
-                    <span class="hero-dot-progress" />
-                  </button>
+                    aria-pressed={index === startIdx ? 'true' : 'false'}
+                  />
                 ))
               }
             </div>
