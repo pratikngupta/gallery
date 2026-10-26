@@ -244,8 +244,15 @@ async function scanLibrary(files) {
     // ("RCAF T-33 #01") so the wall can tell the prints apart.
     const folderName = segments.length > 1 ? segments[segments.length - 2] : null;
     const folderKey = path.dirname(file);
+
+    // Strip cover/featured tags from the base before testing —
+    // "IMG_9676-featured" should still be recognized as generic.
+    const testBase = base
+      .replace(/[-_]*(?:coverart|cover|featured)[-_]*/gi, '')
+      .trim();
+
     let title = titleFromName(base);
-    if (GENERIC_NAME.test(base) && folderName) {
+    if (GENERIC_NAME.test(testBase) && folderName) {
       title = titleFromName(folderName, false);
     }
 
