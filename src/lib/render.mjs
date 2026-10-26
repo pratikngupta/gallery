@@ -57,7 +57,9 @@ export function heroSlidesFor(photos, categories) {
 // Home-page featured: one cover per category, then balanced picks from each
 // category (two per category, cycling) until the wall is full. Hero prints and
 // cover photos are excluded so the wall never repeats what the showcase is
-// already showing.
+// already showing. Within each category, "featured" photos are preferred
+// so the wall actually shows prints the owner marked with 'featured' in the
+// filename.
 export function featuredFor(photos, categories, cap = 9, excludeIds = []) {
   const exclude = new Set(excludeIds);
   const seen = new Set(exclude);
@@ -71,13 +73,21 @@ export function featuredFor(photos, categories, cap = 9, excludeIds = []) {
   // 1. One cover per category (the first photo or a "featured" photo)
   for (const c of categories) add(c.cover);
 
-  // 2. Balanced picks from each category — cycling through categories.
-  //    One pick per category per round, round-robin until the wall is full.
+  // 2. Sort each category: featured photos first, then by scan order.
+  //    This ensures the round-robin picks from the featured set first.
   const byCat = new Map();
   for (const c of categories) byCat.set(c.key, []);
   for (const p of photos) {
     const group = byCat.get(p.category);
     if (group) group.push(p);
+  }
+  // Sort within each group: featured before non-featured, then by existing order.
+  for (const group of byCat.values()) {
+    group.sort((a, b) => {
+      if (a.isFeatured && !b.isFeatured) return -1;
+      if (!a.isFeatured && b.isFeatured) return 1;
+      return 0;
+    });
   }
   const cats = [...byCat.values()].filter((g) => g.length > 0);
 
