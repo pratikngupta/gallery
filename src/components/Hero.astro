@@ -162,6 +162,8 @@ const firstSlide = slides[0];
     const arrows = showcase.querySelectorAll('[data-hero-arrow]');
     if (slides.length <= 1) return;
 
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
     // Performance: skip the slideshow entirely on slow connections or reduced-motion.
     // Show only the first slide and let users navigate manually.
     const slowConnection = navigator.connection && (navigator.connection.effectiveType === 'slow-2g' || navigator.connection.effectiveType === '2g' || navigator.connection.saveData);
