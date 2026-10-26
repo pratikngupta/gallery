@@ -162,15 +162,16 @@ const firstSlide = slides[0];
     const arrows = showcase.querySelectorAll('[data-hero-arrow]');
     if (slides.length <= 1) return;
 
+    // Performance: skip the slideshow entirely on slow connections or reduced-motion.
+    // Show only the first slide and let users navigate manually.
+    const slowConnection = navigator.connection && (navigator.connection.effectiveType === 'slow-2g' || navigator.connection.effectiveType === '2g' || navigator.connection.saveData);
+    const skipSlideshow = reducedMotion.matches || slowConnection;
+
     let currentIndex = 0;
     let paused = false;
     let timer = null;
-    let progressTimer = null;
     const INTERVAL = 5000;
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    // A slide that is not showing must not be tabbable: an invisible link
-    // with a focus ring is worse than no link at all.
     function setVisibility(index, visible) {
       const slide = slides[index];
       slide.classList.toggle('is-active', visible);
@@ -188,18 +189,12 @@ const firstSlide = slides[0];
       currentIndex = (nextIndex + slides.length) % slides.length;
       setVisibility(currentIndex, true);
 
-      // Update dot states and reset progress bar
       dots.forEach((dot, i) => {
         const isActive = i === currentIndex;
         dot.classList.toggle('is-active', isActive);
         dot.setAttribute('aria-pressed', String(isActive));
-        if (isActive && progressTimer) {
-          dot.querySelector('.hero-dot-progress')?.setAttribute('style', `animation-duration:${INTERVAL}ms`);
-        }
       });
 
-      // The badge changes as a whole chip. With reduced motion it simply
-      // changes, without the fade.
       const nextPlace = slides[currentIndex].dataset.place || '';
       if (badge && badge.textContent !== nextPlace) {
         if (reducedMotion.matches) {
@@ -216,15 +211,6 @@ const firstSlide = slides[0];
       }
     }
 
-    function startProgressAnimation() {
-      if (reducedMotion.matches || paused) return;
-      const activeDot = dots[currentIndex];
-      if (!activeDot) return;
-      const progress = activeDot.querySelector('.hero-dot-progress');
-      if (!progress) return;
-      progress.setAttribute('style', `animation-duration:${INTERVAL}ms`);
-    }
-
     function startTimer() {
       stopTimer();
       if (paused || reducedMotion.matches) return;
@@ -238,46 +224,54 @@ const firstSlide = slides[0];
       }
     }
 
-    pauseBtn.addEventListener('click', () => {
-      paused = !paused;
-      pauseBtn.setAttribute('aria-pressed', String(paused));
-      pauseBtn.textContent = paused ? 'Resume slideshow' : 'Pause slideshow';
-      if (paused) stopTimer();
-      else startTimer();
-    });
-
-    // Dot click handlers — jump to any slide and restart the interval
-    dots.forEach((dot) => {
-      dot.addEventListener('click', () => {
-        const target = parseInt(dot.dataset.index, 10);
-        if (isNaN(target) || target === currentIndex) return;
-        stopTimer();
-        goToSlide(target);
-        if (!paused && !reducedMotion.matches) startTimer();
+    if (!skipSlideshow) {
+      pauseBtn.addEventListener('click', () => {
+        paused = !paused;
+        pauseBtn.setAttribute('aria-pressed', String(paused));
+        pauseBtn.textContent = paused ? 'Resume slideshow' : 'Pause slideshow';
+        if (paused) stopTimer();
+        else startTimer();
       });
-    });
 
-    // Arrow click handlers — step one slide at a time
-    arrows.forEach((arrow) => {
-      arrow.addEventListener('click', () => {
-        const dir = parseInt(arrow.dataset.dir, 10);
-        stopTimer();
-        goToSlide(currentIndex + dir);
-        if (!paused && !reducedMotion.matches) startTimer();
+      dots.forEach((dot) => {
+        dot.addEventListener('click', () => {
+          const target = parseInt(dot.dataset.index, 10);
+          if (isNaN(target) || target === currentIndex) return;
+          stopTimer();
+          goToSlide(target);
+          if (!paused && !reducedMotion.matches) startTimer();
+        });
       });
-    });
 
-    // Hover and focus pause the switch while someone is looking at a print;
-    // the pause button is the explicit control that works without a mouse.
-    showcase.addEventListener('mouseenter', stopTimer);
-    showcase.addEventListener('mouseleave', startTimer);
-    showcase.addEventListener('focusin', stopTimer);
-    showcase.addEventListener('focusout', startTimer);
+      arrows.forEach((arrow) => {
+        arrow.addEventListener('click', () => {
+          const dir = parseInt(arrow.dataset.dir, 10);
+          stopTimer();
+          goToSlide(currentIndex + dir);
+          if (!paused && !reducedMotion.matches) startTimer();
+        });
+      });
 
-    reducedMotion.addEventListener('change', () => (paused ? stopTimer() : startTimer()));
+      showcase.addEventListener('mouseenter', stopTimer);
+      showcase.addEventListener('mouseleave', startTimer);
+      showcase.addEventListener('focusin', stopTimer);
+      showcase.addEventListener('focusout', startTimer);
+      reducedMotion.addEventListener('change', () => (paused ? stopTimer() : startTimer()));
 
-    startTimer();
-    startProgressAnimation();
+      startTimer();
+    } else {
+      // Hide controls that don't work in skip mode
+      if (pauseBtn) pauseBtn.style.display = 'none';
+      dots.forEach((dot) => dot.style.display = 'none');
+      arrows.forEach((arrow) => {
+        arrow.style.display = 'flex'; // arrows still work
+        arrow.addEventListener('click', () => {
+          const dir = parseInt(arrow.dataset.dir, 10);
+          goToSlide(currentIndex + dir);
+        });
+      });
+    }
+
     document.addEventListener('astro:before-swap', stopTimer);
   }
 

@@ -157,24 +157,19 @@ body {
 
 .reveal {
   opacity: 0;
-  transform: translateY(1.5rem);
-  transition: opacity var(--t-reveal) cubic-bezier(0.4, 0, 0.2, 1),
-              transform var(--t-reveal) cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .reveal.is-visible {
   opacity: 1;
-  transform: translateY(0);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .reveal {
     opacity: 1;
-    transform: none;
   }
   .reveal.is-visible {
     opacity: 1;
-    transform: none;
   }
 }
 
@@ -400,11 +395,6 @@ body {
   object-position: center;
   display: block;
   filter: saturate(1.02);
-  transition: transform 12s ease-out;
-}
-
-.hero-slide.is-active .hero-slide-img {
-  transform: scale(1.02);
 }
 
 /* Location pill overlay on bottom-left */
@@ -497,7 +487,6 @@ body {
   padding: 0;
   cursor: pointer;
   transition: border-color var(--t-fast) ease;
-  overflow: hidden;
 }
 
 .hero-dot:hover {
@@ -506,42 +495,7 @@ body {
 
 .hero-dot.is-active {
   border-color: var(--text);
-}
-
-/* Progress fill that runs across the dot while the slide is active */
-.hero-dot-progress {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
   background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.01ms linear;
-}
-
-@media (hover: hover) {
-  .hero-dot.is-active .hero-dot-progress {
-    animation: hero-dot-progress linear forwards;
-  }
-}
-
-@keyframes hero-dot-progress {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-/* Reduce motion: skip the progress animation */
-@media (prefers-reduced-motion: reduce) {
-  .hero-dot-progress {
-    animation: none !important;
-  }
-  .hero-dot.is-active .hero-dot-progress {
-    background: var(--accent);
-  }
 }
 
 /* ——— hero navigation arrows ——— */
@@ -558,26 +512,16 @@ body {
   justify-content: center;
   border-radius: 50%;
   border: 1.5px solid color-mix(in srgb, var(--darkroom-text) 30%, transparent);
-  background: color-mix(in srgb, var(--darkroom) 50%, transparent);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: var(--darkroom);
   color: var(--darkroom-text);
   padding: 0;
   cursor: pointer;
-  transition:
-    border-color var(--t-fast) ease,
-    background var(--t-fast) ease,
-    transform var(--t-fast) ease;
+  transition: opacity var(--t-fast) ease;
 }
 
 .hero-arrow:hover {
   border-color: color-mix(in srgb, var(--darkroom-text) 60%, transparent);
-  background: color-mix(in srgb, var(--darkroom) 70%, transparent);
-  transform: translateY(-50%) scale(1.06);
-}
-
-.hero-arrow:active {
-  transform: translateY(-50%) scale(0.98);
+  background: color-mix(in srgb, var(--darkroom) 80%, transparent);
 }
 
 .hero-arrow--prev {
@@ -943,7 +887,6 @@ body {
 .subcat-pill:hover {
   color: var(--text);
   border-color: var(--meta);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--meta) 20%, transparent);
 }
 
 .pill.is-active,
@@ -952,7 +895,6 @@ body {
   background: var(--text);
   border-color: var(--text);
   font-weight: 600;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--text) 30%, transparent);
 }
 
 .masonry {
