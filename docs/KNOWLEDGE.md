@@ -125,15 +125,17 @@ tokens and typefaces.
 8. After adding files: `npm run build` (renditions regenerate only for what's new) and deploy. Nothing else.
 
 ## Decisions made (and why — don't re-litigate without a reason)
-- **Dropdown menu on every viewport (owner decision, 2026-02):** the owner
-  dropped the two-row phone header. Final form after iteration: the inline nav
-  (HOME / GALLERY / ABOUT) stays in the header row at every width, and a
-  circular hamburger trigger opens a native `popover` holding only the
-  appearance controls (palette picker + theme toggle). The trigger toggles via
-  `popovertarget`; Esc/focus are native, outside-tap close and post-navigation
-  close are the only JS (in `Layout`). An earlier full-nav dropdown (MENU text
-  trigger, links inside) was built and rejected — the owner wants the nav
-  visible.
+- **Dropdown menu on every viewport (owner decision, 2026-02, iterated to
+  final form):** the owner dropped the two-row phone header. Final: the
+  header row is wordmark + a MENU text trigger at every width (no icon
+  chrome — the site's letter-spaced caps carry it). Mobile: the row holds
+  nothing else; the native `popover` menu carries the nav links above the
+  appearance controls. Desktop: the inline nav stays in the row and the menu
+  holds only the appearance controls (`.menu-nav` is `display: none` ≥641px).
+  The trigger toggles via `popovertarget`; Esc/focus are native, outside-tap
+  close and post-navigation close are the only JS (in `Layout`). Rejected
+  along the way: two-row phone header, circular hamburger trigger, a menu
+  that hid the desktop nav.
 - **Astro, not React/Next:** the site is content, not an app; zero-JS output
   is the exact fit.
 - **Git + files over a CMS:** see `docs/ARCHITECTURE.md` → "Why no CMS".

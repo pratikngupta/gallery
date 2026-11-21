@@ -294,10 +294,9 @@ body {
   left: 0;
   right: 0;
   z-index: 50;
-  /* dropdown top = trigger hit height + the row's vertical padding; the
-     44px trigger only exists at phone widths, so the max-640 block below
-     redefines --header-h */
-  --header-h: calc(36px + 1.5rem);
+  /* dropdown top = trigger hit height + the row's vertical padding (the
+     MENU trigger is 44px tall on every viewport) */
+  --header-h: calc(44px + 1.5rem);
   padding: 0.75rem var(--gutter);
   background: color-mix(in srgb, var(--bg) 82%, transparent);
   backdrop-filter: blur(16px);
@@ -368,47 +367,43 @@ body {
   width: 100%;
 }
 
-/* Circular hamburger trigger, drawn in the header's existing icon language
-   (the old theme-toggle circle, which now lives inside the menu). */
+/* MENU trigger: text, the same voice as the nav links. Its label is its own
+   accessible name, so no aria-label. */
 .menu-trigger {
   appearance: none;
   justify-self: end;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 50%;
-  border: 1px solid var(--frame);
-  background: color-mix(in srgb, var(--frame) 40%, transparent);
+  min-height: 44px;
+  padding: 0 0.125rem;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--meta);
   cursor: pointer;
-  transition: color var(--t-fast) ease, border-color var(--t-fast) ease, transform var(--t-fast) ease;
+  transition: color var(--t-fast) ease;
 }
 
-.menu-trigger:hover {
-  color: var(--text);
-  border-color: var(--meta);
-  transform: scale(1.05);
-}
-
+.menu-trigger:hover,
 .menu-trigger[aria-expanded='true'] {
   color: var(--text);
-  border-color: var(--meta);
 }
 
-.menu-trigger svg {
-  pointer-events: none;
-}
-
-/* Dropdown menu: a native popover holding only the appearance controls.
-   On phones it is an edge-to-edge sheet; from 641px up it hangs off the
-   right edge, flush with the trigger. Flat, no shadow — chrome, not a print. */
+/* Dropdown menu: a native popover. On phones it is an edge-to-edge sheet
+   holding the nav links (the row has no room for them) above the appearance
+   controls; from 641px up it hangs off the right edge, flush with the
+   trigger, holding only the appearance controls (the links are already
+   inline in the row). Flat, no shadow — chrome, not a print. */
 .site-menu {
   position: fixed;
   top: var(--header-h);
   left: 0;
   right: 0;
+  /* override the UA's `width: fit-content` — without this the sheet
+     shrinks to its content and the `right: 0` is ignored */
+  width: 100%;
   margin: 0;
   padding: 0;
   max-height: calc(100dvh - var(--header-h));
@@ -417,6 +412,25 @@ body {
   border-bottom: 1px solid var(--frame);
   background: var(--bg);
   color: var(--text);
+}
+
+.menu-nav a {
+  display: block;
+  padding: 1rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--meta);
+  transition: color var(--t-fast) ease;
+}
+
+.menu-nav a:hover {
+  color: var(--text);
+}
+
+.menu-nav a[aria-current='page'] {
+  color: var(--accent);
 }
 
 .menu-appearance {
@@ -525,6 +539,11 @@ body {
     border: 1px solid var(--frame);
     border-top: 0;
     border-radius: 0 0 var(--radius) var(--radius);
+  }
+
+  /* The row already shows the links inline on desktop. */
+  .menu-nav {
+    display: none;
   }
 
   .menu-appearance {
@@ -1679,49 +1698,23 @@ body {
   color: var(--meta);
 }
 
-/* ——— responsive: 640px is the phone breakpoint; 359px is the small-phone
-   step-down (header row + hero) ——— */
+/* ——— responsive: 640px is the phone breakpoint ——— */
 /* Everything above already shrinks with clamp(); these are the structural
    differences that a clamp cannot express. */
 
 @media (max-width: 640px) {
-  /* One row at phone widths: the wordmark anchors the left, the nav and
-     trigger form a quiet right-hand cluster, and the space between them is
-     the breathing room. The nav steps down a size and gains tracking so it
-     reads as secondary to the mark; touch height stays 44px. Padding stays
-     0.75rem — --header-h assumes it. */
-  .site-header {
-    --header-h: calc(44px + 1.5rem);
-  }
-
-  .site-header-inner {
-    grid-template-columns: auto 1fr auto;
-    column-gap: 0.5rem;
+  /* Phone header row: wordmark + MENU, nothing else. The links live in the
+     menu (progressive disclosure — the desktop row has the room for them).
+     With only two items, the row fits every phone width, so there is no
+     smaller step-down. Padding stays 0.75rem — --header-h assumes it. */
+  .site-nav {
+    display: none;
   }
 
   .wordmark {
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     letter-spacing: 0.08em;
     white-space: nowrap;
-  }
-
-  .site-nav {
-    gap: 0.5rem;
-    justify-self: end;
-  }
-
-  .site-nav a {
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    padding: 0;
-    font-size: 0.625rem;
-    letter-spacing: 0.08em;
-  }
-
-  .menu-trigger {
-    width: 44px;
-    height: 44px;
   }
 
   .menu-appearance {
@@ -1788,31 +1781,5 @@ body {
 
   .series-nav {
     margin-top: 2rem;
-  }
-}
-
-@media (max-width: 359px) {
-  /* Below here the header row physically breaks: one more notch down.
-     Must come after the 640 block — media queries add no specificity. */
-  .site-header {
-    --header-h: calc(40px + 1.5rem);
-  }
-
-  .wordmark {
-    font-size: 0.75rem;
-  }
-
-  .site-nav {
-    gap: 0.25rem;
-  }
-
-  .site-nav a {
-    font-size: 0.5625rem;
-    letter-spacing: 0.06em;
-  }
-
-  .menu-trigger {
-    width: 40px;
-    height: 40px;
   }
 }
