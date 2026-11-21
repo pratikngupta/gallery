@@ -49,7 +49,12 @@ const {
         }
       }
       applyStoredTheme();
-      document.addEventListener('astro:after-swap', applyStoredTheme);
+      // This inline script re-runs on every view transition (each swapped-in
+      // page carries its own copy of <head>), so the reapplier is bound once.
+      if (!window.__themeSwapBound) {
+        window.__themeSwapBound = true;
+        document.addEventListener('astro:after-swap', applyStoredTheme);
+      }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -213,6 +218,10 @@ const {
             else if (img.complete && img.naturalWidth > 0) upgrade(img);
           });
       sweep();
+      // After a view transition, cached 40px thumbnails can already be
+      // complete when the new page lands — no load event will fire, so sweep
+      // again on every page load or the wall stays blurred.
+      document.addEventListener('astro:page-load', sweep);
 
       // ——— scroll-reveal: sections fade in as they enter the viewport ———
       // One intersection observer per page-load. Re-create it on each Astro

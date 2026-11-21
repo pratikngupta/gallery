@@ -47,7 +47,9 @@ export function heroSlidesFor(photos, categories) {
     series: prettyKey(p.subcategory || p.category.replace(/-/g, ' ')),
     src: R(p, 1280),
     srcset: `${R(p, 750)} 750w, ${R(p, 1280)} 1280w, ${R(p, 2560)} 2560w`,
-    href: `/photo/${p.id}`,
+    // Trailing slash: every other link on the site targets /photo/<id>/, the
+    // shape Astro's static output actually has.
+    href: `/photo/${p.id}/`,
     alt: p.title,
     width: p.width,
     height: p.height,

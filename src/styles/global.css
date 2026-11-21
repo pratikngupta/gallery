@@ -693,6 +693,13 @@ body {
     opacity: 1;
     pointer-events: auto;
   }
+  /* Slideshow skipped (reduced motion / slow connection): the arrows are the
+     only remaining control, so they stay visible instead of waiting for
+     hover. */
+  .hero-showcase--manual .hero-arrow {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 @media (max-width: 640px) {

@@ -162,48 +162,6 @@ const firstSlide = slides[0];
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    // Client-side randomization: rotate the DOM so a random slide appears first.
-    // This gives variety on every page reload without build-time randomness.
-    const randomStart = Math.floor(Math.random() * slides.length);
-    if (randomStart > 0) {
-      // Move the random slide to the front of the DOM order
-      const randomSlide = slides[randomStart];
-      slides[0].before(randomSlide);
-      // Update dot order: move the random dot to front
-      const dotsContainer = showcase.parentElement.querySelector('[data-hero-dots]');
-      const randomDot = dotsContainer ? dotsContainer.querySelector(`[data-hero-dot][data-index="${randomStart}"]`) : null;
-      if (randomDot) dotsContainer.insertBefore(randomDot, dotsContainer.firstChild);
-
-      // Update aria for the new first slide
-      randomSlide.setAttribute('aria-hidden', 'false');
-      randomSlide.inert = false;
-      randomSlide.classList.add('is-active');
-      slides[0].setAttribute('aria-hidden', 'true');
-      slides[0].inert = true;
-      slides[0].classList.remove('is-active');
-
-      // Update location pill
-      const pill = showcase.querySelector('[data-hero-location]');
-      const badge = pill && pill.querySelector('.hero-location-text');
-      if (badge) {
-        badge.textContent = randomSlide.dataset.place || '';
-        pill.hidden = !randomSlide.dataset.place;
-      }
-
-      // Update dots
-      dots.forEach((dot, i) => {
-        dot.classList.toggle('is-active', i === 0);
-        dot.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
-      });
-
-      // Update arrow attributes to reference the new DOM order
-      const newArrows = showcase.querySelectorAll('[data-hero-arrow]');
-      newArrows.forEach((arrow) => {
-        arrow.style.opacity = '1';
-        arrow.style.pointerEvents = 'auto';
-      });
-    }
-
     // Performance: skip the slideshow entirely on slow connections or reduced-motion.
     // Show only the first slide and let users navigate manually.
     const slowConnection = navigator.connection && (navigator.connection.effectiveType === 'slow-2g' || navigator.connection.effectiveType === '2g' || navigator.connection.saveData);
@@ -266,6 +224,15 @@ const firstSlide = slides[0];
       }
     }
 
+    // Client-side randomization: start the cycle at a random slide so a page
+    // reload shows variety. The slides are a stacked, absolutely-positioned
+    // deck, so DOM order is irrelevant — no DOM surgery, no array re-capture,
+    // just run the first transition to the random index.
+    if (slides.length > 1) {
+      const randomStart = Math.floor(Math.random() * slides.length);
+      if (randomStart !== 0) goToSlide(randomStart);
+    }
+
     if (!skipSlideshow) {
       pauseBtn.addEventListener('click', () => {
         paused = !paused;
@@ -302,11 +269,13 @@ const firstSlide = slides[0];
 
       startTimer();
     } else {
-      // Hide controls that don't work in skip mode
+      // Slideshow skipped: hide the controls that do not work, and keep the
+      // arrows visible — they are the only remaining way to change slides
+      // (.hero-showcase--manual, see global.css).
       if (pauseBtn) pauseBtn.style.display = 'none';
       dots.forEach((dot) => dot.style.display = 'none');
+      showcase.classList.add('hero-showcase--manual');
       arrows.forEach((arrow) => {
-        arrow.style.display = 'flex'; // arrows still work
         arrow.addEventListener('click', () => {
           const dir = parseInt(arrow.dataset.dir, 10);
           goToSlide(currentIndex + dir);
@@ -314,9 +283,28 @@ const firstSlide = slides[0];
       });
     }
 
+    // A hidden tab must not keep cycling slides. The module-level
+    // visibilitychange listener dispatches onto the live showcase; the
+    // handler dies with the element, so leaving the page cleans itself up.
+    showcase.addEventListener('hero:visibility', (e) => {
+      if (e.detail.hidden) stopTimer();
+      else if (!paused && !skipSlideshow) startTimer();
+    });
+
     document.addEventListener('astro:before-swap', stopTimer);
   }
 
   setupHeroShowcase();
   document.addEventListener('astro:page-load', setupHeroShowcase);
+
+  // One document-level listener for the life of the document; each live
+  // showcase receives the event on its own element.
+  if (!window.__heroVisibility) {
+    window.__heroVisibility = true;
+    document.addEventListener('visibilitychange', () => {
+      document.querySelectorAll('[data-hero-showcase]').forEach((sc) => {
+        sc.dispatchEvent(new CustomEvent('hero:visibility', { detail: { hidden: document.hidden } }));
+      });
+    });
+  }
 </script>
