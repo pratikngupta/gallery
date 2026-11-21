@@ -153,6 +153,42 @@ const {
         updatePaletteButtons();
       });
 
+      // ——— dropdown menu (native popover) ———
+      // The trigger toggles the popover via popovertarget; Esc and focus
+      // return are browser-native. Left to do: sync aria-expanded, close on
+      // outside tap (popovers do not auto-close), and close after a
+      // view-transition swap — the persistent header (and an open menu)
+      // survives the swap, so a stale open menu would float over the new page.
+      // NOTE: a <dialog popover> is managed by the Popover API, so `open`
+      // does NOT reflect its state — always use :popover-open / newState.
+      const bindMenu = () => {
+        const trigger = document.getElementById('menu-trigger');
+        const menu = document.getElementById('site-menu');
+        if (!trigger || !menu || menu.dataset.bound) return;
+        menu.dataset.bound = '1';
+        const menuOpen = () => menu.matches(':popover-open');
+        const closeMenu = () => (menu.hidePopover ? menu.hidePopover() : menu.close());
+        menu.addEventListener('toggle', () =>
+          // Read the live state: Chrome reports newState as "open"/"closed"
+          // here, not the spec's "showing"/"hiding", and :popover-open is
+          // authoritative for a dialog popover.
+          trigger.setAttribute('aria-expanded', String(menu.matches(':popover-open')))
+        );
+        document.addEventListener('pointerdown', (e) => {
+          if (menuOpen() && !menu.contains(e.target) && !trigger.contains(e.target)) {
+            closeMenu();
+          }
+        });
+        document.addEventListener('astro:page-load', () => {
+          if (menuOpen()) closeMenu();
+        });
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bindMenu, { once: true });
+      } else {
+        bindMenu();
+      }
+
       // ——— header background after the hero ———
       // `data-header` keeps the header persistent across view-transition swaps,
       // so it is resolved inside the handler — capturing it here would pin a dead

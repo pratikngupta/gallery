@@ -27,12 +27,13 @@ tokens and typefaces.
   zoom popover — dark in every palette and mode), `--radius: 8px` for prints and
   `--radius-pill: 9999px` for chips, `--container: 1320px`, and `--gutter`,
   `--page-top`, `--page-bottom` as clamps so the page breathes at every width.
-  The palette picker is five swatch dots in the header; like the theme toggle,
-  switching is event-delegated, persisted in `localStorage`
+  The header is one row on every screen — wordmark + a MENU trigger opening a
+  native `popover` dropdown that holds the nav links, the five-swatch palette
+  picker, and the theme toggle (owner: the two-row phone header was dropped for
+  this dropdown on all viewports). Like the theme toggle, switching is
+  event-delegated, persisted in `localStorage`
   (`darkroom-theme`, `darkroom-palette`), and reapplied by the inline head
-  script on `astro:after-swap` — no flash, no first-paint drift. At ≤640px the
-  header wraps so the dots get a second line rather than squeezing past the
-  gutter.
+  script on `astro:after-swap` — no flash, no first-paint drift.
 - **Contrast is measured, not assumed.** Every `--accent` measures at least
   AA (4.5:1) against its own `--bg` — the weakest are Slate light (4.9:1) and
   Sage light (5.0:1) — so `--accent-text` is simply `var(--accent)` in every
@@ -124,6 +125,15 @@ tokens and typefaces.
 8. After adding files: `npm run build` (renditions regenerate only for what's new) and deploy. Nothing else.
 
 ## Decisions made (and why — don't re-litigate without a reason)
+- **Dropdown menu on every viewport (owner decision, 2026-02):** the owner
+  dropped the two-row phone header. Final form after iteration: the inline nav
+  (HOME / GALLERY / ABOUT) stays in the header row at every width, and a
+  circular hamburger trigger opens a native `popover` holding only the
+  appearance controls (palette picker + theme toggle). The trigger toggles via
+  `popovertarget`; Esc/focus are native, outside-tap close and post-navigation
+  close are the only JS (in `Layout`). An earlier full-nav dropdown (MENU text
+  trigger, links inside) was built and rejected — the owner wants the nav
+  visible.
 - **Astro, not React/Next:** the site is content, not an app; zero-JS output
   is the exact fit.
 - **Git + files over a CMS:** see `docs/ARCHITECTURE.md` → "Why no CMS".
