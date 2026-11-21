@@ -1370,7 +1370,12 @@ body {
 
 .zoom-popover {
   /* Transparent default state; backdrop-filter does the darkening.
-     No solid background — the main page image stays visible behind it. */
+     No solid background — the main page image stays visible behind it.
+     Flex-centering: the dialog fills the viewport, and without a centering
+     container the block image sits at the top-left corner. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   inset: 0;
   width: auto;
   height: auto;

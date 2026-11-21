@@ -179,7 +179,11 @@ async function readMeta(file, title) {
         const f = Array.isArray(ex.FocalLength) ? ex.FocalLength[0] : ex.FocalLength;
         exif.focal = `${Math.round(f)}mm`;
       }
-      if (ex.FNumber) exif.aperture = `ƒ/${ex.FNumber}`;
+      if (ex.FNumber) {
+        // FNumber arrives as a raw float (1.7799999713880652 from iPhone
+        // tags); round to two decimals so the spec table shows f/1.78.
+        exif.aperture = `ƒ/${Math.round(ex.FNumber * 100) / 100}`;
+      }
       if (ex.ExposureTime) exif.shutter = ex.ExposureTime >= 1 ? `${ex.ExposureTime}s` : `1/${Math.round(1 / ex.ExposureTime)}s`;
       if (ex.ISO && ex.ISO !== 0) exif.iso = `ISO ${ex.ISO}`;
       if (ex.DateTimeOriginal) exif.date = new Date(ex.DateTimeOriginal);
