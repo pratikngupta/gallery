@@ -160,7 +160,11 @@ async function readMeta(file, title) {
   }
 
   try {
-    const ex = await exifr.parse(file, {
+    // Parse from a Buffer, not a file path: exifr's file source calls
+    // FileHandle.stat(path), which modern Node rejects, and the error plus
+    // the leaked handle would cost every photo its EXIF and can kill the
+    // build. A Buffer sidesteps that code path entirely.
+    const ex = await exifr.parse(await fs.readFile(file), {
       pick: ['Make', 'Model', 'LensModel', 'FNumber', 'ExposureTime', 'FocalLength', 'ISO', 'DateTimeOriginal'],
     });
     if (ex) {
@@ -234,7 +238,11 @@ async function scanLibrary(files) {
   for (const file of files) {
     const rel = path.relative(PHOTOS_DIR, file);
     const segments = rel.split(path.sep);
-    const base = path.basename(file, path.extname(file));
+    // Some files arrive with stray leading/trailing spaces in the name
+    // (" CF-188A Hornet 1 featured.jpg"). The real path stays as-is, but
+    // titles and ids are derived from the trimmed form so neither starts
+    // with a dash or a space.
+    const base = path.basename(file, path.extname(file)).trim();
     const atRoot = segments.length === 1;
     const category = atRoot ? CATCH_ALL : segments[0];
     const subcategory = segments.length > 2 ? segments[1] : null;
@@ -242,7 +250,7 @@ async function scanLibrary(files) {
     // A generic camera name ("IMG_9092") titles the photo after its folder.
     // If that title is already taken in the folder, number the duplicate
     // ("RCAF T-33 #01") so the wall can tell the prints apart.
-    const folderName = segments.length > 1 ? segments[segments.length - 2] : null;
+    const folderName = segments.length > 1 ? segments[segments.length - 2].trim() : null;
     const folderKey = path.dirname(file);
 
     // Strip cover/featured tags from the base before testing —
@@ -277,7 +285,13 @@ async function scanLibrary(files) {
     const year = meta.exif?.date ? meta.exif.date.getFullYear() : st.mtime.getFullYear();
     const location = meta.location || inferLocation(rel, meta.title, category, subcategory);
 
-    const id = rel.toLowerCase().replace(/\.[^.]+$/, '').replace(/[^a-z0-9/_-]/g, '-');
+    const id = rel
+      .split(path.sep)
+      .map((s) => s.trim())
+      .join('/')
+      .toLowerCase()
+      .replace(/\.[^.]+$/, '')
+      .replace(/[^a-z0-9/_-]/g, '-');
     const dims = dimensions.get(id);
     photos.push({
       id,
