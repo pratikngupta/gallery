@@ -128,14 +128,20 @@ tokens and typefaces.
 - **Dropdown menu on every viewport (owner decision, 2026-02, iterated to
   final form):** the owner dropped the two-row phone header. Final: the
   header row is wordmark + a MENU text trigger at every width (no icon
-  chrome — the site's letter-spaced caps carry it). Mobile: the row holds
-  nothing else; the native `popover` menu carries the nav links above the
-  appearance controls. Desktop: the inline nav stays in the row and the menu
-  holds only the appearance controls (`.menu-nav` is `display: none` ≥641px).
-  The trigger toggles via `popovertarget`; Esc/focus are native, outside-tap
-  close and post-navigation close are the only JS (in `Layout`). Rejected
-  along the way: two-row phone header, circular hamburger trigger, a menu
-  that hid the desktop nav.
+  chrome — the site's letter-spaced caps carry it). The native `popover`
+  menu is a **right-anchored panel on every viewport**, hanging flush under
+  the trigger: `right: var(--gutter)`, `width: min(20rem, calc(100% -
+  var(--gutter)))` — nearly full-width at ~320px, a right-side panel with
+  the page visible on the left from ~360px up. Mobile shows the nav links
+  inside (`.menu-nav`); desktop hides them (the links are already inline in
+  the row). Two UA-stylesheet traps live in the CSS comments: the dialog's
+  `inset: 0` must be cleared (`left: auto`) or the `right` inset is ignored,
+  and hiding `.site-nav` drops it out of grid auto-placement, so the mobile
+  row switches to a 2-column grid. The trigger toggles via `popovertarget`;
+  Esc/focus are native, outside-tap close and post-navigation close are the
+  only JS (in `Layout`). Rejected along the way: two-row phone header,
+  circular hamburger trigger, a menu that hid the desktop nav, a full-width
+  phone sheet, and a left-anchored panel.
 - **Astro, not React/Next:** the site is content, not an app; zero-JS output
   is the exact fit.
 - **Git + files over a CMS:** see `docs/ARCHITECTURE.md` → "Why no CMS".

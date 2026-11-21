@@ -391,25 +391,28 @@ body {
   color: var(--text);
 }
 
-/* Dropdown menu: a native popover. On phones it is an edge-to-edge sheet
-   holding the nav links (the row has no room for them) above the appearance
-   controls; from 641px up it hangs off the right edge, flush with the
-   trigger, holding only the appearance controls (the links are already
+/* Dropdown menu: a native popover, right-anchored on every viewport so it
+   hangs flush under the MENU trigger. On phones it is min(20rem, viewport
+   minus gutter) — nearly full-width at ~320px, a right-side panel with the
+   page visible on the left from ~360px up. Mobile shows the nav links
+   (the row has no room for them); desktop hides them (the links are already
    inline in the row). Flat, no shadow — chrome, not a print. */
 .site-menu {
   position: fixed;
   top: var(--header-h);
-  left: 0;
-  right: 0;
-  /* override the UA's `width: fit-content` — without this the sheet
-     shrinks to its content and the `right: 0` is ignored */
-  width: 100%;
+  right: var(--gutter);
+  /* the UA dialog sheet sets `inset: 0` — with left + width both set, an
+     ignored `right` would pin the panel to the left edge, so clear it */
+  left: auto;
+  /* width + right are the sizing; no left inset, so nothing over-constrains */
+  width: min(20rem, calc(100% - var(--gutter)));
   margin: 0;
   padding: 0;
   max-height: calc(100dvh - var(--header-h));
   overflow-y: auto;
-  border: 0;
-  border-bottom: 1px solid var(--frame);
+  border: 1px solid var(--frame);
+  border-top: 0;
+  border-radius: 0 0 var(--radius) var(--radius);
   background: var(--bg);
   color: var(--text);
 }
@@ -531,23 +534,9 @@ body {
    trigger sits in. These must come after the base rules — media queries add
    no specificity, so a later base rule would win. */
 @media (min-width: 641px) {
-  .site-menu {
-    left: auto;
-    right: max(var(--gutter), calc((100vw - var(--container)) / 2));
-    width: max-content;
-    min-width: 14rem;
-    border: 1px solid var(--frame);
-    border-top: 0;
-    border-radius: 0 0 var(--radius) var(--radius);
-  }
-
   /* The row already shows the links inline on desktop. */
   .menu-nav {
     display: none;
-  }
-
-  .menu-appearance {
-    padding: 1.25rem 1.5rem calc(1.25rem + env(safe-area-inset-bottom));
   }
 }
 
@@ -1711,14 +1700,16 @@ body {
     display: none;
   }
 
+  /* The hidden nav drops out of grid auto-placement, so the trigger would
+     land in column 2 of the 3-column template — back to 2 columns. */
+  .site-header-inner {
+    grid-template-columns: 1fr auto;
+  }
+
   .wordmark {
     font-size: 0.875rem;
     letter-spacing: 0.08em;
     white-space: nowrap;
-  }
-
-  .menu-appearance {
-    padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
   }
 
   .hero-editorial {
