@@ -1371,11 +1371,10 @@ body {
 .zoom-popover {
   /* Transparent default state; backdrop-filter does the darkening.
      No solid background — the main page image stays visible behind it.
-     Flex-centering: the dialog fills the viewport, and without a centering
-     container the block image sits at the top-left corner. */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+     No display property here: the closed popover must keep the UA's
+     display:none, or the invisible box sits above the page and eats
+     clicks (the trigger would be unclickable). Centering is flex, but
+     only in the open state, below. */
   inset: 0;
   width: auto;
   height: auto;
@@ -1398,6 +1397,11 @@ body {
 }
 
 .zoom-popover:popover-open {
+  /* Flex only while open: the dialog fills the viewport, and without a
+     centering container the block image sits at the top-left corner. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   opacity: 1;
   transform: scale(1);
   /* Popover handles focus — no autofill needed. */
@@ -1608,8 +1612,9 @@ body {
 
 @media (max-width: 640px) {
   /* One row cannot hold wordmark + nav + five swatches + toggle at phone
-     widths, so the picker wraps to a second line under the nav instead of
-     squeezing the row past the gutter. */
+     widths, so the appearance cluster takes the second row as one tight,
+     centered control strip: grid row 1 holds wordmark (left) and nav
+     (right), row 2 holds the whole cluster on its own. */
   .site-header {
     height: auto;
     padding: 0.6rem var(--gutter);
@@ -1618,14 +1623,11 @@ body {
   }
 
   .site-header-inner {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto;
     align-items: center;
-    flex-wrap: wrap;
     row-gap: 0.5rem;
     width: 100%;
-    grid-template-columns: none;
-    grid-template-rows: none;
   }
 
   .wordmark {
@@ -1655,10 +1657,28 @@ body {
   }
 
   .header-actions {
-    margin-left: 0.25rem;
+    grid-column: 1 / -1;
+    justify-content: center;
     display: flex;
     align-items: center;
-    flex-shrink: 0;
+  }
+
+  .palette-picker {
+    gap: 0;
+  }
+
+  /* The swatch is a target, not the target: 44px-tall hit areas around a
+     12px identity dot, and a little more presence so slate and plum read
+     on dark walls. */
+  .palette-dot {
+    width: 36px;
+    height: 44px;
+  }
+
+  .palette-dot span {
+    width: 12px;
+    height: 12px;
+    opacity: 0.6;
   }
 
   .theme-toggle {
