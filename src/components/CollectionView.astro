@@ -42,7 +42,7 @@ const stateJson = JSON.stringify(
 ---
 <section class="collection reveal" data-collection-view data-collection-state={stateJson}>
   <header class="collection-head">
-    <nav class="breadcrumb" aria-label="Breadcrumb" hidden={activeCat === null}>
+    <nav class="breadcrumb" aria-label="Breadcrumb" data-breadcrumb hidden={activeCat === null}>
       <a href="/collections/" class="breadcrumb-link">Gallery</a>
       <span class="breadcrumb-sep" aria-hidden="true">/</span>
       <span class="breadcrumb-current" data-breadcrumb-cat>{activeCat?.name ?? ''}</span>
@@ -54,7 +54,7 @@ const stateJson = JSON.stringify(
     <h1 class="collection-title" data-collection-title>{heading}</h1>
     <p class="collection-desc" data-collection-desc>{headDesc}</p>
   </header>
-  <nav class="pill-nav" aria-label="Collections">
+  <nav class="pill-nav" aria-label="Collections" data-cat-nav hidden={active !== 'all'}>
     <button type="button" class={`pill ${activeCat === null ? 'is-active' : ''}`} data-cat-filter="all" aria-pressed={activeCat === null}>
       All
     </button>
@@ -101,6 +101,7 @@ const stateJson = JSON.stringify(
       view.dataset.ready = '1';
       if (!view.querySelector('.ph-frame[data-cat]')) return;
       const cats = JSON.parse(view.dataset.collectionState);
+      const catNavEl = view.querySelector('[data-cat-nav]');
       const frames = Array.from(view.querySelectorAll('.ph-frame[data-cat]'));
       const catPills = Array.from(view.querySelectorAll('[data-cat-filter]'));
       const subNavs = Array.from(view.querySelectorAll('[data-subcat-nav]'));
@@ -130,6 +131,10 @@ const stateJson = JSON.stringify(
         activeSub = 'all';
         const cat = cats.find((c) => c.key === next);
         frames.forEach((f) => (f.hidden = frameHidden(f)));
+        // One switcher row at a time: the category row answers "which
+        // collection?" and is meaningless once one is picked; the series
+        // row for the active category takes its place.
+        if (catNavEl) catNavEl.hidden = next !== 'all';
         subNavs.forEach((n) => {
           n.hidden = n.dataset.forCat !== next;
           n.querySelectorAll('[data-subcat-filter]').forEach((p) => {
@@ -160,13 +165,28 @@ const stateJson = JSON.stringify(
         document.title = `${next === 'all' ? 'Collections' : cat?.name} — Pratik Gupta`;
       }
 
+      // A switch is a state change plus an honest URL — never a navigation.
+      // "Back to gallery" and the breadcrumb's Gallery link are real links
+      // (JS-off, crawlers) but are intercepted for the same in-place switch.
+      function switchTo(key) {
+        applyCat(key);
+        const url = key === 'all' ? '/collections/' : `/collections/${key}/`;
+        if (location.pathname !== url) history.pushState({ cat: key }, '', url);
+      }
+
       catPills.forEach((pill) => {
         pill.addEventListener('click', () => {
           const key = pill.dataset.catFilter;
           if (key === activeCat) return;
-          applyCat(key);
-          const url = key === 'all' ? '/collections/' : `/collections/${key}/`;
-          if (location.pathname !== url) history.pushState({ cat: key }, '', url);
+          switchTo(key);
+        });
+      });
+
+      view.querySelectorAll('a[href="/collections/"]').forEach((link) => {
+        link.addEventListener('click', (e) => {
+          if (activeCat === 'all') return;
+          e.preventDefault();
+          switchTo('all');
         });
       });
 

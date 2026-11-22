@@ -83,23 +83,31 @@ tokens and typefaces.
   - Collections: in-place switching (owner decision, 2026-02): every
     collection page ships the whole wall (inactive categories' tiles render
     `hidden`) and the category pills are buttons that filter it in place —
-    switching a collection must not reload the page. The title, description,
+    switching a collection must not reload the page. One switcher row per
+    level: the category row on "All", the active category's series row
+    after a selection — the other row is hidden, never stacked, so no
+    Birds chips appear while Aircraft is active. The title, description,
     breadcrumb, series chips and `<title>` follow the switch, and a
     `pushState` keeps the URL at `/collections/<category>/` so back, reload
-    and shared links land exactly where the wall shows. The static
+    and shared links land exactly where the wall shows. "Back to gallery"
+    and the breadcrumb's Gallery link are real links (JS-off, crawlers) but
+    intercepted for the same in-place switch. The static
     per-category pages exist for the URLs (portal links, search, sharing);
     the switch itself never navigates. Series chips filter the visible
     category (same in-place pattern, no URL change). Dynamic breadcrumbs
     (`Gallery / Aircraft / [Subcategory]`, the subcategory crumb appears only
-    when a filter is active), high-contrast solid active pills, and a "Back
-    to gallery" capsule at the head of a category's chip row — the breadcrumb
-    crumb alone was too quiet to find. Capsule radius on navigation, 8px on
-    filters, so the two read as different kinds of control without adding
-    chrome. The crumb floats in the page-top padding band
-    (`top: calc(var(--page-top) - 2.4rem)`, scoped to `.collection .breadcrumb`)
-    instead of sitting in flow, so the heading, description, pills and wall
-    start at exactly the same level on every collection view — the page never
-    "drops down" to record a filter.
+    when a filter is active), high-contrast solid active pills, and a "Back to
+    gallery" capsule at the head of a category's chip row — the breadcrumb
+    crumb alone was too quiet to find.
+    Capsule radius on navigation, 8px on filters, so the two read as
+    different kinds of control without adding chrome. The crumb floats in
+    the page-top padding band (`top: calc(var(--page-top) - 2.4rem)`, scoped
+    to `.collection .breadcrumb`) instead of sitting in flow, so the heading,
+    description, pills and wall start at exactly the same level on every
+    collection view — the page never "drops down" to record a filter.
+    Note: `.pill-nav`/`.subcat-nav` are author-level `display: flex`, which
+    beats the UA rule behind `hidden` — they carry their own `[hidden]`
+    overrides, the same trap as `.ph-frame` and `.breadcrumb`.
   - Detail: an origin-aware back chip (`.photo-back`: `← Home`, `← Gallery`,
     `← Aircraft`, `← Previous print`) at the head of the breadcrumb line on
     desktop, pointing at the page the click actually came from. Always visible
