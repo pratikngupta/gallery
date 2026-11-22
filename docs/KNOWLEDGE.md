@@ -27,10 +27,14 @@ tokens and typefaces.
   zoom popover — dark in every palette and mode), `--radius: 8px` for prints and
   `--radius-pill: 9999px` for chips, `--container: 1320px`, and `--gutter`,
   `--page-top`, `--page-bottom` as clamps so the page breathes at every width.
-  The header is one row on every screen — wordmark + a MENU trigger opening a
-  native `popover` dropdown that holds the nav links, the five-swatch palette
-  picker, and the theme toggle (owner: the two-row phone header was dropped for
-  this dropdown on all viewports). Like the theme toggle, switching is
+  The header is one row on every screen. On mobile: wordmark + a MENU
+  trigger opening a native `popover` dropdown that holds the nav links, the
+  five-swatch palette picker, and the theme toggle. On desktop (≥641px):
+  wordmark + inline nav links, and the appearance controls (palette picker +
+  theme toggle) sit directly in the row — there is no MENU trigger, because a
+  menu holding only the appearance controls was a false promise. (Owner:
+  the two-row phone header was dropped for this layout.) Like the theme
+  toggle, switching is
   event-delegated, persisted in `localStorage`
   (`darkroom-theme`, `darkroom-palette`), and reapplied by the inline head
   script on `astro:after-swap` — no flash, no first-paint drift.
@@ -76,16 +80,26 @@ tokens and typefaces.
     conventions), a Pause control in the hero bar, featured works wall (9 items,
     balanced 3 columns, excluding every print the showcase is showing), and an
     "Explore the full gallery" (`#full-gallery`) archive portal.
-  - Collections: dynamic breadcrumbs (`Gallery / Aircraft / [Subcategory]`, the
-    subcategory crumb appears only when a filter is active), single-tier
-    subcategory pills, high-contrast solid active pills, and a "Back to gallery"
-    capsule at the head of the pill row — the breadcrumb crumb alone was too quiet
-    to find. Capsule radius on navigation, 8px on filters, so the two read as
-    different kinds of control without adding chrome. On a category page the crumb
-    floats in the page-top padding band (`top: calc(var(--page-top) - 2.4rem)`,
-    scoped to `.collection .breadcrumb`) instead of sitting in flow, so the
-    heading, description, pills and wall start at exactly the same level as on
-    `/collections/` — the page never "drops down" to record the filter.
+  - Collections: in-place switching (owner decision, 2026-02): every
+    collection page ships the whole wall (inactive categories' tiles render
+    `hidden`) and the category pills are buttons that filter it in place —
+    switching a collection must not reload the page. The title, description,
+    breadcrumb, series chips and `<title>` follow the switch, and a
+    `pushState` keeps the URL at `/collections/<category>/` so back, reload
+    and shared links land exactly where the wall shows. The static
+    per-category pages exist for the URLs (portal links, search, sharing);
+    the switch itself never navigates. Series chips filter the visible
+    category (same in-place pattern, no URL change). Dynamic breadcrumbs
+    (`Gallery / Aircraft / [Subcategory]`, the subcategory crumb appears only
+    when a filter is active), high-contrast solid active pills, and a "Back
+    to gallery" capsule at the head of a category's chip row — the breadcrumb
+    crumb alone was too quiet to find. Capsule radius on navigation, 8px on
+    filters, so the two read as different kinds of control without adding
+    chrome. The crumb floats in the page-top padding band
+    (`top: calc(var(--page-top) - 2.4rem)`, scoped to `.collection .breadcrumb`)
+    instead of sitting in flow, so the heading, description, pills and wall
+    start at exactly the same level on every collection view — the page never
+    "drops down" to record a filter.
   - Detail: an origin-aware back chip (`.photo-back`: `← Home`, `← Gallery`,
     `← Aircraft`, `← Previous print`) at the head of the breadcrumb line on
     desktop, pointing at the page the click actually came from. Always visible
@@ -125,23 +139,38 @@ tokens and typefaces.
 8. After adding files: `npm run build` (renditions regenerate only for what's new) and deploy. Nothing else.
 
 ## Decisions made (and why — don't re-litigate without a reason)
-- **Dropdown menu on every viewport (owner decision, 2026-02, iterated to
-  final form):** the owner dropped the two-row phone header. Final: the
-  header row is wordmark + a MENU text trigger at every width (no icon
-  chrome — the site's letter-spaced caps carry it). The native `popover`
-  menu is a **right-anchored panel on every viewport**, hanging flush under
-  the trigger: `right: var(--gutter)`, `width: min(20rem, calc(100% -
+- **Dropdown menu on mobile, inline appearance controls on desktop (owner
+  decision, 2026-02, iterated to final form):** the owner dropped the
+  two-row phone header. First final: a MENU text trigger at every width (no
+  icon chrome — the site's letter-spaced caps carry it). Owner follow-up:
+  on desktop the hamburger only held the appearance controls (the nav links
+  were already inline in the row), which was a false promise — so at ≥641px
+  the MENU trigger is hidden and the palette picker + theme toggle sit
+  directly in the header row (`.header-appearance`, one component with the
+  in-menu copy, `src/components/AppearanceControls.astro`). Mobile is
+  unchanged: the native `popover` menu is a **right-anchored panel**,
+  hanging flush under the trigger: `right: var(--gutter)`, `width: min(20rem, calc(100% -
   var(--gutter)))` — nearly full-width at ~320px, a right-side panel with
-  the page visible on the left from ~360px up. Mobile shows the nav links
-  inside (`.menu-nav`); desktop hides them (the links are already inline in
-  the row). Two UA-stylesheet traps live in the CSS comments: the dialog's
+  the page visible on the left from ~360px up. It shows the nav links
+  (`.menu-nav`) plus the appearance controls. Two UA-stylesheet traps live in the CSS comments: the dialog's
   `inset: 0` must be cleared (`left: auto`) or the `right` inset is ignored,
   and hiding `.site-nav` drops it out of grid auto-placement, so the mobile
   row switches to a 2-column grid. The trigger toggles via `popovertarget`;
   Esc/focus are native, outside-tap close and post-navigation close are the
   only JS (in `Layout`). Rejected along the way: two-row phone header,
   circular hamburger trigger, a menu that hid the desktop nav, a full-width
-  phone sheet, and a left-anchored panel.
+  phone sheet, a left-anchored panel, and a desktop hamburger that held
+  only the appearance controls.
+- **In-place collection switching over per-page pill navigation (owner
+  decision, 2026-02):** the owner found that switching collections
+  (e.g. All → Aircraft) reloaded the whole section — title, pills, wall, and
+  a scroll reset — which read as a page reload. Fix: `/collections/` and
+  `/collections/<category>/` render the identical full wall (inactive
+  categories `hidden`), the category pills are buttons, and switching only
+  retoggles `hidden` plus the head content; `history.pushState` moves the
+  URL (no navigation), `popstate` restores it. Rejected: animating the view
+  transition swap (navigation motion is banned by the design system) and
+  keeping separate per-category walls (the reload would remain).
 - **Astro, not React/Next:** the site is content, not an app; zero-JS output
   is the exact fit.
 - **Git + files over a CMS:** see `docs/ARCHITECTURE.md` → "Why no CMS".

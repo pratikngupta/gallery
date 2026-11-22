@@ -1049,13 +1049,21 @@ body {
   color: var(--meta);
 }
 
-/* A category page has to open at the same level as /collections/, which has no
-   crumb at all. Parked in the top padding band instead of stacked above the
-   heading, the crumb records where you are without pushing the wall down. */
+/* A category page has to open at the same level as /collections/ (whose
+   crumb is hidden while "All" is active). Parked in the top padding band
+   instead of stacked above the heading, the crumb records where you are
+   without pushing the wall down. */
 .collection .breadcrumb {
   position: absolute;
   left: var(--gutter);
   top: calc(var(--page-top) - 2.4rem);
+}
+
+/* On /collections/ the crumb is in the DOM but hidden (the in-place switcher
+   reveals it when a category is active) — author-level inline-flex beats the
+   UA rule behind `hidden`, so it needs its own. */
+.breadcrumb[hidden] {
+  display: none;
 }
 
 .breadcrumb-link {

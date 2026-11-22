@@ -1,101 +1,209 @@
 ---
 // Shared shell for /collections/ and /collections/<category>:
-// breadcrumb, title, description, the switcher, then the wall.
-import PillNav, { type Subcategory } from './PillNav.astro';
+// breadcrumb, title, description, switcher, then the wall.
+//
+// Switching is in-page, not per-page (owner: switching collections must not
+// reload everything). Every collection page ships the whole wall — inactive
+// categories render with `hidden` — and the category pills filter it in
+// place, the same pattern the series chips already use. A pushState keeps
+// the URL honest, so back, reload, and shared links land exactly where the
+// wall shows. The static per-category pages exist for the URLs; the switch
+// itself never navigates.
 import PhotoMasonry from './PhotoMasonry.astro';
-
-export interface Props {
-  title: string;
+import { slug } from '../lib/photos.mjs';
+interface Subcategory {
+  key: string;
+  name: string;
+}
+interface Category {
+  key: string;
+  name: string;
   description?: string | null;
-  active: string;
-  categories: Array<{ key: string; name: string }>;
-  subcategories?: Subcategory[];
-  photos: Record<string, unknown>[];
+  subcategories: Subcategory[];
+}
+export interface Props {
+  active: string; // 'all' or a category key
+  categories: Category[];
+  photos: Record<string, unknown>[]; // the whole library, with URLs
   emptyMessage?: string;
 }
-const { title, description, active, categories, subcategories = [], photos, emptyMessage } = Astro.props;
-const isAll = active === 'all';
+const { active, categories, photos, emptyMessage } = Astro.props;
+const activeCat = active === 'all' ? null : categories.find((c) => c.key === active) ?? null;
+const heading = activeCat ? activeCat.name : 'Gallery';
+const headDesc = activeCat?.description ?? 'Explore every photograph across the collections';
+const stateJson = JSON.stringify(
+  categories.map((c) => ({
+    key: c.key,
+    name: c.name,
+    description: c.description ?? null,
+    subcategories: c.subcategories.map((s) => ({ key: s.key, name: s.name })),
+  }))
+);
 ---
-
-<section class="collection reveal" data-collection-view>
+<section class="collection reveal" data-collection-view data-collection-state={stateJson}>
   <header class="collection-head">
-    {
-      !isAll && (
-        <nav class="breadcrumb" aria-label="Breadcrumb">
-          <a href="/collections/" class="breadcrumb-link">Gallery</a>
-          <span class="breadcrumb-sep" aria-hidden="true">/</span>
-          <span class="breadcrumb-current" data-breadcrumb-cat>{title}</span>
-          <span class="breadcrumb-sub" data-breadcrumb-sub-wrap hidden>
-            <span class="breadcrumb-sep" aria-hidden="true">/</span>
-              <span class="breadcrumb-current" data-breadcrumb-sub></span>
-          </span>
-        </nav>
-      )
-    }
-    <h1 class="collection-title">{title}</h1>
-    {
-      description && (
-        <p class="collection-desc">{description}</p>
-      )
-    }
+    <nav class="breadcrumb" aria-label="Breadcrumb" hidden={activeCat === null}>
+      <a href="/collections/" class="breadcrumb-link">Gallery</a>
+      <span class="breadcrumb-sep" aria-hidden="true">/</span>
+      <span class="breadcrumb-current" data-breadcrumb-cat>{activeCat?.name ?? ''}</span>
+      <span class="breadcrumb-sub" data-breadcrumb-sub-wrap hidden>
+        <span class="breadcrumb-sep" aria-hidden="true">/</span>
+        <span class="breadcrumb-current" data-breadcrumb-sub></span>
+      </span>
+    </nav>
+    <h1 class="collection-title" data-collection-title>{heading}</h1>
+    <p class="collection-desc" data-collection-desc>{headDesc}</p>
   </header>
-
-  <PillNav
-    categories={categories}
-    active={active}
-    subcategories={subcategories}
-    back={isAll ? undefined : '/collections/'}
-  />
-
+  <nav class="pill-nav" aria-label="Collections">
+    <button type="button" class={`pill ${activeCat === null ? 'is-active' : ''}`} data-cat-filter="all" aria-pressed={activeCat === null}>
+      All
+    </button>
+    {
+      categories.map((c) => (
+        <button type="button" class={`pill ${c.key === active ? 'is-active' : ''}`} data-cat-filter={c.key} aria-pressed={c.key === active}>
+          {c.name}
+        </button>
+      ))
+    }
+  </nav>
+  {
+    categories
+      .filter((c) => c.subcategories.length > 0)
+      .map((c) => (
+        <nav class="subcat-nav" data-subcat-nav data-for-cat={c.key} aria-label={`${c.name} series`} hidden={c.key !== active}>
+          <a class="collection-back" href="/collections/">Back to gallery</a>
+          <button type="button" class={`subcat-pill ${c.key === active ? 'is-active' : ''}`} data-subcat-filter="all" aria-pressed={c.key === active}>
+            All {c.name}
+          </button>
+          {
+            c.subcategories.map((s) => (
+              <button type="button" class="subcat-pill" data-subcat-filter={slug(s.key)} aria-pressed="false">
+                {s.name}
+              </button>
+            ))
+          }
+        </nav>
+      ))
+  }
   {
     photos.length === 0 ? (
       <p class="collection-empty">
         {emptyMessage ?? 'No photographs yet — drop images into src/photos/ and rebuild.'}
       </p>
     ) : (
-      <PhotoMasonry photos={photos} />
+      <PhotoMasonry photos={photos} activeCat={active} />
     )
   }
-</section>
+  <script>
+    function setupCollectionSwitcher() {
+      const view = document.querySelector('[data-collection-view]');
+      if (!view || view.dataset.ready) return;
+      view.dataset.ready = '1';
+      if (!view.querySelector('.ph-frame[data-cat]')) return;
+      const cats = JSON.parse(view.dataset.collectionState);
+      const frames = Array.from(view.querySelectorAll('.ph-frame[data-cat]'));
+      const catPills = Array.from(view.querySelectorAll('[data-cat-filter]'));
+      const subNavs = Array.from(view.querySelectorAll('[data-subcat-nav]'));
+      const titleEl = view.querySelector('[data-collection-title]');
+      const descEl = view.querySelector('[data-collection-desc]');
+      const crumbEl = view.querySelector('[data-breadcrumb]');
+      const crumbCat = view.querySelector('[data-breadcrumb-cat]');
+      const crumbSubWrap = view.querySelector('[data-breadcrumb-sub-wrap]');
+      const crumbSub = view.querySelector('[data-breadcrumb-sub]');
+      const metaDesc = document.querySelector('meta[name="description"]');
+      const ALL_DESC = 'Explore every photograph across the collections';
 
-<script>
-  function setupSeriesFilter() {
-    const nav = document.querySelector('[data-subcat-nav]');
-    if (!nav || nav.dataset.ready) return;
-    nav.dataset.ready = '1';
+      const catFromUrl = () => {
+        const m = location.pathname.match(/^\/collections\/([^/]+)\/?$/);
+        const key = m ? decodeURIComponent(m[1]) : 'all';
+        return cats.some((c) => c.key === key) ? key : 'all';
+      };
+      let activeSub = 'all';
+      let activeCat = catFromUrl();
 
-    const pills = Array.from(nav.querySelectorAll('[data-subcat-filter]'));
-    const frames = Array.from(document.querySelectorAll('.ph-frame[data-subcat]'));
-    const subWrap = document.querySelector('[data-breadcrumb-sub-wrap]');
-    const subText = document.querySelector('[data-breadcrumb-sub]');
+      const frameHidden = (f) =>
+        (activeCat !== 'all' && f.dataset.cat !== activeCat) ||
+        (activeSub !== 'all' && f.dataset.subcat !== activeSub);
 
-    pills.forEach((pill) => {
-      pill.addEventListener('click', () => {
-        const target = pill.dataset.subcatFilter;
-        if (!target) return;
-
-        pills.forEach((p) => {
-          const activeNow = p === pill;
-          p.classList.toggle('is-active', activeNow);
-          p.setAttribute('aria-pressed', activeNow ? 'true' : 'false');
+      function applyCat(next) {
+        activeCat = next;
+        activeSub = 'all';
+        const cat = cats.find((c) => c.key === next);
+        frames.forEach((f) => (f.hidden = frameHidden(f)));
+        subNavs.forEach((n) => {
+          n.hidden = n.dataset.forCat !== next;
+          n.querySelectorAll('[data-subcat-filter]').forEach((p) => {
+            const on = p.dataset.subcatFilter === 'all';
+            p.classList.toggle('is-active', on);
+            p.setAttribute('aria-pressed', String(on));
+          });
         });
-
-        if (subWrap && subText) {
-          if (target === 'all') {
-            subWrap.hidden = true;
-          } else {
-            subText.textContent = pill.textContent?.trim() || '';
-            subWrap.hidden = false;
-          }
+        catPills.forEach((p) => {
+          const on = p.dataset.catFilter === next;
+          p.classList.toggle('is-active', on);
+          p.setAttribute('aria-pressed', String(on));
+        });
+        if (crumbEl) {
+          crumbEl.hidden = next === 'all';
+          if (crumbCat && cat) crumbCat.textContent = cat.name;
+          if (crumbSubWrap) crumbSubWrap.hidden = true;
         }
+        if (titleEl) titleEl.textContent = next === 'all' ? 'Gallery' : cat.name;
+        if (descEl) {
+          const d = next === 'all' ? null : cat?.description;
+          descEl.textContent = d ?? ALL_DESC;
+          descEl.hidden = !d;
+        }
+        if (metaDesc) {
+          metaDesc.setAttribute('content', next === 'all' ? ALL_DESC : (cat?.description ?? ALL_DESC));
+        }
+        document.title = `${next === 'all' ? 'Collections' : cat?.name} — Pratik Gupta`;
+      }
 
-        frames.forEach((frame) => {
-          frame.hidden = target !== 'all' && frame.dataset.subcat !== target;
+      catPills.forEach((pill) => {
+        pill.addEventListener('click', () => {
+          const key = pill.dataset.catFilter;
+          if (key === activeCat) return;
+          applyCat(key);
+          const url = key === 'all' ? '/collections/' : `/collections/${key}/`;
+          if (location.pathname !== url) history.pushState({ cat: key }, '', url);
         });
       });
-    });
-  }
 
-  setupSeriesFilter();
-  document.addEventListener('astro:page-load', setupSeriesFilter);
-</script>
+      subNavs.forEach((nav) => {
+        nav.querySelectorAll('[data-subcat-filter]').forEach((pill) => {
+          pill.addEventListener('click', () => {
+            const target = pill.dataset.subcatFilter;
+            if (!target) return;
+            activeSub = target;
+            nav.querySelectorAll('[data-subcat-filter]').forEach((p) => {
+              const on = p === pill;
+              p.classList.toggle('is-active', on);
+              p.setAttribute('aria-pressed', String(on));
+            });
+            if (crumbSubWrap && crumbSub) {
+              crumbSub.textContent = target === 'all' ? '' : (pill.textContent || '').trim();
+              crumbSubWrap.hidden = target === 'all';
+            }
+            frames.forEach((f) => (f.hidden = frameHidden(f)));
+          });
+        });
+      });
+
+      // The URL is the source of truth on arrival and on the back button;
+      // the static render already matches it, so this call is a no-op except
+      // after an in-place switch where pushState moved the URL.
+      applyCat(catFromUrl());
+      view.__onPopstate = () => applyCat(catFromUrl());
+      if (!window.__collectionPopstate) {
+        window.__collectionPopstate = true;
+        document.addEventListener('popstate', () => {
+          const v = document.querySelector('[data-collection-view]');
+          if (v && v.__onPopstate) v.__onPopstate();
+        });
+      }
+    }
+    setupCollectionSwitcher();
+    document.addEventListener('astro:page-load', setupCollectionSwitcher);
+  </script>
+</section>

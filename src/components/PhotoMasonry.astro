@@ -1,15 +1,15 @@
 ---
 // The wall: prints that link to their detail page. No transition:name —
 // navigation swaps instantly (see the wildcard rules in global.css);
-// data-subcat feeds the series filter.
+// data-subcat feeds the series filter, data-cat the in-place collection
+// switcher on /collections/.
 import { slug } from '../lib/photos.mjs';
-
 export interface Props {
   photos: Record<string, unknown>[];
+  activeCat?: string | null; // tiles of other categories render hidden
 }
-const { photos } = Astro.props;
+const { photos, activeCat = null } = Astro.props;
 ---
-
 <div class="masonry">
   {
     photos.map((p) => (
@@ -18,6 +18,8 @@ const { photos } = Astro.props;
         href={`/photo/${p.id}/`}
         aria-label={`View ${p.title}`}
         data-subcat={slug(p.subcategory)}
+        data-cat={p.category}
+        hidden={activeCat !== null && p.category !== activeCat}
       >
         <img
           class="ph-img"

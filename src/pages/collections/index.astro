@@ -3,18 +3,10 @@ import Layout from '../../layouts/Layout.astro';
 import CollectionView from '../../components/CollectionView.astro';
 import { scanPhotos } from '../../lib/photos.mjs';
 import { withUrls } from '../../lib/render.mjs';
-
-// /collections/ — every photograph, switchable by the pill bar.
+// /collections/ — every photograph, switchable in place by the pill bar.
 const { categories, photos } = await scanPhotos();
 const wall = photos.map(withUrls);
 ---
-
-<Layout title="Collections — Pratik Gupta">
-  <CollectionView
-    title="Gallery"
-    description="Explore every photograph across the collections"
-    active="all"
-    categories={categories}
-    photos={wall}
-  />
+<Layout title="Collections — Pratik Gupta" description="Explore every photograph across the collections">
+  <CollectionView active="all" categories={categories} photos={wall} />
 </Layout>
