@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-22T15:42:05.453Z",
+  "title": "Design System: Pratik Gupta — Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#090909",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#f5f5f5",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "meta": {
+        "role": "neutral",
+        "displayName": "Meta",
+        "canonical": "#a3a3a3",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "frame": {
+        "role": "neutral",
+        "displayName": "Frame",
+        "canonical": "#303030",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "accent-graphite": {
+        "role": "primary",
+        "displayName": "Graphite Grey",
+        "canonical": "#d4d4d4",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "accent-slate": {
+        "role": "primary",
+        "displayName": "Slate Blue",
+        "canonical": "#60a5fa",
+        "tonalRamp": [
+          "#050a1c",
+          "#182341",
+          "#30406a",
+          "#4a5f95",
+          "#6e81b0",
+          "#96a5c7",
+          "#c1c9db",
+          "#ebeef6"
+        ]
+      },
+      "accent-stone": {
+        "role": "primary",
+        "displayName": "Stone Ochre",
+        "canonical": "#c4a484",
+        "tonalRamp": [
+          "#0f0a06",
+          "#2c231c",
+          "#4c3f35",
+          "#6e5e50",
+          "#8e7f74",
+          "#ada39a",
+          "#cec8c3",
+          "#f0eeec"
+        ]
+      },
+      "accent-sage": {
+        "role": "primary",
+        "displayName": "Sage Green",
+        "canonical": "#87a991",
+        "tonalRamp": [
+          "#080d09",
+          "#1f2722",
+          "#3a453d",
+          "#57665b",
+          "#79867d",
+          "#9fa8a1",
+          "#c6cbc7",
+          "#edefed"
+        ]
+      },
+      "accent-plum": {
+        "role": "primary",
+        "displayName": "Plum Violet",
+        "canonical": "#b5a0d0",
+        "tonalRamp": [
+          "#0d0912",
+          "#282230",
+          "#463d52",
+          "#665b75",
+          "#877d94",
+          "#a8a1b2",
+          "#cbc7d0",
+          "#efeef1"
+        ]
+      },
+      "darkroom": {
+        "role": "special",
+        "displayName": "Darkroom",
+        "canonical": "#0e0d0b",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      }
+    },
+    "paletteMatrix": {
+      "graphite": {
+        "dark": {
+          "bg": "#090909",
+          "text": "#f5f5f5",
+          "accent": "#d4d4d4",
+          "meta": "#a3a3a3",
+          "frame": "#303030"
+        },
+        "light": {
+          "bg": "#ffffff",
+          "text": "#171717",
+          "accent": "#404040",
+          "meta": "#666666",
+          "frame": "#e5e5e5"
+        }
+      },
+      "slate": {
+        "dark": {
+          "bg": "#111827",
+          "text": "#f8fafc",
+          "accent": "#60a5fa",
+          "meta": "#94a3b8",
+          "frame": "#374151"
+        },
+        "light": {
+          "bg": "#f8fafc",
+          "text": "#0f172a",
+          "accent": "#2563eb",
+          "meta": "#64748b",
+          "frame": "#e2e8f0"
+        }
+      },
+      "stone": {
+        "dark": {
+          "bg": "#1c1917",
+          "text": "#f5f0e8",
+          "accent": "#c4a484",
+          "meta": "#a8a29e",
+          "frame": "#44403c"
+        },
+        "light": {
+          "bg": "#faf7f2",
+          "text": "#292524",
+          "accent": "#8a6441",
+          "meta": "#78716c",
+          "frame": "#e7e0d7"
+        }
+      },
+      "sage": {
+        "dark": {
+          "bg": "#121714",
+          "text": "#e8ede6",
+          "accent": "#87a991",
+          "meta": "#a6b5aa",
+          "frame": "#344238"
+        },
+        "light": {
+          "bg": "#f5f8f4",
+          "text": "#1c3024",
+          "accent": "#427a54",
+          "meta": "#607467",
+          "frame": "#dae5da"
+        }
+      },
+      "plum": {
+        "dark": {
+          "bg": "#18151f",
+          "text": "#f4eff8",
+          "accent": "#b5a0d0",
+          "meta": "#aaa0b4",
+          "frame": "#41374c"
+        },
+        "light": {
+          "bg": "#faf7fc",
+          "text": "#2d2235",
+          "accent": "#76559b",
+          "meta": "#776b80",
+          "frame": "#e8dff0"
+        }
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "t-fast",
+        "value": "0.2s ease",
+        "purpose": "State changes: pills, capsules, scrims, nav underline."
+      },
+      {
+        "name": "t-reveal",
+        "value": "0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        "purpose": "The blur-up develop: placeholder resolves into the full print."
+      },
+      {
+        "name": "t-hero",
+        "value": "0.85s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        "purpose": "Showcase slide crossfade with a settle from scale(1.02)."
+      },
+      {
+        "name": "blur-up",
+        "value": "filter: blur(22px) saturate(0.75); transform: scale(1.04)",
+        "purpose": "The not-yet-developed print (40px placeholder state)."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile",
+        "value": "640px",
+        "purpose": "Masonry drops to 1 column; header collapses to wordmark + MENU."
+      },
+      {
+        "name": "tablet",
+        "value": "1024px",
+        "purpose": "Masonry drops to 2 columns; detail page gains the 340px spec sidebar."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Pill (switcher / filter)",
+      "kind": "chip",
+      "refersTo": "pill",
+      "description": "Collection and series switcher; the active pill is the only solid object on the wall.",
+      "html": "<div style=\"display:flex;gap:.5rem;flex-wrap:wrap;align-items:center\"><button class=\"ds-pill\">All</button><button class=\"ds-pill is-active\">Aircraft</button><button class=\"ds-pill\" tabindex=\"0\">Birds</button></div>",
+      "css": ".ds-pill{font-family:var(--font-body,Archivo,sans-serif);font-size:.875rem;font-weight:500;color:var(--meta,#a3a3a3);padding:.45rem 1.15rem;border:1px solid var(--frame,#303030);border-radius:var(--radius,8px);background:color-mix(in srgb, var(--frame,#303030) 45%, transparent);cursor:pointer;text-decoration:none;transition:color .2s ease,background-color .2s ease,border-color .2s ease}.ds-pill:hover{color:var(--ink,#f5f5f5);border-color:var(--meta,#a3a3a3)}.ds-pill.is-active{color:var(--paper,#090909);background:var(--ink,#f5f5f5);border-color:var(--ink,#f5f5f5);font-weight:600}.ds-pill:focus-visible{outline:2px solid var(--accent,#d4d4d4);outline-offset:3px}"
+    },
+    {
+      "name": "Back Capsule (navigation)",
+      "kind": "button",
+      "refersTo": "back-capsule",
+      "description": "Origin-aware way back; capsule radius means navigation, 8px means filter.",
+      "html": "<a class=\"ds-back\" href=\"#\">Back to gallery</a>",
+      "css": ".ds-back{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .85rem;font-family:var(--font-body,Archivo,sans-serif);font-size:.875rem;font-weight:500;color:var(--meta,#a3a3a3);border:1px solid var(--frame,#303030);border-radius:var(--radius-pill,9999px);background:color-mix(in srgb, var(--frame,#303030) 45%, transparent);text-decoration:none;transition:color .2s ease,background-color .2s ease,border-color .2s ease}.ds-back:hover{color:var(--accent,#d4d4d4);border-color:var(--accent,#d4d4d4)}.ds-back:focus-visible{outline:2px solid var(--accent,#d4d4d4);outline-offset:3px}"
+    },
+    {
+      "name": "Print Tile",
+      "kind": "card",
+      "refersTo": "print-tile",
+      "description": "A clean print: 8px radius, no border or shadow, title-only hover scrim in the darkroom color.",
+      "html": "<a class=\"ds-print\" href=\"#\"><span class=\"ds-scrim\"><span>Sparrows</span></span></a>",
+      "css": ".ds-print{position:relative;display:block;width:220px;height:280px;padding:0;border-radius:var(--radius,8px);overflow:hidden;background:linear-gradient(160deg,#2c3e50 0%,#1a252f 60%,#141d26 100%)}.ds-print .ds-scrim{position:absolute;inset:0;display:flex;align-items:flex-end;padding:1rem 1.25rem;background:linear-gradient(to top, color-mix(in srgb, var(--darkroom,#0e0d0b) 72%, transparent), transparent 55%);opacity:0;transition:opacity .2s ease;pointer-events:none}.ds-print .ds-scrim span{font-size:.875rem;color:var(--darkroom-ink,#ece7df)}.ds-print:hover .ds-scrim,.ds-print:focus-visible .ds-scrim{opacity:1}.ds-print:focus-visible{outline:2px solid var(--accent,#d4d4d4);outline-offset:3px}"
+    },
+    {
+      "name": "Hero Location Pill",
+      "kind": "chip",
+      "refersTo": "hero-location-pill",
+      "description": "Bottom-left of the showcase; states a place only when the library states one.",
+      "html": "<span class=\"ds-loc\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/></svg>Toronto, Canada</span>",
+      "css": ".ds-loc{position:relative;display:inline-flex;align-items:center;gap:.45rem;padding:.4rem .95rem;background:var(--darkroom,#0e0d0b);color:var(--darkroom-ink,#ece7df);border-radius:var(--radius-pill,9999px);font-family:var(--font-body,Archivo,sans-serif);font-size:.8125rem;font-weight:500;letter-spacing:.02em}"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "description": "Uppercase 13px label; meta at rest, ink on hover, 1.5px underline grows from the left.",
+      "html": "<nav style=\"display:flex;gap:1.75rem;align-items:center\"><a class=\"ds-nav\" href=\"#\">HOME</a><a class=\"ds-nav\" href=\"#\">GALLERY</a><a class=\"ds-nav\" href=\"#\">ABOUT</a></nav>",
+      "css": ".ds-nav{position:relative;font-family:var(--font-body,Archivo,sans-serif);font-size:.8125rem;font-weight:500;letter-spacing:.06em;color:var(--meta,#a3a3a3);text-transform:uppercase;text-decoration:none;transition:color .2s ease}.ds-nav::after{content:\"\";position:absolute;left:0;bottom:-4px;width:0;height:1.5px;background:var(--ink,#f5f5f5);transition:width .2s ease}.ds-nav:hover{color:var(--ink,#f5f5f5)}.ds-nav:hover::after{width:100%}.ds-nav:focus-visible{outline:2px solid var(--accent,#d4d4d4);outline-offset:3px}"
+    },
+    {
+      "name": "Palette Dots",
+      "kind": "custom",
+      "description": "The five accent hues as 14px dots — the only place hue reads as content rather than state.",
+      "html": "<div style=\"display:flex;gap:.5rem;align-items:center\" role=\"radiogroup\" aria-label=\"Palette\"><span class=\"ds-dot\" style=\"background:#d4d4d4\"></span><span class=\"ds-dot\" style=\"background:#60a5fa\"></span><span class=\"ds-dot\" style=\"background:#c4a484\"></span><span class=\"ds-dot\" style=\"background:#87a991\"></span><span class=\"ds-dot\" style=\"background:#b5a0d0\"></span></div>",
+      "css": ".ds-dot{display:block;width:14px;height:14px;border-radius:50%;transition:transform .2s ease}.ds-dot:hover{transform:scale(1.25)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Darkroom",
+    "overview": "The site is a darkroom, not a web app. A near-black wall holds clean prints; the interface is the plaster, never the paint. The voice is measured, dark, and confident: the work speaks, the interface holds its breath. There is no urgency, no decoration, no explanation — a print appears the way a print develops, out of blur, in the safelight of a state accent.\n\nDensity is deliberately low. Every page is one wall at a time: a hero showcase, a masonry of prints, or a single print under the lamp. Chrome is measured in hairlines (1px frame) and radii (8px), and the only hue on a screen is the accent, which is spent on state — active, hover, focus — and on nothing else.\n\nThis system implements the owner's binding non-negotiable (PRODUCT.md): the photographs are the interface. No UI element may compete with the images. Confirmed visual rejections, from the owner: cards/borders/shadows around prints; navigation animations (page swaps are instant); an accent used as decoration; an endless single-scroll home; a UI that requires photo metadata to function.",
+    "keyCharacteristics": [
+      "Clean prints on a near-black wall — no cards, borders, or shadows",
+      "Ink-on-paper inversion carries both themes; no palette-specific component colors",
+      "One hue per palette, spent on state only (active pill, hover, focus ring)",
+      "The work develops in: a 40px placeholder blurs up into the full print",
+      "Capsule radius means navigation; 8px radius means print or filter",
+      "Mono type is the lab readout: EXIF, specs, counts"
+    ],
+    "rules": [
+      {
+        "name": "The State-Only Accent Rule",
+        "body": "The accent appears only on active, hover, and focus. Never as decoration, never in gradients, never in type. Its rarity is the point.",
+        "section": "colors"
+      },
+      {
+        "name": "The Measured-Contrast Rule",
+        "body": "No color ships without its ratio: every accent and meta measures at least 4.5:1 against its own paper in every palette × theme. The weakest values in the set (Sage light 5.0:1, Stone light 5.2:1) were nudged to clear AA — add no color without doing the same.",
+        "section": "colors"
+      },
+      {
+        "name": "The Always-Dark Room Rule",
+        "body": "Darkroom surfaces stay dark in every palette and every theme. A light theme never lights the darkroom.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Typeface Rule",
+        "body": "Only Archivo (one variable range, 400–700) and JetBrains Mono. Nothing else may be requested — and the Google Fonts range must stop at 700, because a subset that stops at 600 makes the browser fake the bold.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Surfaces are flat at rest and stay flat. Depth is conveyed by darkening and developing, never by box-shadow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Capsule-Means-Go Rule",
+        "body": "Capsule radius means navigation; 8px means print or filter. The two must not be mixed — the radius is how a visitor tells a door from a switch.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do keep the photographs the interface: no cards, borders, or shadows on grid images; the only tile chrome is the 8px radius and the title-only hover scrim.",
+      "Do spend the accent on state only — active pill, hover, focus ring (2px solid, 3px offset).",
+      "Do let the wall develop: 40px placeholder → blur-up over 0.6s with cubic-bezier(0.25, 0.46, 0.45, 0.94).",
+      "Do keep the zoom popover dark in every palette and theme.",
+      "Do reserve uppercase for the wordmark and nav labels; everything else is sentence case.",
+      "Do check both themes and all five palettes, and prefers-reduced-motion, before anything ships.",
+      "Do measure contrast (≥4.5:1) before adding any color to the set."
+    ],
+    "donts": [
+      "Don't put a shadow, border, or card on a photograph — depth is tonal, not graphical.",
+      "Don't animate navigation: page swaps are instant; the only motion in the system is the blur-up develop and the hero showcase.",
+      "Don't use the accent as decoration, in gradients, or in text color at rest.",
+      "Don't add tracked all-caps eyebrows or →/↓ glyphs to link and button text.",
+      "Don't request fonts or weights beyond the Archivo 400–700 variable range and JetBrains Mono.",
+      "Don't assert geography the library doesn't state — the hero badge hides rather than guesses.",
+      "Don't build commerce, booking, or social-follow UI — the site is showcase only (PRODUCT.md); email is the only call to action."
+    ]
+  }
+}
