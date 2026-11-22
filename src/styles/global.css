@@ -390,6 +390,30 @@ body {
 .menu-trigger[aria-expanded='true'] {
   color: var(--text);
 }
+/* Appearance controls (palette dots + theme toggle): one component, two
+   homes. Desktop: they sit in the header row itself — there is no
+   hamburger, because a menu holding only the appearance controls was a
+   false promise. Mobile: they live inside the MENU popover, which also
+   carries the page links. */
+.header-appearance {
+  display: none;
+}
+@media (min-width: 641px) {
+  .header-appearance {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    justify-self: end;
+  }
+  .menu-trigger {
+    display: none;
+  }
+  /* Row context: tighter dot hit areas than the menu's, so the row fits
+     641–700px viewports (the dots themselves stay 14px). */
+  .header-appearance .palette-dot {
+    width: 1.75rem;
+  }
+}
 
 /* Dropdown menu: a native popover, right-anchored on every viewport so it
    hangs flush under the MENU trigger. On phones it is min(20rem, viewport

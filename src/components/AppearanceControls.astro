@@ -1,0 +1,29 @@
+---
+// Palette picker + theme toggle, one component in two homes:
+// inline in the header row on desktop (where MENU is gone) and inside
+// the MENU popover on every viewport. The layout's delegated click
+// handler and the update* helpers query every match, so both copies
+// stay in sync for free.
+export interface Props {
+  inMenu?: boolean;
+}
+const { inMenu = false } = Astro.props;
+---
+<div class={inMenu ? 'appearance-controls menu-appearance' : 'appearance-controls header-appearance'}>
+  <div class="palette-picker" role="group" aria-label="Color palette">
+    <button type="button" class="palette-dot" data-palette="graphite" aria-label="Graphite palette" aria-pressed="true"><span aria-hidden="true"></span></button>
+    <button type="button" class="palette-dot" data-palette="slate" aria-label="Slate palette" aria-pressed="false"><span aria-hidden="true"></span></button>
+    <button type="button" class="palette-dot" data-palette="stone" aria-label="Stone palette" aria-pressed="false"><span aria-hidden="true"></span></button>
+    <button type="button" class="palette-dot" data-palette="sage" aria-label="Sage palette" aria-pressed="false"><span aria-hidden="true"></span></button>
+    <button type="button" class="palette-dot" data-palette="plum" aria-label="Plum palette" aria-pressed="false"><span aria-hidden="true"></span></button>
+  </div>
+  <button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+    <svg class="theme-icon theme-icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4"></circle>
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l1.41 1.41"></path>
+    </svg>
+    <svg class="theme-icon theme-icon--moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+    </svg>
+  </button>
+</div>
