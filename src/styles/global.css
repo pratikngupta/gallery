@@ -1014,12 +1014,23 @@ body {
   margin-bottom: 1.25rem;
 }
 
-.collection-title {
+/* The plate label: the collection title commands the head, and a mono
+   readout under it carries the count and the collection's position — the
+   same voice as the EXIF readouts on the detail page. */
+.plate-title {
   font-family: var(--font-heading);
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(2.7rem, 5.4vw, 4.05rem);
   font-weight: 700;
-  letter-spacing: -0.025em;
-  line-height: 1.05;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+}
+
+.plate-meta {
+  margin-top: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  color: var(--meta);
 }
 
 .collection-desc {
@@ -1149,7 +1160,7 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.5rem;
-  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  margin-bottom: 1.75rem;
 }
 
 /* Only one switcher row is on the wall at a time — the category row on

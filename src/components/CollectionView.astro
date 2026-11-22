@@ -9,6 +9,10 @@
 // the URL honest, so back, reload, and shared links land exactly where the
 // wall shows. The static per-category pages exist for the URLs; the switch
 // itself never navigates.
+//
+// The head is a "plate label": the collection title commands, and a mono
+// readout under it carries the count and the collection's position — the
+// same voice as the EXIF readouts on the detail page.
 import PhotoMasonry from './PhotoMasonry.astro';
 import { slug } from '../lib/photos.mjs';
 interface Subcategory {
@@ -39,6 +43,9 @@ const stateJson = JSON.stringify(
     subcategories: c.subcategories.map((s) => ({ key: s.key, name: s.name })),
   }))
 );
+const plateMeta = activeCat
+  ? `${photos.filter((p) => p.category === activeCat.key).length} prints · collection ${String(categories.findIndex((c) => c.key === active) + 1).padStart(2, '0')} of ${String(categories.length).padStart(2, '0')}`
+  : `${photos.length} prints · ${categories.length} collections`;
 ---
 <section class="collection reveal" data-collection-view data-collection-state={stateJson}>
   <header class="collection-head">
@@ -51,7 +58,8 @@ const stateJson = JSON.stringify(
         <span class="breadcrumb-current" data-breadcrumb-sub></span>
       </span>
     </nav>
-    <h1 class="collection-title" data-collection-title>{heading}</h1>
+    <h1 class="plate-title" data-collection-title>{heading}</h1>
+    <p class="plate-meta mono" data-plate-meta>{plateMeta}</p>
     <p class="collection-desc" data-collection-desc>{headDesc}</p>
   </header>
   <nav class="pill-nav" aria-label="Collections" data-cat-nav hidden={active !== 'all'}>
@@ -106,12 +114,12 @@ const stateJson = JSON.stringify(
       const catPills = Array.from(view.querySelectorAll('[data-cat-filter]'));
       const subNavs = Array.from(view.querySelectorAll('[data-subcat-nav]'));
       const titleEl = view.querySelector('[data-collection-title]');
+      const metaEl = view.querySelector('[data-plate-meta]');
       const descEl = view.querySelector('[data-collection-desc]');
       const crumbEl = view.querySelector('[data-breadcrumb]');
       const crumbCat = view.querySelector('[data-breadcrumb-cat]');
       const crumbSubWrap = view.querySelector('[data-breadcrumb-sub-wrap]');
       const crumbSub = view.querySelector('[data-breadcrumb-sub]');
-      const metaDesc = document.querySelector('meta[name="description"]');
       const ALL_DESC = 'Explore every photograph across the collections';
 
       const catFromUrl = () => {
@@ -154,13 +162,16 @@ const stateJson = JSON.stringify(
           if (crumbSubWrap) crumbSubWrap.hidden = true;
         }
         if (titleEl) titleEl.textContent = next === 'all' ? 'Gallery' : cat.name;
+        if (metaEl) {
+          metaEl.textContent =
+            next === 'all'
+              ? `${frames.length} prints · ${cats.length} collections`
+              : `${frames.filter((f) => f.dataset.cat === next).length} prints · collection ${String(cats.findIndex((c) => c.key === next) + 1).padStart(2, '0')} of ${String(cats.length).padStart(2, '0')}`;
+        }
         if (descEl) {
           const d = next === 'all' ? null : cat?.description;
           descEl.textContent = d ?? ALL_DESC;
           descEl.hidden = !d;
-        }
-        if (metaDesc) {
-          metaDesc.setAttribute('content', next === 'all' ? ALL_DESC : (cat?.description ?? ALL_DESC));
         }
         document.title = `${next === 'all' ? 'Collections' : cat?.name} — Pratik Gupta`;
       }
